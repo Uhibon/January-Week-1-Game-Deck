@@ -86,6 +86,14 @@ a.deck{
   transition:transform .3s, box-shadow .4s, filter .4s;
 }
 
+/* Base colors */
+a.deck:nth-child(1){background-color:var(--pink);box-shadow:0 0 20px var(--pink);}
+a.deck:nth-child(2){background-color:var(--blue);box-shadow:0 0 20px var(--blue);}
+a.deck:nth-child(3){background-color:var(--yellow);box-shadow:0 0 20px var(--yellow);}
+a.deck:nth-child(4){background-color:var(--purple);box-shadow:0 0 20px var(--purple);}
+a.deck:nth-child(5){background-color:var(--mint);box-shadow:0 0 20px var(--mint);}
+a.deck:nth-child(6){background-color:var(--orange);box-shadow:0 0 20px var(--orange);}
+
 /* Animated stripes background */
 a.deck::before{
   content:"";
@@ -99,20 +107,36 @@ a.deck::before{
   background-size:200% 200%;
   animation:stripesMove 5s linear infinite;
   z-index:0;
-  opacity:0.5;
-}
-@keyframes stripesMove{
-  0%{background-position:0 0;}
-  100%{background-position:200% 200%;}
+  opacity:0.4;
 }
 
-/* Base colors */
-a.deck:nth-child(1){background-color:var(--pink);box-shadow:0 0 20px var(--pink);}
-a.deck:nth-child(2){background-color:var(--blue);box-shadow:0 0 20px var(--blue);}
-a.deck:nth-child(3){background-color:var(--yellow);box-shadow:0 0 20px var(--yellow);}
-a.deck:nth-child(4){background-color:var(--purple);box-shadow:0 0 20px var(--purple);}
-a.deck:nth-child(5){background-color:var(--mint);box-shadow:0 0 20px var(--mint);}
-a.deck:nth-child(6){background-color:var(--orange);box-shadow:0 0 20px var(--orange);}
+/* Spiral animation overlay */
+a.deck::after{
+  content:"";
+  position:absolute;
+  top:50%;left:50%;
+  width:160%;height:160%;
+  border-radius:50%;
+  transform:translate(-50%,-50%) rotate(0deg);
+  opacity:0.25;
+  background:conic-gradient(from 0deg, 
+    rgba(255,255,255,0.2) 0deg 30deg,
+    transparent 30deg 60deg,
+    rgba(255,255,255,0.2) 60deg 90deg,
+    transparent 90deg 120deg,
+    rgba(255,255,255,0.2) 120deg 150deg,
+    transparent 150deg 180deg,
+    rgba(255,255,255,0.2) 180deg 210deg,
+    transparent 210deg 240deg,
+    rgba(255,255,255,0.2) 240deg 270deg,
+    transparent 270deg 300deg,
+    rgba(255,255,255,0.2) 300deg 330deg,
+    transparent 330deg 360deg
+  );
+  animation:spin 12s linear infinite;
+  z-index:0;
+  mix-blend-mode:overlay;
+}
 
 /* Hover glow */
 a.deck:hover{
@@ -131,7 +155,15 @@ a.deck:nth-child(6):hover{box-shadow:0 0 30px var(--orange),0 0 60px rgba(255,17
 a.deck span{font-size:0.8em;color:#222;position:relative;z-index:1;}
 a.deck b{position:relative;z-index:1;}
 
-/* Animation */
+/* Animations */
+@keyframes stripesMove{
+  0%{background-position:0 0;}
+  100%{background-position:200% 200%;}
+}
+@keyframes spin{
+  0%{transform:translate(-50%,-50%) rotate(0deg);}
+  100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
 /* Footer */
