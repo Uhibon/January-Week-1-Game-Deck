@@ -94,29 +94,22 @@ a.deck:nth-child(4){background-color:var(--purple);}
 a.deck:nth-child(5){background-color:var(--mint);}
 a.deck:nth-child(6){background-color:var(--orange);}
 
-/* Spiral overlay */
+/* Spirals (more contrast per color) */
+a.deck:nth-child(1)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(255,0,128,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(255,0,128,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(255,0,128,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(255,0,128,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(255,0,128,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(255,0,128,0.5) 330deg 360deg);}
+a.deck:nth-child(2)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(0,180,255,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(0,180,255,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(0,180,255,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(0,180,255,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(0,180,255,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(0,180,255,0.5) 330deg 360deg);}
+a.deck:nth-child(3)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(255,200,0,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(255,200,0,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(255,200,0,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(255,200,0,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(255,200,0,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(255,200,0,0.5) 330deg 360deg);}
+a.deck:nth-child(4)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(180,0,255,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(180,0,255,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(180,0,255,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(180,0,255,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(180,0,255,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(180,0,255,0.5) 330deg 360deg);}
+a.deck:nth-child(5)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(0,255,128,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(0,255,128,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(0,255,128,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(0,255,128,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(0,255,128,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(0,255,128,0.5) 330deg 360deg);}
+a.deck:nth-child(6)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(255,128,0,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(255,128,0,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(255,128,0,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(255,128,0,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(255,128,0,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(255,128,0,0.5) 330deg 360deg);}
+
+/* Spiral shared properties */
 a.deck::after{
-  content:"";
   position:absolute;
   top:50%;left:50%;
   width:160%;height:160%;
   border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
-  opacity:0.35;
-  background:conic-gradient(from 0deg,
-    rgba(255,255,255,0.3) 0deg 30deg,
-    transparent 30deg 60deg,
-    rgba(255,255,255,0.3) 60deg 90deg,
-    transparent 90deg 120deg,
-    rgba(255,255,255,0.3) 120deg 150deg,
-    transparent 150deg 180deg,
-    rgba(255,255,255,0.3) 180deg 210deg,
-    transparent 210deg 240deg,
-    rgba(255,255,255,0.3) 240deg 270deg,
-    transparent 270deg 300deg,
-    rgba(255,255,255,0.3) 300deg 330deg,
-    transparent 330deg 360deg
-  );
+  opacity:.45;
   animation:spin 10s linear infinite;
   z-index:0;
   mix-blend-mode:overlay;
