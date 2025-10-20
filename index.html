@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="booha-ghost.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet" />
 <style>
-:root {
+:root{
   --radius:28px;
   --pink:#ff7eb9;
   --blue:#5ee6ff;
@@ -87,30 +87,14 @@ a.deck{
 }
 
 /* Base colors */
-a.deck:nth-child(1){background-color:var(--pink);box-shadow:0 0 20px var(--pink);}
-a.deck:nth-child(2){background-color:var(--blue);box-shadow:0 0 20px var(--blue);}
-a.deck:nth-child(3){background-color:var(--yellow);box-shadow:0 0 20px var(--yellow);}
-a.deck:nth-child(4){background-color:var(--purple);box-shadow:0 0 20px var(--purple);}
-a.deck:nth-child(5){background-color:var(--mint);box-shadow:0 0 20px var(--mint);}
-a.deck:nth-child(6){background-color:var(--orange);box-shadow:0 0 20px var(--orange);}
+a.deck:nth-child(1){background-color:var(--pink);}
+a.deck:nth-child(2){background-color:var(--blue);}
+a.deck:nth-child(3){background-color:var(--yellow);}
+a.deck:nth-child(4){background-color:var(--purple);}
+a.deck:nth-child(5){background-color:var(--mint);}
+a.deck:nth-child(6){background-color:var(--orange);}
 
-/* Animated stripes background */
-a.deck::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:repeating-linear-gradient(
-    45deg,
-    rgba(255,255,255,0.15) 0 20px,
-    rgba(255,255,255,0) 20px 40px
-  );
-  background-size:200% 200%;
-  animation:stripesMove 5s linear infinite;
-  z-index:0;
-  opacity:0.4;
-}
-
-/* Spiral animation overlay */
+/* Spiral overlay */
 a.deck::after{
   content:"";
   position:absolute;
@@ -118,48 +102,51 @@ a.deck::after{
   width:160%;height:160%;
   border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
-  opacity:0.25;
-  background:conic-gradient(from 0deg, 
-    rgba(255,255,255,0.2) 0deg 30deg,
+  opacity:0.35;
+  background:conic-gradient(from 0deg,
+    rgba(255,255,255,0.3) 0deg 30deg,
     transparent 30deg 60deg,
-    rgba(255,255,255,0.2) 60deg 90deg,
+    rgba(255,255,255,0.3) 60deg 90deg,
     transparent 90deg 120deg,
-    rgba(255,255,255,0.2) 120deg 150deg,
+    rgba(255,255,255,0.3) 120deg 150deg,
     transparent 150deg 180deg,
-    rgba(255,255,255,0.2) 180deg 210deg,
+    rgba(255,255,255,0.3) 180deg 210deg,
     transparent 210deg 240deg,
-    rgba(255,255,255,0.2) 240deg 270deg,
+    rgba(255,255,255,0.3) 240deg 270deg,
     transparent 270deg 300deg,
-    rgba(255,255,255,0.2) 300deg 330deg,
+    rgba(255,255,255,0.3) 300deg 330deg,
     transparent 330deg 360deg
   );
-  animation:spin 12s linear infinite;
+  animation:spin 10s linear infinite;
   z-index:0;
   mix-blend-mode:overlay;
 }
 
-/* Hover glow */
+/* Sequential glowing animation */
+a.deck:nth-child(1){animation:glow 6s infinite;animation-delay:0s;}
+a.deck:nth-child(2){animation:glow 6s infinite;animation-delay:1s;}
+a.deck:nth-child(3){animation:glow 6s infinite;animation-delay:2s;}
+a.deck:nth-child(4){animation:glow 6s infinite;animation-delay:3s;}
+a.deck:nth-child(5){animation:glow 6s infinite;animation-delay:4s;}
+a.deck:nth-child(6){animation:glow 6s infinite;animation-delay:5s;}
+
+@keyframes glow{
+  0%,100%{box-shadow:0 0 10px rgba(255,255,255,0.15);}
+  15%{box-shadow:0 0 30px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.5);}
+  30%{box-shadow:0 0 10px rgba(255,255,255,0.15);}
+}
+
+/* Hover lift */
 a.deck:hover{
   transform:scale(1.08);
   filter:brightness(1.2);
-  z-index:2;
 }
-a.deck:nth-child(1):hover{box-shadow:0 0 30px var(--pink),0 0 60px rgba(255,126,185,.6);}
-a.deck:nth-child(2):hover{box-shadow:0 0 30px var(--blue),0 0 60px rgba(94,230,255,.6);}
-a.deck:nth-child(3):hover{box-shadow:0 0 30px var(--yellow),0 0 60px rgba(255,246,128,.6);}
-a.deck:nth-child(4):hover{box-shadow:0 0 30px var(--purple),0 0 60px rgba(199,125,255,.6);}
-a.deck:nth-child(5):hover{box-shadow:0 0 30px var(--mint),0 0 60px rgba(166,247,178,.6);}
-a.deck:nth-child(6):hover{box-shadow:0 0 30px var(--orange),0 0 60px rgba(255,179,102,.6);}
 
 /* Text */
 a.deck span{font-size:0.8em;color:#222;position:relative;z-index:1;}
 a.deck b{position:relative;z-index:1;}
 
 /* Animations */
-@keyframes stripesMove{
-  0%{background-position:0 0;}
-  100%{background-position:200% 200%;}
-}
 @keyframes spin{
   0%{transform:translate(-50%,-50%) rotate(0deg);}
   100%{transform:translate(-50%,-50%) rotate(360deg);}
