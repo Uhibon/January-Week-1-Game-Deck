@@ -21,14 +21,23 @@ h1{font-size:clamp(32px,5vw,60px);margin-bottom:.4em;font-weight:900;}
 h2{font-size:clamp(22px,3vw,36px);margin-bottom:.3em;font-weight:800;color:#ccc;}
 h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2.5em;}
 
-.deck-links{display:grid;grid-template-columns:repeat(3,160px);gap:2rem;justify-content:center;}
+/* Grid */
+.deck-links{
+  display:grid;
+  grid-template-columns:repeat(3,180px);
+  gap:2rem;
+  justify-content:center;
+  align-items:center;
+}
+
+/* Game squares */
 a.deck{
   position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  width:160px;height:160px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
+  width:180px;height:180px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
   font-size:1.1rem;overflow:hidden;transition:transform .3s,filter .4s;
 }
 
-/* card colors */
+/* Base colors */
 a.deck:nth-child(1){background:var(--pink);}
 a.deck:nth-child(2){background:var(--blue);}
 a.deck:nth-child(3){background:var(--yellow);}
@@ -36,7 +45,7 @@ a.deck:nth-child(4){background:var(--purple);}
 a.deck:nth-child(5){background:var(--mint);}
 a.deck:nth-child(6){background:var(--orange);}
 
-/* shared spiral overlay */
+/* Shared spiral overlay */
 a.deck::after{
   content:"";position:absolute;top:50%;left:50%;width:170%;height:170%;border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
@@ -64,15 +73,15 @@ a.deck::after{
   pointer-events:none;z-index:0;
 }
 
-/* hue rotation to tint spirals differently */
-a.deck:nth-child(1)::after{filter:hue-rotate(320deg);}
+/* Tint each spiral */
+a.deck:nth-child(1)::after{filter:hue-rotate(330deg);}
 a.deck:nth-child(2)::after{filter:hue-rotate(190deg);}
 a.deck:nth-child(3)::after{filter:hue-rotate(50deg);}
 a.deck:nth-child(4)::after{filter:hue-rotate(270deg);}
 a.deck:nth-child(5)::after{filter:hue-rotate(130deg);}
 a.deck:nth-child(6)::after{filter:hue-rotate(20deg);}
 
-/* sequential glow */
+/* Sequential glow */
 a.deck:nth-child(1){animation:glow 6s infinite;animation-delay:0s;}
 a.deck:nth-child(2){animation:glow 6s infinite;animation-delay:1s;}
 a.deck:nth-child(3){animation:glow 6s infinite;animation-delay:2s;}
@@ -91,9 +100,10 @@ a.deck:nth-child(6){animation:glow 6s infinite;animation-delay:5s;}
 }
 
 a.deck:hover{transform:scale(1.08);filter:brightness(1.25);}
-a.deck span{font-size:.8em;color:#222;position:relative;z-index:1;}
-a.deck b{position:relative;z-index:1;}
+a.deck span{font-size:0.85em;color:#222;position:relative;z-index:1;}
+a.deck b{position:relative;z-index:1;display:block;}
 
+/* Fade & footer */
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
 </style>
@@ -106,12 +116,35 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   <h3>January Week 1 Game Deck<br>１月第１週ゲームデッキ</h3>
 
   <div class="deck-links">
-    <a class="deck" href="game1.html"><b>Game 1</b><br><span>ゲーム①</span></a>
-    <a class="deck" href="game2.html"><b>Game 2</b><br><span>ゲーム②</span></a>
-    <a class="deck" href="game3.html"><b>Game 3</b><br><span>ゲーム③</span></a>
-    <a class="deck" href="game4.html"><b>Game 4</b><br><span>ゲーム④</span></a>
-    <a class="deck" href="game5.html"><b>Game 5</b><br><span>ゲーム⑤</span></a>
-    <a class="deck" href="game6.html"><b>Game 6</b><br><span>ゲーム⑥</span></a>
+    <a class="deck" href="dragdrop.html">
+      <b>🎯 Drag & Drop</b>
+      <span>ドラッグ＆ドロップ</span>
+    </a>
+
+    <a class="deck" href="sentencequiz.html">
+      <b>🧩 Make the Sentences</b>
+      <span>ぶんをつくろう！</span>
+    </a>
+
+    <a class="deck" href="speak.html">
+      <b>🗣️ Eigo Pera Pera</b>
+      <span>えいごペラペラ</span>
+    </a>
+
+    <a class="deck" href="#">
+      <b>👻 Coming Soon</b>
+      <span>こうしんちゅう</span>
+    </a>
+
+    <a class="deck" href="#">
+      <b>💫 Coming Soon</b>
+      <span>こうしんちゅう</span>
+    </a>
+
+    <a class="deck" href="#">
+      <b>🎮 Coming Soon</b>
+      <span>こうしんちゅう</span>
+    </a>
   </div>
 
   <footer>
