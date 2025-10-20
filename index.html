@@ -4,118 +4,75 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>The Boo-riculum – January Week 1 Game Deck</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#000">
 <link rel="icon" type="image/png" href="booha-ghost.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --radius:28px;
-  --pink:#ff7eb9;
-  --blue:#5ee6ff;
-  --yellow:#fff680;
-  --purple:#c77dff;
-  --mint:#a6f7b2;
-  --orange:#ffb366;
+  --pink:#ff7eb9; --blue:#5ee6ff; --yellow:#fff680;
+  --purple:#c77dff; --mint:#a6f7b2; --orange:#ffb366;
 }
 
-/* Reset */
+/* Reset & base layout */
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{
-  height:100%;
-  font-family:'Cinzel',serif;
-  background:#000;
-  color:#fff;
-  overflow:hidden;
-}
+html,body{height:100%;font-family:'Cinzel',serif;background:#000;color:#fff;overflow:hidden;}
+#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;animation:fadeIn 1s ease;position:relative;}
+h1{font-size:clamp(32px,5vw,60px);margin-bottom:.4em;font-weight:900;}
+h2{font-size:clamp(22px,3vw,36px);margin-bottom:.3em;font-weight:800;color:#ccc;}
+h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2.5em;}
 
-/* Layout */
-#welcome{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  height:100%;
-  text-align:center;
-  animation:fadeIn 1.2s ease-in;
-  position:relative;
-}
-
-/* Headings */
-h1{
-  font-size:clamp(32px,5vw,60px);
-  letter-spacing:1px;
-  margin-bottom:0.4em;
-  font-weight:900;
-}
-h2{
-  font-size:clamp(22px,3vw,36px);
-  margin-bottom:0.3em;
-  font-weight:800;
-  color:#ccc;
-}
-h3{
-  font-size:clamp(18px,2.5vw,28px);
-  color:#aaa;
-  margin-bottom:2.5em;
-}
-
-/* Grid */
-.deck-links{
-  display:grid;
-  grid-template-columns:repeat(3,160px);
-  gap:2rem;
-  justify-content:center;
-  align-items:center;
-}
-
-/* Game squares */
+.deck-links{display:grid;grid-template-columns:repeat(3,160px);gap:2rem;justify-content:center;}
 a.deck{
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  width:160px;height:160px;
-  border-radius:20px;
-  text-decoration:none;
-  color:#111;
-  font-weight:900;
-  font-size:1.1rem;
-  text-align:center;
-  overflow:hidden;
-  transition:transform .3s, box-shadow .4s, filter .4s;
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:160px;height:160px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
+  font-size:1.1rem;overflow:hidden;transition:transform .3s,filter .4s;
 }
 
-/* Base colors */
-a.deck:nth-child(1){background-color:var(--pink);}
-a.deck:nth-child(2){background-color:var(--blue);}
-a.deck:nth-child(3){background-color:var(--yellow);}
-a.deck:nth-child(4){background-color:var(--purple);}
-a.deck:nth-child(5){background-color:var(--mint);}
-a.deck:nth-child(6){background-color:var(--orange);}
+/* card colors */
+a.deck:nth-child(1){background:var(--pink);}
+a.deck:nth-child(2){background:var(--blue);}
+a.deck:nth-child(3){background:var(--yellow);}
+a.deck:nth-child(4){background:var(--purple);}
+a.deck:nth-child(5){background:var(--mint);}
+a.deck:nth-child(6){background:var(--orange);}
 
-/* Spirals (more contrast per color) */
-a.deck:nth-child(1)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(255,0,128,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(255,0,128,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(255,0,128,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(255,0,128,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(255,0,128,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(255,0,128,0.5) 330deg 360deg);}
-a.deck:nth-child(2)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(0,180,255,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(0,180,255,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(0,180,255,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(0,180,255,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(0,180,255,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(0,180,255,0.5) 330deg 360deg);}
-a.deck:nth-child(3)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(255,200,0,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(255,200,0,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(255,200,0,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(255,200,0,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(255,200,0,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(255,200,0,0.5) 330deg 360deg);}
-a.deck:nth-child(4)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(180,0,255,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(180,0,255,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(180,0,255,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(180,0,255,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(180,0,255,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(180,0,255,0.5) 330deg 360deg);}
-a.deck:nth-child(5)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(0,255,128,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(0,255,128,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(0,255,128,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(0,255,128,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(0,255,128,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(0,255,128,0.5) 330deg 360deg);}
-a.deck:nth-child(6)::after{background:conic-gradient(from 0deg,rgba(255,255,255,0.7) 0deg 30deg,rgba(255,128,0,0.5) 30deg 60deg,rgba(255,255,255,0.7) 60deg 90deg,rgba(255,128,0,0.5) 90deg 120deg,rgba(255,255,255,0.7) 120deg 150deg,rgba(255,128,0,0.5) 150deg 180deg,rgba(255,255,255,0.7) 180deg 210deg,rgba(255,128,0,0.5) 210deg 240deg,rgba(255,255,255,0.7) 240deg 270deg,rgba(255,128,0,0.5) 270deg 300deg,rgba(255,255,255,0.7) 300deg 330deg,rgba(255,128,0,0.5) 330deg 360deg);}
-
-/* Spiral shared properties */
+/* shared spiral overlay */
 a.deck::after{
-  position:absolute;
-  top:50%;left:50%;
-  width:160%;height:160%;
-  border-radius:50%;
+  content:"";position:absolute;top:50%;left:50%;width:170%;height:170%;border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
-  opacity:.45;
+  background:conic-gradient(from 0deg,
+    rgba(255,255,255,0.8) 0deg 20deg,
+    rgba(255,255,255,0) 20deg 40deg,
+    rgba(255,255,255,0.8) 40deg 60deg,
+    rgba(255,255,255,0) 60deg 80deg,
+    rgba(255,255,255,0.8) 80deg 100deg,
+    rgba(255,255,255,0) 100deg 120deg,
+    rgba(255,255,255,0.8) 120deg 140deg,
+    rgba(255,255,255,0) 140deg 160deg,
+    rgba(255,255,255,0.8) 160deg 180deg,
+    rgba(255,255,255,0) 180deg 200deg,
+    rgba(255,255,255,0.8) 200deg 220deg,
+    rgba(255,255,255,0) 220deg 240deg,
+    rgba(255,255,255,0.8) 240deg 260deg,
+    rgba(255,255,255,0) 260deg 280deg,
+    rgba(255,255,255,0.8) 280deg 300deg,
+    rgba(255,255,255,0) 300deg 320deg,
+    rgba(255,255,255,0.8) 320deg 340deg,
+    rgba(255,255,255,0) 340deg 360deg);
+  opacity:.55;mix-blend-mode:overlay;
   animation:spin 10s linear infinite;
-  z-index:0;
-  mix-blend-mode:overlay;
+  pointer-events:none;z-index:0;
 }
 
-/* Sequential glowing animation */
+/* hue rotation to tint spirals differently */
+a.deck:nth-child(1)::after{filter:hue-rotate(320deg);}
+a.deck:nth-child(2)::after{filter:hue-rotate(190deg);}
+a.deck:nth-child(3)::after{filter:hue-rotate(50deg);}
+a.deck:nth-child(4)::after{filter:hue-rotate(270deg);}
+a.deck:nth-child(5)::after{filter:hue-rotate(130deg);}
+a.deck:nth-child(6)::after{filter:hue-rotate(20deg);}
+
+/* sequential glow */
 a.deck:nth-child(1){animation:glow 6s infinite;animation-delay:0s;}
 a.deck:nth-child(2){animation:glow 6s infinite;animation-delay:1s;}
 a.deck:nth-child(3){animation:glow 6s infinite;animation-delay:2s;}
@@ -124,39 +81,21 @@ a.deck:nth-child(5){animation:glow 6s infinite;animation-delay:4s;}
 a.deck:nth-child(6){animation:glow 6s infinite;animation-delay:5s;}
 
 @keyframes glow{
-  0%,100%{box-shadow:0 0 10px rgba(255,255,255,0.15);}
-  15%{box-shadow:0 0 30px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.5);}
-  30%{box-shadow:0 0 10px rgba(255,255,255,0.15);}
+  0%,100%{box-shadow:0 0 10px rgba(255,255,255,.1);}
+  15%{box-shadow:0 0 35px rgba(255,255,255,.9),0 0 70px rgba(255,255,255,.5);}
+  30%{box-shadow:0 0 10px rgba(255,255,255,.1);}
 }
-
-/* Hover lift */
-a.deck:hover{
-  transform:scale(1.08);
-  filter:brightness(1.2);
-}
-
-/* Text */
-a.deck span{font-size:0.8em;color:#222;position:relative;z-index:1;}
-a.deck b{position:relative;z-index:1;}
-
-/* Animations */
 @keyframes spin{
   0%{transform:translate(-50%,-50%) rotate(0deg);}
   100%{transform:translate(-50%,-50%) rotate(360deg);}
 }
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
-/* Footer */
-footer{
-  position:absolute;
-  bottom:20px;
-  width:100%;
-  text-align:center;
-  font-size:clamp(14px,2vw,18px);
-  color:#888;
-  letter-spacing:1px;
-  opacity:0.9;
-}
+a.deck:hover{transform:scale(1.08);filter:brightness(1.25);}
+a.deck span{font-size:.8em;color:#222;position:relative;z-index:1;}
+a.deck b{position:relative;z-index:1;}
+
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
 </style>
 </head>
 <body>
