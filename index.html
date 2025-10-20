@@ -59,16 +59,18 @@ h3{
   margin-bottom:2.5em;
 }
 
-/* Grid of games */
+/* Grid */
 .deck-links{
-  display:flex;
-  flex-wrap:wrap;
+  display:grid;
+  grid-template-columns:repeat(3,160px);
   gap:2rem;
   justify-content:center;
+  align-items:center;
 }
 
 /* Game squares */
 a.deck{
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -80,37 +82,56 @@ a.deck{
   font-weight:900;
   font-size:1.1rem;
   text-align:center;
-  box-shadow:0 0 25px rgba(255,255,255,.15);
+  overflow:hidden;
   transition:transform .3s, box-shadow .4s, filter .4s;
-  background-size:300% 300%;
-  animation:stripes 10s linear infinite;
 }
 
-/* Each block color */
-a.deck:nth-child(1){background:linear-gradient(145deg,var(--pink),#ffc0cb,var(--purple));}
-a.deck:nth-child(2){background:linear-gradient(145deg,var(--blue),#b3f0ff,var(--mint));}
-a.deck:nth-child(3){background:linear-gradient(145deg,var(--yellow),#fffac2,var(--pink));}
-a.deck:nth-child(4){background:linear-gradient(145deg,var(--purple),#e2b3ff,var(--blue));}
-a.deck:nth-child(5){background:linear-gradient(145deg,var(--mint),#d2ffd9,var(--yellow));}
-a.deck:nth-child(6){background:linear-gradient(145deg,var(--orange),#ffd9b3,var(--pink));}
+/* Animated stripes background */
+a.deck::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.15) 0 20px,
+    rgba(255,255,255,0) 20px 40px
+  );
+  background-size:200% 200%;
+  animation:stripesMove 5s linear infinite;
+  z-index:0;
+  opacity:0.5;
+}
+@keyframes stripesMove{
+  0%{background-position:0 0;}
+  100%{background-position:200% 200%;}
+}
+
+/* Base colors */
+a.deck:nth-child(1){background-color:var(--pink);box-shadow:0 0 20px var(--pink);}
+a.deck:nth-child(2){background-color:var(--blue);box-shadow:0 0 20px var(--blue);}
+a.deck:nth-child(3){background-color:var(--yellow);box-shadow:0 0 20px var(--yellow);}
+a.deck:nth-child(4){background-color:var(--purple);box-shadow:0 0 20px var(--purple);}
+a.deck:nth-child(5){background-color:var(--mint);box-shadow:0 0 20px var(--mint);}
+a.deck:nth-child(6){background-color:var(--orange);box-shadow:0 0 20px var(--orange);}
 
 /* Hover glow */
 a.deck:hover{
   transform:scale(1.08);
   filter:brightness(1.2);
+  z-index:2;
 }
-a.deck:nth-child(1):hover{box-shadow:0 0 30px var(--pink),0 0 60px rgba(255,126,185,.5);}
-a.deck:nth-child(2):hover{box-shadow:0 0 30px var(--blue),0 0 60px rgba(94,230,255,.5);}
-a.deck:nth-child(3):hover{box-shadow:0 0 30px var(--yellow),0 0 60px rgba(255,246,128,.5);}
-a.deck:nth-child(4):hover{box-shadow:0 0 30px var(--purple),0 0 60px rgba(199,125,255,.5);}
-a.deck:nth-child(5):hover{box-shadow:0 0 30px var(--mint),0 0 60px rgba(166,247,178,.5);}
-a.deck:nth-child(6):hover{box-shadow:0 0 30px var(--orange),0 0 60px rgba(255,179,102,.5);}
+a.deck:nth-child(1):hover{box-shadow:0 0 30px var(--pink),0 0 60px rgba(255,126,185,.6);}
+a.deck:nth-child(2):hover{box-shadow:0 0 30px var(--blue),0 0 60px rgba(94,230,255,.6);}
+a.deck:nth-child(3):hover{box-shadow:0 0 30px var(--yellow),0 0 60px rgba(255,246,128,.6);}
+a.deck:nth-child(4):hover{box-shadow:0 0 30px var(--purple),0 0 60px rgba(199,125,255,.6);}
+a.deck:nth-child(5):hover{box-shadow:0 0 30px var(--mint),0 0 60px rgba(166,247,178,.6);}
+a.deck:nth-child(6):hover{box-shadow:0 0 30px var(--orange),0 0 60px rgba(255,179,102,.6);}
 
-/* Stripe motion */
-@keyframes stripes{
-  0%{background-position:0 0;}
-  100%{background-position:300% 300%;}
-}
+/* Text */
+a.deck span{font-size:0.8em;color:#222;position:relative;z-index:1;}
+a.deck b{position:relative;z-index:1;}
+
+/* Animation */
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
 /* Footer */
@@ -134,12 +155,12 @@ footer{
   <h3>January Week 1 Game Deck<br>１月第１週ゲームデッキ</h3>
 
   <div class="deck-links">
-    <a class="deck" href="game1.html">Game 1<br><span style="font-size:0.8em;">ゲーム①</span></a>
-    <a class="deck" href="game2.html">Game 2<br><span style="font-size:0.8em;">ゲーム②</span></a>
-    <a class="deck" href="game3.html">Game 3<br><span style="font-size:0.8em;">ゲーム③</span></a>
-    <a class="deck" href="game4.html">Game 4<br><span style="font-size:0.8em;">ゲーム④</span></a>
-    <a class="deck" href="game5.html">Game 5<br><span style="font-size:0.8em;">ゲーム⑤</span></a>
-    <a class="deck" href="game6.html">Game 6<br><span style="font-size:0.8em;">ゲーム⑥</span></a>
+    <a class="deck" href="game1.html"><b>Game 1</b><br><span>ゲーム①</span></a>
+    <a class="deck" href="game2.html"><b>Game 2</b><br><span>ゲーム②</span></a>
+    <a class="deck" href="game3.html"><b>Game 3</b><br><span>ゲーム③</span></a>
+    <a class="deck" href="game4.html"><b>Game 4</b><br><span>ゲーム④</span></a>
+    <a class="deck" href="game5.html"><b>Game 5</b><br><span>ゲーム⑤</span></a>
+    <a class="deck" href="game6.html"><b>Game 6</b><br><span>ゲーム⑥</span></a>
   </div>
 
   <footer>
