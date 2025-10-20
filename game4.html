@@ -4,46 +4,21 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Game 4 – Eigo Adventure!</title>
-<meta name="theme-color" content="#000000" />
+<meta name="theme-color" content="#ffffff" />
 <link rel="icon" type="image/png" href="booha-ghost.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --ink:#ffffff; --muted:#cfd3dc; --bg:#0b1530; --radius:28px;
+  --ink:#111111; --muted:#5f6673; --bg:#f5f7fb; --radius:28px;
   --accent:#ff7eb9; --accent2:#5ee6ff; --gold:#ffd166; --good:#22c55e; --bad:#ef4444;
+  --glow:#ffd6e8; --glow2:#fff3a6;
 }
 
 /* Reset */
 *{box-sizing:border-box;margin:0;padding:0}
 
 /* Page */
-html,body{height:100%;background:#000;color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Inter,sans-serif;}
-
-/* Spiral + glow background */
-body::before{
-  content:""; position:fixed; inset:0;
-  background:radial-gradient(1200px 1200px at 50% 40%, #1c2a55 0%, #0b1530 40%, #000 100%);
-  z-index:-2;
-}
-body::after{
-  content:""; position:fixed; left:50%; top:45%; width:190vmax; height:190vmax;
-  transform:translate(-50%,-50%) rotate(0deg);
-  border-radius:50%;
-  background:conic-gradient(from 0deg,
-    rgba(255,255,255,.35) 0 20deg, rgba(255,255,255,0) 20 40deg,
-    rgba(255,255,255,.35) 40 60deg, rgba(255,255,255,0) 60 80deg,
-    rgba(255,255,255,.35) 80 100deg, rgba(255,255,255,0) 100 120deg,
-    rgba(255,255,255,.35) 120 140deg, rgba(255,255,255,0) 140 160deg,
-    rgba(255,255,255,.35) 160 180deg, rgba(255,255,255,0) 180 200deg,
-    rgba(255,255,255,.35) 200 220deg, rgba(255,255,255,0) 220 240deg,
-    rgba(255,255,255,.35) 240 260deg, rgba(255,255,255,0) 260 280deg,
-    rgba(255,255,255,.35) 280 300deg, rgba(255,255,255,0) 300 320deg,
-    rgba(255,255,255,.35) 320 340deg, rgba(255,255,255,0) 340 360deg);
-  mix-blend-mode:overlay; opacity:.5; filter:hue-rotate(190deg);
-  animation:spin 18s linear infinite;
-  z-index:-1;
-}
-@keyframes spin{ to{ transform:translate(-50%,-50%) rotate(360deg);} }
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Inter,sans-serif;}
 
 /* Header */
 header{
@@ -56,18 +31,18 @@ header h2{ font-size:clamp(16px,2.8vw,22px); color:var(--muted); margin-top:4px;
 .card{
   width:min(1000px,92vw);
   margin:20px auto;
-  background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-  border:2px solid rgba(255,255,255,.15);
+  background:#fff;
+  border:2px solid rgba(0,0,0,.08);
   border-radius:var(--radius);
-  box-shadow:0 30px 80px rgba(0,0,0,.45);
+  box-shadow:0 30px 80px rgba(0,0,0,.12);
   overflow:hidden;
 }
 
 /* Top bar */
 .top{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:14px 18px; background:rgba(255,255,255,.04);
-  border-bottom:1px solid rgba(255,255,255,.12);
+  padding:14px 18px; background:#fafafa;
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
 .badge{
   font-family:'Cinzel',serif; font-weight:800;
@@ -79,11 +54,11 @@ header h2{ font-size:clamp(16px,2.8vw,22px); color:var(--muted); margin-top:4px;
   display:flex; align-items:center; gap:10px; color:var(--muted); font-weight:600;
 }
 .progress .dot{
-  width:10px;height:10px;border-radius:50%; background:#334; box-shadow:0 0 6px rgba(255,255,255,.25) inset;
+  width:10px;height:10px;border-radius:50%; background:#e2e6ef; box-shadow:0 0 6px rgba(0,0,0,.05) inset;
 }
 .progress .dot.active{ background:#7dd3fc; }
 .score{
-  font-weight:800; color:#a6f7b2;
+  font-weight:800; color:#00a86b;
 }
 
 /* Paragraph area */
@@ -95,82 +70,92 @@ h3#paraTitle{
   font-size:clamp(18px,3.6vw,26px);
   margin-bottom:14px; letter-spacing:.5px;
 }
+
+.sentenceBlock{
+  padding:14px 0 12px;
+  border-bottom:1px dashed rgba(0,0,0,.06);
+}
 .sentence{
   font-size:clamp(18px,2.6vw,24px);
   line-height:1.55;
-  padding:10px 0;
 }
 .blank{
   display:inline-flex; align-items:center; justify-content:center;
-  min-width:120px; padding:2px 10px; margin:0 4px;
-  border-bottom:3px dashed rgba(255,255,255,.45);
-  color:#fff; font-weight:800; letter-spacing:.5px;
-  background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+  min-width:120px; padding:0 10px; margin:0 4px;
+  border-bottom:3px dashed rgba(0,0,0,.35);
+  color:#111; font-weight:800; letter-spacing:.5px;
   border-radius:10px;
 }
-.blank.waiting{ box-shadow:0 0 0 4px rgba(255,255,255,.08) inset; }
+.blank.waiting{ box-shadow:0 0 0 4px rgba(0,0,0,.06) inset; }
 .blank.correct{
   background:linear-gradient(90deg,#fff680,#a6f7b2);
-  color:#111; border-bottom-color:transparent; box-shadow:0 0 25px rgba(255,246,128,.55);
+  color:#111; border-bottom-color:transparent; box-shadow:0 0 18px rgba(255,246,128,.55);
   animation:pop .35s ease;
 }
-@keyframes pop{ 0%{transform:scale(.9)} 100%{transform:scale(1)} }
+@keyframes pop{ 0%{transform:scale(.92)} 100%{transform:scale(1)} }
 
-/* JP/Hira hint row */
-.hint{
-  margin:8px 0 4px; color:var(--muted); font-size:clamp(13px,2.2vw,16px);
-  display:flex; gap:14px; flex-wrap:wrap;
+.jp{
+  margin-top:6px;
+  color:#2e3340;
+  font-size:clamp(14px,2.3vw,18px);
+  text-shadow:0 0 10px var(--glow2);
+}
+.kana{
+  margin-top:2px;
+  color:#6b7280;
+  font-size:clamp(13px,2.1vw,16px);
+  text-shadow:0 0 8px var(--glow);
 }
 
 /* Controls */
 .controls{
-  display:flex; flex-wrap:wrap; gap:10px; padding:16px 18px 22px; justify-content:center;
-  border-top:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03);
+  display:flex; flex-wrap:wrap; gap:10px; padding:16px 18px 18px; justify-content:center;
+  border-top:1px solid rgba(0,0,0,.08); background:#fafafa;
 }
 button{
   appearance:none; border:0; padding:12px 16px; border-radius:14px;
   font-weight:800; letter-spacing:.3px; cursor:pointer;
   color:#111; background:linear-gradient(90deg,#ff7eb9,#5ee6ff);
-  box-shadow:0 12px 30px rgba(0,0,0,.35);
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
 }
-button.secondary{ color:#eee; background:#223047; }
+button.secondary{ color:#111; background:#eaeef7; }
 button.good{ background:linear-gradient(90deg,#a6f7b2,#fff680); color:#111; }
 button.bad{ background:#ef4444; color:#fff; }
-button:disabled{ filter:grayscale(.5) brightness(.8); cursor:not-allowed; }
+button:disabled{ filter:grayscale(.5) brightness(.9); cursor:not-allowed; }
 
 /* Mic indicator */
 .mic{
-  display:flex; align-items:center; gap:10px; color:var(--muted); font-weight:700;
+  display:flex; align-items:center; gap:10px; color:#4b5563; font-weight:700;
 }
 .micDot{
-  width:12px;height:12px;border-radius:50%; background:#334;
-  box-shadow:0 0 0 0 rgba(94,230,255,.6);
+  width:12px;height:12px;border-radius:50%; background:#cbd5e1;
+  box-shadow:0 0 0 0 rgba(94,230,255,.45);
 }
 .mic.listening .micDot{ background:#5ee6ff; animation:ping 1.5s infinite; }
 @keyframes ping{
-  0%{ box-shadow:0 0 0 0 rgba(94,230,255,.6); }
+  0%{ box-shadow:0 0 0 0 rgba(94,230,255,.45); }
   70%{ box-shadow:0 0 0 14px rgba(94,230,255,0); }
   100%{ box-shadow:0 0 0 0 rgba(94,230,255,0); }
 }
 
 /* Footer */
 footer{
-  text-align:center; color:#9aa3b2; padding:16px 0 28px; font-size:14px;
+  text-align:center; color:#7b8391; padding:16px 0 28px; font-size:14px;
 }
 
 /* Result overlay */
 #result{
-  position:fixed; inset:0; background:rgba(0,0,0,.75);
+  position:fixed; inset:0; background:rgba(0,0,0,.35);
   display:none; align-items:center; justify-content:center; z-index:9;
 }
 .resultCard{
-  width:min(680px,92vw); background:#0e1a3a; border:2px solid rgba(255,255,255,.15);
+  width:min(680px,92vw); background:#ffffff; border:2px solid rgba(0,0,0,.1);
   border-radius:24px; padding:24px; text-align:center;
-  box-shadow:0 30px 100px rgba(0,0,0,.7);
+  box-shadow:0 30px 100px rgba(0,0,0,.25);
 }
-.resultCard h2{ font-family:'Cinzel',serif; font-weight:900; font-size:clamp(26px,4.5vw,42px); margin-bottom:6px;}
-.resultCard p{ color:#cfd3dc; margin-bottom:16px; }
-.bigScore{ font-size:clamp(26px,6vw,56px); font-weight:900; color:#a6f7b2; margin:10px 0 20px; }
+.resultCard h2{ font-family:'Cinzel',serif; font-weight:900; font-size:clamp(26px,4.5vw,42px); margin-bottom:6px; color:#0b1530;}
+.resultCard p{ color:#4b5563; margin-bottom:16px; }
+.bigScore{ font-size:clamp(26px,6vw,56px); font-weight:900; color:#00a86b; margin:10px 0 20px; }
 
 /* Confetti (simple) */
 .confetti{
@@ -206,7 +191,6 @@ footer{
   <div class="content">
     <h3 id="paraTitle">Paragraph 1 / 10</h3>
     <div id="sentences"></div>
-    <div class="hint" id="hintRow"></div>
   </div>
 
   <div class="controls">
@@ -237,6 +221,7 @@ footer{
 <script>
 /* ---------------------------
    DATA: 10 paragraphs × 5
+   Each item also includes kana lines.
 ----------------------------*/
 const PARAGRAPHS = [
   { // 1 – Fresh Start
@@ -248,7 +233,20 @@ const PARAGRAPHS = [
       "I will _____ to make every day special."
     ],
     answers: ["will","goals","study","smile","try"],
-    jp: ["１月です。新しいことを始めます。","毎朝、ノートに目標を書きます。","週末でも少し勉強します。","今年は違う気がして笑います。","毎日を特別にするために挑戦します。"]
+    jp: [
+      "１月です。新しいことを始めます。",
+      "毎朝、ノートに目標を書きます。",
+      "週末でも少し勉強します。",
+      "今年は違う気がして笑います。",
+      "毎日を特別にするために挑戦します。"
+    ],
+    kana: [
+      "いちがつです。あたらしいことをはじめます。",
+      "まいあさ、ノートにもくひょうをかきます。",
+      "しゅうまつでもすこしべんきょうします。",
+      "ことしはちがうきがしてわらいます。",
+      "まいにちをとくべつにするためにちょうせんします。"
+    ]
   },
   { // 2 – The Plan
     en: [
@@ -259,7 +257,20 @@ const PARAGRAPHS = [
       "I will _____ my classmates when they need me."
     ],
     answers: ["early","read","late","listen","help"],
-    jp: ["早起きして朝ごはんを食べます。","学校の前に読みます。","もう遅刻しません。","授業でしっかり聞きます。","クラスメイトを手伝います。"]
+    jp: [
+      "早起きして朝ごはんを食べます。",
+      "学校の前に読みます。",
+      "もう遅刻しません。",
+      "授業でしっかり聞きます。",
+      "クラスメイトを手伝います。"
+    ],
+    kana: [
+      "はやおきしてあさごはんをたべます。",
+      "がっこうのまえによみます。",
+      "もうちこくしません。",
+      "じゅぎょうでしっかりききます。",
+      "クラスメイトをてつだいます。"
+    ]
   },
   { // 3 – At School
     en: [
@@ -270,7 +281,20 @@ const PARAGRAPHS = [
       "I will _____ learning every subject."
     ],
     answers: ["best","clean","speak","write","enjoy"],
-    jp: ["先生は「ベストを尽くして」と言います。","今日は机を片づけます。","授業で英語をもっと話します。","ノートに新しい単語を書きます。","すべての教科の学びを楽しみます。"]
+    jp: [
+      "先生は「ベストを尽くして」と言います。",
+      "今日は机を片づけます。",
+      "授業で英語をもっと話します。",
+      "ノートに新しい単語を書きます。",
+      "すべての教科の学びを楽しみます。"
+    ],
+    kana: [
+      "せんせいは「ベストをつくして」といいます。",
+      "きょうはつくえをかたづけます。",
+      "じゅぎょうでえいごをもっとはなします。",
+      "ノートにあたらしいたんごをかきます。",
+      "すべてのきょうかのまなびをたのしみます。"
+    ]
   },
   { // 4 – Making Friends
     en: [
@@ -281,7 +305,20 @@ const PARAGRAPHS = [
       "Friendship makes school _____."
     ],
     answers: ["make","talk","walk","laugh","fun"],
-    jp: ["今週、新しい友だちを作ります。","好きなゲームについて話します。","一緒に歩いて帰ります。","おもしろい話に笑います。","友情は学校を楽しくします。"]
+    jp: [
+      "今週、新しい友だちを作ります。",
+      "好きなゲームについて話します。",
+      "一緒に歩いて帰ります。",
+      "おもしろい話に笑います。",
+      "友情は学校を楽しくします。"
+    ],
+    kana: [
+      "こんしゅう、あたらしいともだちをつくります。",
+      "すきなゲームについてはなします。",
+      "いっしょにあるいてかえります。",
+      "おもしろいはなしにわらいます。",
+      "ゆうじょうはがっこうをたのしくします。"
+    ]
   },
   { // 5 – Good Habits
     en: [
@@ -292,7 +329,20 @@ const PARAGRAPHS = [
       "I will _____ until it feels easy."
     ],
     answers: ["start","read","practice","review","continue"],
-    jp: ["今月は良い習慣を始めます。","もっと本を読みます。","毎日英語を練習します。","昨日のレッスンを復習します。","簡単になるまで続けます。"]
+    jp: [
+      "今月は良い習慣を始めます。",
+      "もっと本を読みます。",
+      "毎日英語を練習します。",
+      "昨日のレッスンを復習します。",
+      "簡単になるまで続けます。"
+    ],
+    kana: [
+      "こんげつはよいしゅうかんをはじめます。",
+      "もっとほんをよみます。",
+      "まいにちえいごをれんしゅうします。",
+      "きのうのレッスンをふくしゅうします。",
+      "かんたんになるまでつづけます。"
+    ]
   },
   { // 6 – Challenges
     en: [
@@ -303,7 +353,20 @@ const PARAGRAPHS = [
       "I will never _____ up."
     ],
     answers: ["forget","tired","try","focus","give"],
-    jp: ["ときどき目標を忘れてしまいます。","疲れることもあります。","何度も挑戦します。","小さな一歩に集中します。","決してあきらめません。"]
+    jp: [
+      "ときどき目標を忘れてしまいます。",
+      "疲れることもあります。",
+      "何度も挑戦します。",
+      "小さな一歩に集中します。",
+      "決してあきらめません。"
+    ],
+    kana: [
+      "ときどきもくひょうをわすれてしまいます。",
+      "つかれることもあります。",
+      "なんどもちょうせんします。",
+      "ちいさないっぽにしゅうちゅうします。",
+      "けっしてあきらめません。"
+    ]
   },
   { // 7 – At Home
     en: [
@@ -314,7 +377,20 @@ const PARAGRAPHS = [
       "I will _____ them for helping me."
     ],
     answers: ["clean","help","study","show","thank"],
-    jp: ["放課後、部屋を掃除します。","夕食を家族と手伝います。","ゲームの前に勉強します。","宿題を両親に見せます。","手伝ってくれたことに感謝します。"]
+    jp: [
+      "放課後、部屋を掃除します。",
+      "夕食を家族と手伝います。",
+      "ゲームの前に勉強します。",
+      "宿題を両親に見せます。",
+      "手伝ってくれたことに感謝します。"
+    ],
+    kana: [
+      "ほうかご、へやをそうじします。",
+      "ゆうしょくをかぞくとてつだいます。",
+      "ゲームのまえにべんきょうします。",
+      "しゅくだいをりょうしんにみせます。",
+      "てつだってくれたことにかんしゃします。"
+    ]
   },
   { // 8 – Free Time
     en: [
@@ -325,7 +401,20 @@ const PARAGRAPHS = [
       "I will _____ and feel proud."
     ],
     answers: ["draw","listen","watch","learn","relax"],
-    jp: ["週末は絵を描きます。","英語の音楽を聴きます。","字幕付きの映画を見ます。","歌から新しい単語を学びます。","リラックスして誇らしく思います。"]
+    jp: [
+      "週末は絵を描きます。",
+      "英語の音楽を聴きます。",
+      "字幕付きの映画を見ます。",
+      "歌から新しい単語を学びます。",
+      "リラックスして誇らしく思います。"
+    ],
+    kana: [
+      "しゅうまつはえをかきます。",
+      "えいごのおんがくをききます。",
+      "じまくつきのえいがをみます。",
+      "うたからあたらしいたんごをまなびます。",
+      "リラックスしてほこらしくおもいます。"
+    ]
   },
   { // 9 – Reflection
     en: [
@@ -336,7 +425,20 @@ const PARAGRAPHS = [
       "I will _____ to keep going."
     ],
     answers: ["progress","remember","share","celebrate","promise"],
-    jp: ["毎週、自分の進歩について考えます。","学んだことを覚えておきます。","先生と自分の考えを共有します。","小さな成功を祝います。","続けることを約束します。"]
+    jp: [
+      "毎週、自分の進歩について考えます。",
+      "学んだことを覚えておきます。",
+      "先生と自分の考えを共有します。",
+      "小さな成功を祝います。",
+      "続けることを約束します。"
+    ],
+    kana: [
+      "まいしゅう、じぶんのしんぽについてかんがえます。",
+      "まなんだことをおぼえておきます。",
+      "せんせいとじぶんのかんがえをきょうゆうします。",
+      "ちいさなせいこうをいわいます。",
+      "つづけることをやくそくします。"
+    ]
   },
   { // 10 – The Goal
     en: [
@@ -347,7 +449,20 @@ const PARAGRAPHS = [
       "I will _____ like a Booha star."
     ],
     answers: ["grow","believe","dream","speak","shine"],
-    jp: ["今年、いろいろな面で成長します。","自分を信じます。","大きな夢を持ち、親切にします。","自信を持って英語を話します。","ブーハの星のように輝きます。"]
+    jp: [
+      "今年、いろいろな面で成長します。",
+      "自分を信じます。",
+      "大きな夢を持ち、親切にします。",
+      "自信を持って英語を話します。",
+      "ブーハの星のように輝きます。"
+    ],
+    kana: [
+      "ことし、いろいろなめんでせいちょうします。",
+      "じぶんをしんじます。",
+      "おおきなゆめをもち、しんせつにします。",
+      "じしんをもってえいごをはなします。",
+      "ブーハのほしのようにかがやきます。"
+    ]
   }
 ];
 
@@ -362,25 +477,35 @@ const elDots = document.getElementById('dots');
 const elScore = document.getElementById('scoreLabel');
 const elMic = document.getElementById('mic');
 const elMicText = document.getElementById('micText');
-const elHint = document.getElementById('hintRow');
 
 const btnPlay = document.getElementById('btnPlay');
 const btnRepeat = document.getElementById('btnRepeat');
 const btnReveal = document.getElementById('btnReveal');
 const btnNext = document.getElementById('btnNext');
 
-function speak(text){
-  // If you have local Sage audio per sentence, play it here.
-  // Fallback: Web Speech API TTS (offline-ish).
-  if ('speechSynthesis' in window){
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-US'; u.rate = 0.95; u.pitch = 1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-  }
+/* ---------------------------
+   Speech Synthesis helpers (Sage-like pacing)
+----------------------------*/
+function speakFull(text, {rate=0.9}={}) {
+  if (!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = rate; u.pitch = 1;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+function speakPart(text, {rate=0.95}={}) {
+  if (!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = rate; u.pitch = 1;
+  window.speechSynthesis.speak(u);
 }
 
-// Build top dots
+/* Wait/continue state */
+let waitingForAnswer = false;
+let waitTimer = null;
+let continuedOnce = false;
+
+/* Build top dots */
 function buildDots(){
   elDots.innerHTML='';
   for (let i=0;i<PARAGRAPHS.length;i++){
@@ -398,11 +523,13 @@ function renderParagraph(){
   const p = PARAGRAPHS[currentPara];
   elParaTitle.textContent = `Paragraph ${currentPara+1} / ${PARAGRAPHS.length}`;
   elSentences.innerHTML='';
-  elHint.innerHTML='';
   currentSent = 0;
 
-  // sentences + blanks
+  // sentences + blanks + JP/Kana
   p.en.forEach((line,idx)=>{
+    const block = document.createElement('div');
+    block.className='sentenceBlock';
+
     const s = document.createElement('div');
     s.className='sentence';
     const parts = line.split('_____');
@@ -415,14 +542,17 @@ function renderParagraph(){
     const spanAfter = document.createElement('span');
     spanAfter.textContent = parts[1] || '';
     s.append(spanBefore, blank, spanAfter);
-    elSentences.appendChild(s);
-  });
 
-  // JP hints
-  p.jp.forEach((j)=> {
-    const x = document.createElement('div');
-    x.textContent = j;
-    elHint.appendChild(x);
+    const j = document.createElement('div');
+    j.className = 'jp';
+    j.textContent = p.jp[idx];
+
+    const k = document.createElement('div');
+    k.className = 'kana';
+    k.textContent = p.kana[idx];
+
+    block.append(s, j, k);
+    elSentences.appendChild(block);
   });
 
   buildDots();
@@ -440,13 +570,47 @@ function updateActiveBlank(){
   if (b) b.classList.add('waiting');
 }
 
-function playCurrentSentencePrefix(){
+/* Plays prefix, waits for student, then continues suffix.
+   If timeout (~8s), gives hint by reading full sentence slowly. */
+function playGuidedForCurrent(){
   const p = PARAGRAPHS[currentPara];
   const line = p.en[currentSent];
-  const [prefix] = line.split('_____');
-  speak(prefix.trim());
+  const [prefix, suffixRaw=''] = line.split('_____');
+  const suffix = suffixRaw.trim(); // includes any trailing words after blank
+
+  // reset state
+  clearTimeout(waitTimer);
+  waitingForAnswer = true;
+  continuedOnce = false;
+
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  // 1) Speak the prefix up to the blank
+  speakPart(prefix.trim(), {rate:0.95});
+
+  // 2) Start timeout for hint
+  waitTimer = setTimeout(()=>{
+    if (!continuedOnce) {
+      // Speak the entire sentence as a slow hint
+      speakFull(line.replace('_____','').trim(), {rate:0.8});
+      continuedOnce = true;
+    }
+  }, 8000);
 }
 
+/* Continue the suffix after a correct answer (only once). */
+function continueSuffixAfterAnswer(){
+  if (continuedOnce) return;
+  const p = PARAGRAPHS[currentPara];
+  const line = p.en[currentSent];
+  const [prefix, suffixRaw=''] = line.split('_____');
+  const suffix = suffixRaw.trim();
+  if (!suffix) { continuedOnce = true; return; }
+  // Speak the rest of the sentence
+  speakPart(suffix, {rate:0.95});
+  continuedOnce = true;
+}
+
+/* Reveal + advance helpers */
 function revealWord(){
   const p = PARAGRAPHS[currentPara];
   const ans = p.answers[currentSent];
@@ -456,22 +620,23 @@ function revealWord(){
   b.classList.add('correct');
   b.classList.remove('waiting');
   score++; updateScore();
-  nextWordOrParagraph();
+  continueSuffixAfterAnswer();
+  nextWordOrParagraph(350);
 }
 
-function nextWordOrParagraph(){
+function nextWordOrParagraph(delay=250){
+  clearTimeout(waitTimer);
+  waitingForAnswer = false;
+
   const p = PARAGRAPHS[currentPara];
   currentSent++;
   if (currentSent >= p.en.length){
     // Paragraph complete
     btnNext.disabled = false;
-    // auto-focus next button for flow
     btnNext.focus();
     stopListening();
   }else{
     updateActiveBlank();
-    // auto-play prefix for the next blank to keep flow
-    setTimeout(()=> playCurrentSentencePrefix(), 450);
   }
 }
 
@@ -486,7 +651,7 @@ function nextParagraph(){
 }
 
 /* ---------------------------
-   Speech Recognition
+   Speech Recognition (wait-for-answer)
 ----------------------------*/
 let recog, canListen=false;
 function initRecog(){
@@ -501,7 +666,7 @@ function initRecog(){
   recog.continuous = true;
 
   recog.onstart = ()=>{ elMic.classList.add('listening'); elMicText.textContent='Listening…'; };
-  recog.onend   = ()=>{ elMic.classList.remove('listening'); elMicText.textContent= canListen?'Listening paused':'Mic: ready'; if (canListen) recog.start(); };
+  recog.onend   = ()=>{ elMic.classList.remove('listening'); elMicText.textContent= canListen?'Listening paused':'Mic: ready'; if (canListen) try{recog.start();}catch(e){} };
   recog.onerror = ()=>{ elMic.classList.remove('listening'); elMicText.textContent='Mic error'; };
 
   recog.onresult = (e)=>{
@@ -514,17 +679,20 @@ function initRecog(){
     }
     said = said.toLowerCase();
 
-    // Accept close matches (simple check: contains target or very close)
+    // Accept close matches
     const ok = said.includes(target) || closeEnough(said, target);
-    if (ok){
+    if (ok && waitingForAnswer){
       const b = activeBlankEl();
       if (b){
         b.textContent = p.answers[currentSent];
         b.classList.add('correct');
         b.classList.remove('waiting');
         score++; updateScore();
-        // Small delay so they see success flash
-        setTimeout(()=> nextWordOrParagraph(), 250);
+        waitingForAnswer = false;
+        clearTimeout(waitTimer);
+        continueSuffixAfterAnswer();
+        // short delay so students see success before moving
+        setTimeout(()=> nextWordOrParagraph(), 350);
       }
     }
   };
@@ -532,8 +700,8 @@ function initRecog(){
 }
 
 function closeEnough(input, target){
-  // Basic Levenshtein threshold for short words (1 edit for <=5 chars, 2 edits otherwise)
-  const dist = levenshtein(input.trim().split(/\s+/).pop()||'', target);
+  const last = input.trim().split(/\s+/).pop()||'';
+  const dist = levenshtein(last, target);
   if (target.length <= 5) return dist <= 1;
   return dist <= 2;
 }
@@ -598,14 +766,23 @@ function launchConfetti(n=100){
 /* ---------------------------
    Buttons
 ----------------------------*/
-btnPlay.addEventListener('click', ()=> playCurrentSentencePrefix());
-btnRepeat.addEventListener('click', ()=> playCurrentSentencePrefix());
+btnPlay.addEventListener('click', ()=> playGuidedForCurrent());
+btnRepeat.addEventListener('click', ()=> playGuidedForCurrent());
 btnReveal.addEventListener('click', revealWord);
 btnNext.addEventListener('click', ()=>{ btnNext.disabled=true; nextParagraph(); });
 
 /* ---------------------------
    Init
 ----------------------------*/
+function buildDotsInit(){
+  elDots.innerHTML='';
+  for (let i=0;i<PARAGRAPHS.length;i++){
+    const d=document.createElement('div');
+    d.className='dot';
+    elDots.appendChild(d);
+  }
+}
+buildDotsInit();
 renderParagraph();
 initRecog();
 listen();
