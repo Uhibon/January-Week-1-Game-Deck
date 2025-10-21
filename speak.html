@@ -130,7 +130,7 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
 <footer>Bryan’s English School</footer>
 
 <script>
-const DUR_MS=6000;
+const DUR_MS=6000; // mic & meter duration (must match CSS --dur)
 let idx=0,listening=false,SR=null,streamAllowed=false;
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
@@ -160,6 +160,8 @@ const ITEMS=[
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ].sort(()=>Math.random()-0.5);
 
+/* helpers */
+const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
 function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');}
@@ -179,46 +181,159 @@ function setFinished(){meterText.classList.remove('shimmer');meterCore.classList
 function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 function playSage(en){if(listening)return;const a=new Audio('./audio/'+stripForFile(en)+'.mp3');a.preload='auto';a.volume=1;a.playbackRate=0.95;a.play().catch(()=>{});}
 
-/* Mic */
-async function requestMic(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true;}catch(e){alert("マイクが使えません。Chrome を使用してください。");}}
-function makeRecognizer(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return null;const r=new R();r.lang='en-US';r.continuous=true;r.interimResults=true;try{r.maxAlternatives=5;}catch(_){ }return r;}
+/* Mic permission */
+async function requestMic(){
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t=>t.stop());
+    streamAllowed=true;
+  }catch(e){
+    alert("マイクが使えません。Chrome を使用してください。");
+  }
+}
 
-/* Round */
+/* Recognizer */
+function makeRecognizer(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R) return null;
+  const r=new R();
+  r.lang='en-US';
+  r.continuous=true;
+  r.interimResults=true;
+  try{r.maxAlternatives=5;}catch(_){}
+  return r;
+}
+
+/* Sweep control (exact reflow reset + duration sync) */
+function startSweep(){
+  sweep.style.setProperty('--dur', DUR_MS+'ms');
+  sweep.classList.remove('run'); // reset
+  void sweep.offsetWidth;        // reflow
+  sweep.classList.add('run');    // go
+}
+function stopSweep(){
+  sweep.classList.remove('run');
+}
+
+/* 3-2-1 countdown, then mic + sweep in perfect lockstep */
 async function beginRound(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");return;}
   if(!streamAllowed){await requestMic();if(!streamAllowed)return;}
 
-  resetVisuals();listening=true;playBtn.disabled=true;retryBtn.style.display='none';nextBtn.style.display='none';setListening();
+  resetVisuals();
+  playBtn.disabled=true;
+  retryBtn.style.display='none';
+  nextBtn.style.display='none';
 
-  SR=makeRecognizer();let heard="";
-  SR.onresult=(e)=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";}heard=(heard+" "+txt).trim();markSpoken(heard);};
-  SR.onstart=()=>{sweep.classList.remove('run');void sweep.offsetWidth;sweep.classList.add('run');console.log("🎤 mic active");};
-  SR.onend=()=>console.log("🎤 mic stopped");
-  try{SR.start();}catch(_){}
+  // Countdown
+  meterText.classList.remove('shimmer');
+  meterCore.classList.add('bigPulse');
+  const showCount = async (n, jp) => { meterText.innerHTML = `${n}<br><small>${jp}</small>`; await sleep(700); };
+  await showCount('3','さん');
+  await showCount('2','に');
+  await showCount('1','いち');
+  meterText.innerHTML='GO!<br><small>スタート</small>';
+  await sleep(300);
 
-  await new Promise(r=>setTimeout(r,DUR_MS));
-  listening=false;try{SR.stop();}catch(_){}
-  setFinished();finalizeColors();
+  // Lockstep start: set UI state, start sweep THEN immediately start mic
+  setListening();
+  startSweep();
 
-  const s=keywordScore(ITEMS[idx].en,heard);scoreBox.textContent="スコア："+s+"％";scoreBox.style.display='block';playScoreSound(s);
-  nextBtn.style.display=(s>=75)?'inline-block':'none';retryBtn.style.display=(s<75)?'inline-block':'none';playBtn.disabled=false;
+  listening=true;
+  SR = makeRecognizer();
+  let heard = "";
+
+  // Robust collection of interim + final
+  SR.onresult = (e)=>{
+    let txt="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      txt += e.results[i][0].transcript + " ";
+    }
+    heard=(heard+" "+txt).trim();
+    markSpoken(heard);
+  };
+
+  // If Chrome ends early, auto-restart while the window is open
+  SR.onend = ()=>{
+    if(listening){
+      try{ SR.start(); }catch(_){}
+    }
+  };
+
+  // Start recognition *now* — same tick as sweep start
+  try{ SR.start(); }catch(_){}
+
+  // Wait for exact duration, then stop everything together
+  await sleep(DUR_MS);
+
+  listening=false;
+  try{ SR.stop(); }catch(_){}
+  setFinished();
+  stopSweep();
+  finalizeColors();
+
+  // Score + buttons
+  const s=keywordScore(ITEMS[idx].en,heard);
+  scoreBox.textContent="スコア："+s+"％";
+  scoreBox.style.display='block';
+  playScoreSound(s);
+  nextBtn.style.display=(s>=75)?'inline-block':'none';
+  retryBtn.style.display=(s<75)?'inline-block':'none';
+  playBtn.disabled=false;
 }
 
 /* Score SFX */
 const scoreFiles={low:"assets/audio/0-43.mp3",mid:"assets/audio/44-74.mp3",high:"assets/audio/75-99.mp3",max:"assets/audio/100.mp3"};
 let sfx=new Audio();sfx.preload='auto';
-function playScoreSound(score){let src=scoreFiles.low;if(score===100)src=scoreFiles.max;else if(score>=75)src=scoreFiles.high;else if(score>=44)src=scoreFiles.mid;
-sfx.pause();sfx.src=src;sfx.currentTime=0;sfx.play().catch(()=>{});}
+function playScoreSound(score){
+  let src=scoreFiles.low;
+  if(score===100) src=scoreFiles.max;
+  else if(score>=75) src=scoreFiles.high;
+  else if(score>=44) src=scoreFiles.mid;
+  sfx.pause(); sfx.src=src; sfx.currentTime=0; sfx.play().catch(()=>{});
+}
 
 /* Display next */
-function resetVisuals(){sweep.classList.remove('run');void sweep.offsetWidth;clearHearts();enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));scoreBox.style.display='none';}
-function showItem(){const it=ITEMS[idx];mountWords(it.en);jpEl.textContent=it.jp;hiraEl.textContent=it.hira;resetVisuals();setReady();}
+function resetVisuals(){
+  stopSweep();
+  void sweep.offsetWidth;
+  clearHearts();
+  enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
+  scoreBox.style.display='none';
+  setReady();
+}
+function showItem(){
+  const it=ITEMS[idx];
+  mountWords(it.en);
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
+  resetVisuals();
+}
 
 /* Buttons */
-beginBtn.onclick=async()=>{if(!streamAllowed)await requestMic();if(!streamAllowed)return;showItem();beginRound();};
-retryBtn.onclick=()=>{showItem();beginRound();};
-nextBtn.onclick=()=>{idx++;if(idx>=ITEMS.length){enEl.textContent="Great work today!";jpEl.textContent="よくできました！";hiraEl.textContent="";nextBtn.style.display='none';retryBtn.style.display='none';beginBtn.style.display='none';setReady();sweep.classList.remove('run');return;}showItem();};
+beginBtn.onclick=async()=>{
+  if(!streamAllowed) await requestMic();
+  if(!streamAllowed) return;
+  showItem();
+  beginRound();
+};
+retryBtn.onclick=()=>{ showItem(); beginRound(); };
+nextBtn.onclick=()=>{
+  idx++;
+  if(idx>=ITEMS.length){
+    enEl.textContent="Great work today!";
+    jpEl.textContent="よくできました！";
+    hiraEl.textContent="";
+    nextBtn.style.display='none';
+    retryBtn.style.display='none';
+    beginBtn.style.display='none';
+    setReady();
+    stopSweep();
+    return;
+  }
+  showItem();
+};
 playBtn.onclick=()=>playSage(ITEMS[idx].en);
 
 /* Init */
