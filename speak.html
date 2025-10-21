@@ -27,8 +27,8 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 .wrap{max-width:1100px;margin:0 auto;padding:8px 16px 86px}
 .panel{padding:20px;border:1px solid var(--outline);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));box-shadow:0 6px 24px rgba(0,0,0,.4)}
 
-/* English sentence */
-.card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);padding:22px 16px;margin-bottom:10px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));overflow:hidden}
+/* English sentence card */
+.card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);padding:22px 16px 22px 80px;margin-bottom:10px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));overflow:hidden}
 .en{position:relative;font-weight:900;font-size:clamp(26px,7.4vw,48px);line-height:1.22;text-align:center;letter-spacing:.2px;z-index:2}
 .en .word{display:inline-block;padding:0 .06em;color:#ffffff;transition:color .25s ease}
 .en .word.black{color:#000}
@@ -36,6 +36,51 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 /* Solid wide yellow sweep (behind text) */
 .sweep{position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--yell);opacity:.85;z-index:1;filter:blur(2px)}
+
+/* Gold play button (locked to left edge) */
+.playBtn{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;
+  display:grid;place-items:center;font-weight:900;font-size:20px;color:#351b00;
+  background:
+    radial-gradient(circle at 30% 30%, #ffe8a3, #ffd36a 60%, #ffb800 100%);
+  box-shadow:
+    0 0 0 3px rgba(255,213,120,.35),
+    0 0 16px rgba(255,214,120,.45),
+    inset 0 3px 6px rgba(255,255,255,.6),
+    inset 0 -6px 14px rgba(201,112,0,.55);
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+  outline: none;
+  isolation:isolate;
+  /* shimmer */
+  --delay: 0s;
+  animation: goldPulse 1.8s var(--delay) ease-in-out infinite;
+}
+.playBtn:active{transform:translateY(-50%) scale(.96)}
+.playBtn::after{
+  content:"";
+  position:absolute;inset:-2px;border-radius:50%;
+  background: conic-gradient(from 0deg, rgba(255,255,255,.0), rgba(255,255,255,.55), rgba(255,255,255,0));
+  filter: blur(6px);opacity:.7;
+  animation: sweepShine 1.6s var(--delay) linear infinite;
+  z-index:-1;
+}
+@keyframes goldPulse{
+  0%,100%{ box-shadow:
+    0 0 0 3px rgba(255,213,120,.25),
+    0 0 10px rgba(255,214,120,.35),
+    inset 0 2px 5px rgba(255,255,255,.55),
+    inset 0 -6px 14px rgba(201,112,0,.55);}
+  50%{ box-shadow:
+    0 0 0 4px rgba(255,213,120,.45),
+    0 0 22px rgba(255,214,120,.85),
+    inset 0 4px 8px rgba(255,255,255,.85),
+    inset 0 -8px 18px rgba(201,112,0,.75);}
+}
+@keyframes sweepShine{
+  0%{ transform:rotate(0deg); }
+  100%{ transform:rotate(360deg); }
+}
 
 /* Support bar */
 .supportBar{margin:8px 0 14px;border:1px solid var(--outline);border-radius:14px;padding:12px 14px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03))}
@@ -48,7 +93,24 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 .ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(#22c55e,#facc15,#f43f5e,#a78bfa,#60a5fa,#22c55e);-webkit-mask:radial-gradient(circle,transparent 60%,black 62%);mask:radial-gradient(circle,transparent 60%,black 62%);filter:drop-shadow(0 0 16px rgba(255,255,255,.25));animation:rainbowCycle 3s linear infinite;transition:transform .1s ease}
 @keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
 .meterCore{position:absolute;inset:12% 12%;border-radius:50%;background:radial-gradient(circle at 50% 40%, rgba(255,255,255,.14), rgba(255,255,255,.04));display:grid;place-items:center;text-align:center}
-.meterText{font-weight:900;font-size:clamp(18px,6vw,28px);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.meterText{position:relative;font-weight:900;font-size:clamp(18px,6vw,28px);text-shadow:0 2px 0 rgba(0,0,0,.35);z-index:2}
+
+/* Rainbow sparkles behind 「リスニング中」 */
+.sparkles{
+  position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:50%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,.6) 0 2px, transparent 3px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,.5) 0 2px, transparent 3px),
+    radial-gradient(circle at 85% 35%, rgba(255,255,255,.65) 0 2px, transparent 3px);
+  filter:hue-rotate(0deg) blur(.2px);
+  animation: sparkleDrift 3.4s linear infinite, hueSpin 2.8s linear infinite;
+}
+@keyframes sparkleDrift{
+  0%{ background-position: 0 0, 0 0, 0 0, 0 0; }
+  100%{ background-position: 12px -10px, -14px 12px, 10px 14px, -10px -12px; }
+}
+@keyframes hueSpin{ 0%{filter:hue-rotate(0)} 100%{filter:hue-rotate(360deg)} }
 
 /* Buttons */
 .btnRow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
@@ -89,8 +151,9 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 <div class="wrap">
   <div class="panel">
     <div class="card">
+      <button id="playBtn" class="playBtn" aria-label="Play">▶</button>
       <div class="sweep" id="sweep"></div>
-      <div id="en" class="en">Press はじめる to start</div>
+      <div id="en" class="en">Press スタート to start</div>
     </div>
 
     <div class="supportBar">
@@ -101,17 +164,20 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     <div class="meterWrap">
       <div class="meter">
         <div id="ring" class="ring"></div>
-        <div class="meterCore"><div id="meterText" class="meterText">リスニング中</div></div>
+        <div class="meterCore">
+          <div class="sparkles" aria-hidden="true"></div>
+          <div id="meterText" class="meterText">リスニング中</div>
+        </div>
       </div>
     </div>
 
     <div class="btnRow">
-      <button id="beginBtn" class="btn begin">はじめる<br><small>Begin</small></button>
+      <button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
       <button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
       <button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
     </div>
 
-    <div id="progress">０ / １５（０％）</div>
+    <div id="progress">０／１５</div>
     <div id="scoreBox" class="scoreBox" style="display:none">スコア：—％</div>
 
     <div id="support" class="support" style="display:none;text-align:center;color:#ffcf7f;margin-top:10px">
@@ -143,7 +209,7 @@ const ITEMS = [
   { en:"How can English help your goals?", jp:"英語はあなたの目標にどう役立ちますか。", hira:"(えいご は あなた の もくひょう に どう やくだち ます か)" },
 ];
 
-/* ===== Range Audios ===== */
+/* ===== Range Audios (kept) ===== */
 const A_0_43  = new Audio("assets/audio/0-43.mp3");
 const A_44_74 = new Audio("assets/audio/44-74.mp3");
 const A_75_99 = new Audio("assets/audio/75-99.mp3");
@@ -164,12 +230,14 @@ const fx       = document.getElementById('fx');
 const ring     = document.getElementById('ring');
 const meterText= document.getElementById('meterText');
 const sweep    = document.getElementById('sweep');
+const playBtn  = document.getElementById('playBtn');
 
 /* ===== Config/Utils ===== */
 const LISTEN_SECS = 3.0; // fixed ESL reading speed
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
 function strip(s){ return s.toLowerCase().replace(/[^a-z0-9' ]+/g,' ').replace(/\s+/g,' ').trim(); }
+function stripForFile(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,''); } // filename
 function playAudioSafe(a){ try{ a.pause(); a.currentTime=0; const p=a.play(); if(p&&p.then)p.catch(()=>{});}catch(e){} }
 function toFW(n){ return n.toString().replace(/\d/g, d=>"０１２３４５６７８９"[d]); }
 
@@ -183,9 +251,7 @@ function mountWords(text){
 
 /* ===== Solid yellow sweep behind text ===== */
 function startSweep(durationMs=LISTEN_SECS*1000){
-  // Reset colors
   wordSpans.forEach(w=>{ w.classList.remove('black','blue'); });
-  // Animate full-card yellow from left -> right
   const rect = enEl.getBoundingClientRect();
   const total = rect.width || 1;
   const start = performance.now();
@@ -195,9 +261,8 @@ function startSweep(durationMs=LISTEN_SECS*1000){
   function step(t){
     const elapsed = t - start;
     const prog = Math.min(elapsed/durationMs, 1);
-    const x = total * prog; // leading edge position
-    sweep.style.left = (x - total) + 'px'; // keep sweep filling entire card
-    // turn words black when the sweep passes over
+    const x = total * prog;
+    sweep.style.left = (x - total) + 'px';
     for(const w of wordSpans){
       const r = w.getBoundingClientRect();
       const cx = r.left + r.width/2 - rect.left;
@@ -278,8 +343,7 @@ if(!SR){ support.style.display='block'; }
 let transcriptHeard="";
 function updateProgress(){
   const n = Math.min(idx+1, ITEMS.length);
-  const pct = Math.round((idx/ITEMS.length)*100);
-  progress.textContent = `${toFW(n)} / ${toFW(ITEMS.length)}（${toFW(pct)}％）`;
+  progress.textContent = `${toFW(n)}／${toFW(ITEMS.length)}`; // no percent
 }
 function showItem(){
   const it = ITEMS[idx];
@@ -288,6 +352,9 @@ function showItem(){
   hiraEl.textContent = it.hira || "";
   scoreBox.style.display='none'; scoreBox.className='scoreBox';
   meterText.textContent='リスニング中';
+  // random shimmer offset per sentence for play button
+  const delay = (Math.random()*2).toFixed(2)+'s';
+  playBtn.style.setProperty('--delay', delay);
   updateProgress();
 }
 
@@ -307,12 +374,15 @@ function renderScore(score){
   else if(s>=75) playAudioSafe(A_75_99);
   else if(s>=44) playAudioSafe(A_44_74);
   else playAudioSafe(A_0_43);
+
   const panel=document.querySelector('.panel');
   if(s===100) confetti(240);
   else if(s>=75) confetti(120);
   else if(s>=44) puffs(panel, 22, 'rgba(255,255,255,0.92)');
   else puffs(panel, 28, 'rgba(106,77,43,0.95)');
-  nextBtn.style.display='inline-block';
+
+  // gating: Next only for 75–100
+  nextBtn.style.display = (s>=75) ? 'inline-block' : 'none';
   beginBtn.disabled=false;
   retryBtn.style.display = (s<75) ? 'inline-block' : 'none';
 }
@@ -384,12 +454,33 @@ function confetti(count=120){
 
 /* ===== Mobile audio unlock ===== */
 let unlocked=false;
-function unlock(){ if(unlocked) return; try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); ctx.resume().finally(()=>ctx.close()); }catch(e){} [A_0_43,A_44_74,A_75_99,A_100].forEach(a=>{ try{ a.play().then(()=>a.pause()).catch(()=>{});}catch(e){} }); unlocked=true; }
+function unlock(){ if(unlocked) return;
+  try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); ctx.resume().finally(()=>ctx.close()); }catch(e){}
+  [A_0_43,A_44_74,A_75_99,A_100].forEach(a=>{ try{ a.play().then(()=>a.pause()).catch(()=>{});}catch(e){} });
+  unlocked=true;
+}
+
+/* ===== Sage local audio for current sentence ===== */
+let currentSage=null;
+function sentenceToFile(en){
+  return 'audio/' + stripForFile(en) + '.mp3';
+}
+function playSage(en){
+  const file = sentenceToFile(en);
+  try{
+    if(currentSage){ currentSage.pause(); currentSage=null; }
+    const a = new Audio(file);
+    a.preload='auto'; a.volume=1;
+    a.play().catch(()=>{ /* ignore autoplay restrictions; unlock handles */ });
+    currentSage = a;
+  }catch(e){}
+}
 
 /* ===== Wire up ===== */
 beginBtn.addEventListener('click', async ()=>{ unlock(); if(idx===0 && jpEl.textContent===""){ showItem(); } await beginRound(); });
 retryBtn.addEventListener('click', async ()=>{ await beginRound(); });
 nextBtn.addEventListener('click', ()=> nextItem());
+playBtn.addEventListener('click', ()=>{ unlock(); playSage(ITEMS[idx].en); });
 
 /* ===== Init ===== */
 (function init(){ showItem(); })();
