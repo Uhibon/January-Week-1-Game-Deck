@@ -146,10 +146,10 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 <footer>Bryan’s English School</footer>
 
 <!-- RESULTS AUDIO -->
-<audio id="s_r05" src="assets/audio/r05.mp3"></audio>
-<audio id="s_r610" src="assets/audio/r610.mp3"></audio>
-<audio id="s_r1114" src="assets/audio/r1114.mp3"></audio>
-<audio id="s_r15" src="assets/audio/r15.mp3"></audio>
+<audio id="s_r05" src="assets/audio/result_0-5.mp3"></audio>
+<audio id="s_r610" src="assets/audio/result_6-10.mp3"></audio>
+<audio id="s_r1114" src="assets/audio/result_11-14.mp3"></audio>
+<audio id="s_r15" src="assets/audio/result_15.mp3"></audio>
 
 <script>
 const DATA=[
@@ -169,6 +169,9 @@ const DATA=[
 {en:"I will do my homework first.",jp:"まず宿題をします。",hira:"まず しゅくだい を し ます"},
 {en:"I will be kind to everyone.",jp:"みんなにやさしくします。",hira:"みんな に やさしく し ます"}
 ];
+
+// 🔀 shuffle entire question order every time
+shuffle(DATA);
 
 let i=0,score=0,wrongMode=false,totalScore=0;
 const jp=qs('#jp'),hira=qs('#hira'),bank=qs('#bank'),sent=qs('#sentence');
