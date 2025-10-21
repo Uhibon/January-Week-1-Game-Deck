@@ -21,9 +21,10 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
-.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25}
-.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .25s ease}
+.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative}
+.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease}
 .en .word.blue{color:#60a5fa}
+.en .word.red{color:#ff5757}
 .heart{position:absolute;left:0;top:0;transform:translate(-50%,0);font-size:22px;color:#ff7eb9;opacity:0;
 animation:heartUp .9s ease-out forwards}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
@@ -41,7 +42,7 @@ inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55);}
 50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),
 inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75);}
 }
-.sweep{position:absolute;top:0;left:-100%;width:100%;height:100%;background:#fff680;opacity:.85;z-index:0}
+.sweep{position:absolute;top:0;left:-100%;width:100%;height:100%;background:#fff680;opacity:.85;z-index:0;filter:blur(2px)}
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
 .meterWrap{display:flex;justify-content:center;margin:22px 0}
@@ -121,11 +122,19 @@ const ITEMS=[
 {en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ];
+
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),
 nextBtn=document.getElementById('nextBtn'),scoreBox=document.getElementById('scoreBox'),
 meterText=document.getElementById('meterText'),playBtn=document.getElementById('playBtn'),
 sweep=document.getElementById('sweep');
+
+const A_0_43=new Audio("assets/audio/0-43.mp3"),
+A_44_74=new Audio("assets/audio/44-74.mp3"),
+A_75_99=new Audio("assets/audio/75-99.mp3"),
+A_100=new Audio("assets/audio/100.mp3");
+[A_0_43,A_44_74,A_75_99,A_100].forEach(a=>{a.preload="auto";a.volume=1;});
+
 let idx=0,listening=false,currentSage=null,SR;
 
 function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
@@ -147,9 +156,7 @@ function markSpoken(txt){
  const set=new Set(txt.toLowerCase().split(' '));
  enEl.querySelectorAll('.word').forEach(w=>{
    const s=w.textContent.toLowerCase();
-   if(set.has(s)&&!w.classList.contains('blue')){
-     w.classList.add('blue');popHeartAt(w);
-   }
+   if(set.has(s)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w);}
  });
 }
 function keywordScore(target,spoken){
@@ -161,6 +168,12 @@ function keywordScore(target,spoken){
 function showItem(){
  const it=ITEMS[idx];mountWords(it.en);
  jpEl.textContent=it.jp;hiraEl.textContent=it.hira;scoreBox.style.display='none';
+}
+function playScoreSound(score){
+ if(score===100)A_100.play();
+ else if(score>=75)A_75_99.play();
+ else if(score>=44)A_44_74.play();
+ else A_0_43.play();
 }
 async function beginRound(){
  listening=true;playBtn.disabled=true;meterText.textContent='リスニング中';
@@ -182,9 +195,13 @@ async function beginRound(){
  await new Promise(r=>setTimeout(r,3000));
  SR.stop();listening=false;playBtn.disabled=false;
  const s=keywordScore(ITEMS[idx].en,heard);
+ enEl.querySelectorAll('.word').forEach(w=>{
+   if(!w.classList.contains('blue'))w.classList.add('red');
+ });
  meterText.textContent=s+"%";
  scoreBox.textContent="スコア："+s+"％";
  scoreBox.style.display='block';
+ playScoreSound(s);
  nextBtn.style.display=(s>=75)?'inline-block':'none';
  retryBtn.style.display=(s<75)?'inline-block':'none';
 }
