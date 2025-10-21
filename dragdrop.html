@@ -74,15 +74,24 @@ body.draggingTouch .round-wrap{touch-action:none;}
   word-break:break-word;position:relative;
 }
 .card.en{
+  position:relative;
   color:#000;font-weight:1000;font-size:clamp(1.8rem,5.8vw,3rem);
-  letter-spacing:-.01em;text-transform:none;word-break:keep-all;overflow-wrap:normal;hyphens:none;
-  display:flex;align-items:center;justify-content:center;gap:10px;
+  letter-spacing:-.01em;word-break:keep-all;overflow-wrap:normal;hyphens:none;
+  display:flex;align-items:center;justify-content:center;
 }
 .play-btn{
-  width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,#ffd166 0%,#fbbf24 40%,#b45309 100%);
-  display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:1rem;
-  cursor:pointer;box-shadow:0 0 10px rgba(255,215,100,.6),0 0 30px rgba(255,215,100,.3);
-  animation:shimmer 2.5s infinite;flex-shrink:0;
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:36px;height:36px;
+  border-radius:50%;
+  background:radial-gradient(circle,#ffd166 0%,#fbbf24 40%,#b45309 100%);
+  display:flex;align-items:center;justify-content:center;
+  color:#000;font-weight:900;font-size:1rem;
+  cursor:pointer;
+  box-shadow:0 0 10px rgba(255,215,100,.6),0 0 30px rgba(255,215,100,.3);
+  animation:shimmer 2.5s infinite;
 }
 @keyframes shimmer{
   0%,100%{filter:brightness(1);}
@@ -168,12 +177,23 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 
 <script>
 const MASTER=[
-  {en:"goal",jp:"目標",hira:"もくひょう"},{en:"plan",jp:"計画",hira:"けいかく"},{en:"future",jp:"未来",hira:"みらい"},
-  {en:"dream",jp:"夢",hira:"ゆめ"},{en:"challenge",jp:"挑戦",hira:"ちょうせん"},{en:"try",jp:"挑戦する",hira:"ちょうせん する"},
-  {en:"change",jp:"変える",hira:"かえる"},{en:"habit",jp:"習慣",hira:"しゅうかん"},{en:"exercise",jp:"運動",hira:"うんどう"},
-  {en:"study",jp:"勉強",hira:"べんきょう"},{en:"learn",jp:"学ぶ",hira:"まなぶ"},{en:"practice",jp:"練習",hira:"れんしゅう"},
-  {en:"success",jp:"成功",hira:"せいこう"},{en:"focus",jp:"集中",hira:"しゅうちゅう"},{en:"motivation",jp:"やる気",hira:"やるき"}
+  {en:"goal",jp:"目標",hira:"もくひょう"},
+  {en:"plan",jp:"計画",hira:"けいかく"},
+  {en:"future",jp:"未来",hira:"みらい"},
+  {en:"dream",jp:"夢",hira:"ゆめ"},
+  {en:"challenge",jp:"挑戦",hira:"ちょうせん"},
+  {en:"try",jp:"挑戦する",hira:"ちょうせん する"},
+  {en:"change",jp:"変える",hira:"かえる"},
+  {en:"habit",jp:"習慣",hira:"しゅうかん"},
+  {en:"exercise",jp:"運動",hira:"うんどう"},
+  {en:"study",jp:"勉強",hira:"べんきょう"},
+  {en:"learn",jp:"学ぶ",hira:"まなぶ"},
+  {en:"practice",jp:"練習",hira:"れんしゅう"},
+  {en:"success",jp:"成功",hira:"せいこう"},
+  {en:"focus",jp:"集中",hira:"しゅうちゅう"},
+  {en:"motivation",jp:"やる気",hira:"やるき"}
 ];
+
 function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{});}
 window.addEventListener("DOMContentLoaded",()=>{MASTER.forEach(i=>{const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);a.preload="auto";a.load();});});
 const $=s=>document.querySelector(s);
@@ -182,6 +202,7 @@ function playSfx(id){const src=document.getElementById(id);if(!src)return;const 
 function centerOf(el){const r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2};}
 function burstConfettiAt(el,c=44){const{ x,y}=centerOf(el);for(let i=0;i<c;i++){const b=document.createElement("div");b.className="bit";b.style.left=x+"px";b.style.top=y+"px";const ang=Math.random()*2*Math.PI,dist=80+Math.random()*130;b.style.setProperty("--dx",Math.cos(ang)*dist+"px");b.style.setProperty("--dy",Math.sin(ang)*dist-10+"px");b.style.background=`hsl(${Math.random()*360},100%,60%)`;document.body.appendChild(b);setTimeout(()=>b.remove(),820);}}
 function fartPoofAt(el){const{ x,y}=centerOf(el);const p=document.createElement("div");p.className="poof";p.style.left=x+"px";p.style.top=y+"px";document.body.appendChild(p);setTimeout(()=>p.remove(),980);}
+
 let rounds=[],roundIndex=0,totalScore=0,connections={},jpOrder=[];
 function combineIntoJP(jpCard,enText){
   if(!jpCard)return;
@@ -198,6 +219,7 @@ function combineIntoJP(jpCard,enText){
   jpCard.dataset.connected=enText;connections[jpCard.dataset.jp]=enText;
   $("#checkBtn").disabled=Object.keys(connections).length!==5;
 }
+
 function loadRound(){
   connections={};const set=rounds[roundIndex];const colEn=$("#col-en"),colJp=$("#col-jp");
   colEn.innerHTML="";colJp.innerHTML="";
@@ -209,10 +231,14 @@ function loadRound(){
     const play=document.createElement("div");
     play.className="play-btn";
     play.innerHTML="▶";
-    play.style.animationDelay=`${idx*0.6}s`;
+    // random shimmer offset
+    const randDelay=(Math.random()*3).toFixed(2);
+    play.style.animationDelay=`${randDelay}s`;
     play.addEventListener("click",e=>{e.stopPropagation();playSage(item.en);});
-    const label=document.createElement("div");label.textContent=item.en.toLowerCase();
-    c.appendChild(play);c.appendChild(label);
+    const label=document.createElement("div");
+    label.textContent=item.en.toLowerCase();
+    c.appendChild(play);
+    c.appendChild(label);
     c.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/en",c.dataset.en);c.classList.add("dragging");});
     c.addEventListener("dragend",()=>c.classList.remove("dragging"));
     colEn.appendChild(c);
@@ -229,9 +255,65 @@ function loadRound(){
   jpOrder=[...colJp.querySelectorAll("[data-jp]")];
   $("#checkBtn").disabled=true;
 }
-function initGame(){totalScore=0;roundIndex=0;document.body.className="";$("#page-results").classList.remove("active");$("#page-round").classList.add("active");const shuffled=shuffle([...MASTER]);rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];loadRound();}
-$("#checkBtn").addEventListener("click",()=>{ $("#checkBtn").disabled=true;let i=0;const step=setInterval(()=>{if(i>=jpOrder.length){clearInterval(step);setTimeout(()=>{roundIndex++;if(roundIndex<3){loadRound();}else{showResults();}},900);return;}const card=jpOrder[i],jp=card.dataset.jp,chosen=card.dataset.connected||"";const correct=rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();card.classList.remove("matchedBlue");if(chosen&&chosen===correct){card.classList.add("correct","locked");playSfx("s_ding");burstConfettiAt(card,44);totalScore++;}else{card.classList.add("wrong");playSfx("s_fart");fartPoofAt(card);}i++;},850);});
-function showResults(){ $("#page-round").classList.remove("active");$("#page-results").classList.add("active");const pct=Math.round((totalScore/15)*100);const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");let bg="blueGlow",msg="いいね！あと少しでパーフェクト！",snd=$("#s_r1114");if(totalScore<=5){bg="redGlow";msg="ブーリキュラム見てないでしょ！";snd=$("#s_r05");}else if(totalScore<=10){bg="orangeGlow";msg="YouTube見すぎ！ブーリキュラムもやろう！";snd=$("#s_r610");}else if(totalScore===15){bg="goldGlow";msg="すごい！あなたは地球で一番頭がいい！";snd=$("#s_r15");}document.body.className=bg;msgEl.textContent=msg;scoreEl.textContent=`${totalScore}/15（${pct}%）`;try{snd.currentTime=0;snd.play();}catch(e){}if(totalScore===15){for(let i=0;i<160;i++){setTimeout(()=>{const c=document.createElement("div");c.className="confetti";c.style.left=(Math.random()*100)+"vw";c.style.background=`hsl(${Math.random()*360},100%,60%)`;c.style.animationDuration=(0.9+Math.random()*0.9)+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),1900);},i*10);}}}
+
+function initGame(){
+  totalScore=0;roundIndex=0;document.body.className="";
+  $("#page-results").classList.remove("active");$("#page-round").classList.add("active");
+  const shuffled=shuffle([...MASTER]);
+  rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
+  loadRound();
+}
+
+$("#checkBtn").addEventListener("click",()=>{
+  $("#checkBtn").disabled=true;
+  let i=0;
+  const step=setInterval(()=>{
+    if(i>=jpOrder.length){
+      clearInterval(step);
+      setTimeout(()=>{roundIndex++;if(roundIndex<3){loadRound();}else{showResults();}},900);
+      return;
+    }
+    const card=jpOrder[i],jp=card.dataset.jp,chosen=card.dataset.connected||"";
+    const correct=rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
+    card.classList.remove("matchedBlue");
+    if(chosen&&chosen===correct){
+      card.classList.add("correct","locked");
+      playSfx("s_ding");burstConfettiAt(card,44);totalScore++;
+    }else{
+      card.classList.add("wrong");
+      playSfx("s_fart");fartPoofAt(card);
+    }
+    i++;
+  },850);
+});
+
+function showResults(){
+  $("#page-round").classList.remove("active");
+  $("#page-results").classList.add("active");
+  const pct=Math.round((totalScore/15)*100);
+  const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");
+  let bg="blueGlow",msg="いいね！あと少しでパーフェクト！",snd=$("#s_r1114");
+  if(totalScore<=5){bg="redGlow";msg="ブーリキュラム見てないでしょ！";snd=$("#s_r05");}
+  else if(totalScore<=10){bg="orangeGlow";msg="YouTube見すぎ！ブーリキュラムもやろう！";snd=$("#s_r610");}
+  else if(totalScore===15){bg="goldGlow";msg="すごい！あなたは地球で一番頭がいい！";snd=$("#s_r15");}
+  document.body.className=bg;
+  msgEl.textContent=msg;scoreEl.textContent=`${totalScore}/15（${pct}%）`;
+  try{snd.currentTime=0;snd.play();}catch(e){}
+  if(totalScore===15){
+    for(let i=0;i<160;i++){
+      setTimeout(()=>{
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=(Math.random()*100)+"vw";
+        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+        c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1900);
+      },i*10);
+    }
+  }
+}
+
 $("#playAgain").addEventListener("click",initGame);
 initGame();
 </script>
