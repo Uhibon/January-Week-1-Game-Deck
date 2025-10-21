@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 
-<!-- Preload score sounds to avoid cut-offs -->
+<!-- Preload score sounds -->
 <link rel="preload" as="audio" href="assets/audio/0-43.mp3" />
 <link rel="preload" as="audio" href="assets/audio/44-74.mp3" />
 <link rel="preload" as="audio" href="assets/audio/75-99.mp3" />
@@ -32,24 +32,23 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
   padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)
 }
 
-/* Sweeping yellow meter (stays behind) */
+/* Sweeping yellow meter */
 .sweep{
-  position:absolute;inset:0;height:100%;width:100%;
-  transform:translateX(-100%);
-  background:linear-gradient(0deg,rgba(255,246,128,.92),rgba(255,246,128,.7));
+  position:absolute;inset:0;width:100%;height:100%;
+  background:linear-gradient(0deg,rgba(255,246,128,.9),rgba(255,246,128,.7));
   mix-blend-mode:screen;opacity:.75;border-radius:6px;
-  z-index:0;pointer-events:none;will-change:transform,opacity;
+  transform:translateX(-100%);z-index:0;
 }
-@keyframes sweepAcross { from { transform:translateX(-100%);} to { transform:translateX(0%);} }
-.sweep.run{ animation:sweepAcross var(--dur,6s) linear forwards; }
+@keyframes sweepAcross{from{transform:translateX(-100%)}to{transform:translateX(0%)}}
+.sweep.run{animation:sweepAcross var(--dur,6s) linear forwards;}
 
 .en{
   font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;
-  position:relative;z-index:3; /* above sweep */
+  position:relative;z-index:3;
 }
-.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease, transform .2s ease}
-.en .word.blue{color:#60a5fa;transform:translateY(-8px) scale(1.08);} /* pop above sweep */
-.en .word.red{color:#ff5757}
+.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s,transform .2s}
+.en .word.blue{color:#3aa0ff;text-shadow:0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08);}
+.en .word.red{color:#ff2a2a;text-shadow:0 0 10px #ff2a2a,0 0 18px #ff2a2a}
 
 /* Hearts */
 .heart{
@@ -57,10 +56,9 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
   font-size:22px;color:#ff7eb9;opacity:0;z-index:4;
   animation:heartUp .9s ease-out forwards;
 }
-@keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
-100%{transform:translate(-50%,-60px) scale(1.4);opacity:0}}
+@keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-60px) scale(1.4);opacity:0}}
 
-/* Gold play button (Sage only on tap) */
+/* Gold play button */
 .playBtn{
   position:absolute;left:16px;top:50%;transform:translateY(-50%);
   width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;
@@ -68,7 +66,7 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
   background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);
   box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),
              inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);
-  animation:goldPulse 1.8s ease-in-out infinite
+  animation:goldPulse 1.8s ease-in-out infinite;
 }
 @keyframes goldPulse{
   0%,100%{box-shadow:0 0 0 3px rgba(255,213,120,.25),0 0 10px rgba(255,214,120,.35),
@@ -80,7 +78,7 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
 
-/* Always-visible rainbow listening circle (centerpiece) */
+/* Rainbow listening circle */
 .meterWrap{display:flex;justify-content:center;margin:22px 0}
 .meter{position:relative;width:min(64vw,280px);height:min(64vw,280px);display:grid;place-items:center}
 .ring{
@@ -88,24 +86,24 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
   background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);
   -webkit-mask:radial-gradient(circle,transparent 60%,black 62%);
   mask:radial-gradient(circle,transparent 60%,black 62%);
-  animation:rainbowCycle 3s linear infinite
+  animation:rainbowCycle 3s linear infinite;
 }
 @keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
+
 .meterCore{
   position:absolute;inset:12%;border-radius:50%;
   background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));
-  display:grid;place-items:center;text-align:center;animation:corePulse 3s ease-in-out infinite
+  display:grid;place-items:center;text-align:center;
+  transition:transform .3s ease;
 }
-@keyframes corePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-.meterText{font-weight:900;font-size:clamp(18px,6vw,28px);line-height:1.25}
+.meterCore.bigPulse{animation:bigPulse 1.4s ease-in-out infinite;}
+@keyframes bigPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 
-/* Rainbow shimmer for LISTENING only */
+.meterText{font-weight:900;font-size:clamp(18px,6vw,28px);line-height:1.25;}
 .shimmer{
-  background:linear-gradient(90deg,#fff, #ffd1f3, #d1ffe3, #d1e6ff, #fff680, #ffd1f3, #fff);
+  background:linear-gradient(90deg,#fff,#ffd1f3,#d1ffe3,#d1e6ff,#fff680,#ffd1f3,#fff);
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  background-size:300% 100%;
-  animation:shimmerMove 1.2s linear infinite;
-  text-shadow:0 0 18px rgba(255,255,255,.25);
+  background-size:300% 100%;animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25);
 }
 @keyframes shimmerMove{0%{background-position:0% 0}100%{background-position:100% 0}}
 
@@ -116,10 +114,8 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 
-.scoreBox{
-  margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;
-  background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)
-}
+.scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;
+background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
 </style>
 </head>
 <body>
@@ -133,22 +129,19 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 <div class="wrap">
   <div class="panel">
     <div class="card">
-      <!-- sweeping meter BEHIND text -->
       <div id="sweep" class="sweep"></div>
-      <!-- play button (Sage only on tap) -->
-      <button id="playBtn" class="playBtn" aria-label="Play sentence audio">▶</button>
-      <!-- sentence -->
+      <button id="playBtn" class="playBtn">▶</button>
       <div id="en" class="en">Press スタート to start</div>
     </div>
-
     <div id="jp" class="jp"></div>
     <div id="hira" class="hira"></div>
 
-    <!-- Always-visible rainbow listening circle -->
     <div class="meterWrap">
       <div class="meter">
         <div class="ring"></div>
-        <div class="meterCore"><div id="meterText" class="meterText">Ready<br><small>スタンバイ</small></div></div>
+        <div id="meterCore" class="meterCore">
+          <div id="meterText" class="meterText">Ready<br><small>スタンバイ</small></div>
+        </div>
       </div>
     </div>
 
@@ -157,7 +150,6 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
       <button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
       <button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
     </div>
-
     <div id="scoreBox" class="scoreBox" style="display:none"></div>
   </div>
 </div>
@@ -165,8 +157,21 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 <footer>Bryan’s English School</footer>
 
 <script>
-/* ====== QUESTIONS (all 15) ====== */
-let ITEMS=[
+const DUR_MS = 6000;
+let idx=0,listening=false,SR=null,streamAllowed=false;
+const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
+const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
+const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
+const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep'),meterCore=document.getElementById('meterCore');
+
+/* preload Sage + score audio */
+const sageFiles=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange",
+"doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry",
+"whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
+sageFiles.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3');a.preload='auto';a.load();});
+["assets/audio/0-43.mp3","assets/audio/44-74.mp3","assets/audio/75-99.mp3","assets/audio/100.mp3"].forEach(u=>{const a=new Audio(u);a.preload='auto';a.load();});
+
+const ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
 {en:"Why is it important to you?",jp:"あなたにとってなぜ大切ですか。",hira:"(あなた に とって なぜ たいせつ です か)"},
 {en:"How will you reach your goal?",jp:"どうやって目標を達成しますか。",hira:"(どうやって もくひょう を たっせい します か)"},
@@ -182,157 +187,51 @@ let ITEMS=[
 {en:"How do you stay positive?",jp:"どうやって前向きでいられますか。",hira:"(どうやって まえむき で いられ ます か)"},
 {en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
-];
-// Shuffle each visit
-ITEMS = ITEMS.sort(()=>Math.random()-0.5);
+].sort(()=>Math.random()-0.5);
 
-/* ----- Elements ----- */
-const enEl   = document.getElementById('en');
-const jpEl   = document.getElementById('jp');
-const hiraEl = document.getElementById('hira');
-const beginBtn = document.getElementById('beginBtn');
-const retryBtn = document.getElementById('retryBtn');
-const nextBtn  = document.getElementById('nextBtn');
-const scoreBox = document.getElementById('scoreBox');
-const meterText= document.getElementById('meterText');
-const playBtn  = document.getElementById('playBtn');
-const sweep    = document.getElementById('sweep');
-
-/* ----- Score SFX (pre-warmed) ----- */
-const SCORE_URLS = {
-  low : "assets/audio/0-43.mp3",
-  mid : "assets/audio/44-74.mp3",
-  high: "assets/audio/75-99.mp3",
-  max : "assets/audio/100.mp3"
-};
-const _preloads = Object.values(SCORE_URLS).map(u => { const a=new Audio(u); a.preload="auto"; a.load(); return a; });
-
-/* Single SFX channel */
-let sfx = new Audio();
-sfx.preload = "auto";
-sfx.volume = 1;
-sfx.playbackRate = 0.95;
-sfx.preservesPitch = true;
-
-function playSfx(url){
-  return new Promise(resolve=>{
-    try{
-      sfx.pause();
-      sfx.src = url;
-      sfx.currentTime = 0;
-      const onEnd = ()=>{ sfx.removeEventListener('ended', onEnd); resolve(); };
-      sfx.addEventListener('ended', onEnd, { once:true });
-      const go = ()=>{ sfx.play().catch(()=>resolve()); };
-      if (sfx.readyState >= 3) go();
-      else sfx.addEventListener('canplaythrough', go, { once:true });
-      sfx.load();
-    }catch(_){ resolve(); }
-  });
-}
-async function playScoreSound(score){
-  if(score===100) return playSfx(SCORE_URLS.max);
-  if(score>=75)   return playSfx(SCORE_URLS.high);
-  if(score>=44)   return playSfx(SCORE_URLS.mid);
-  return playSfx(SCORE_URLS.low);
-}
-
-/* ----- State ----- */
-const DUR_MS = 6000; // 6s listening
-let idx=0, listening=false, SR=null, streamAllowed=false;
-
-/* ----- Helpers ----- */
-function normalize(s){
-  return s.toLowerCase()
-          .replace(/[’‘´`]/g,"'")
-          .replace(/[^a-z0-9'\s]/g,' ')
-          .replace(/\s+/g,' ')
-          .trim();
-}
-function toSet(s){ return new Set(normalize(s).split(' ').filter(Boolean)); }
-function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
-
-function playSage(en){
-  if(listening) return; // block during listening
-  const f = './audio/'+stripForFile(en)+'.mp3';
-  const a = new Audio(f);
-  a.preload = 'auto';
-  a.volume = 1;
-  a.playbackRate = 0.95;
-  const go = ()=> a.play().catch(()=>{});
-  if (a.readyState >= 3) go(); else a.addEventListener('canplaythrough', go, { once:true });
-  a.load();
-}
-
-function mountWords(t){
-  enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');
-}
-
-function clearHearts(){
-  enEl.querySelectorAll('.heart').forEach(h=>h.remove());
-}
-function popHeartAt(el){
-  const h=document.createElement('span');h.className='heart';h.textContent='❤';
-  const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
-  h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
-  enEl.appendChild(h);setTimeout(()=>h.remove(),900);
-}
-
-function markSpoken(spoken){
-  const spokenSet = toSet(spoken);
-  enEl.querySelectorAll('.word').forEach(w=>{
-    const val = normalize(w.textContent);
-    if(spokenSet.has(val) && !w.classList.contains('blue')){
-      w.classList.add('blue');
-      popHeartAt(w);
-    }
-  });
-}
-
-function finalizeColors(){
-  enEl.querySelectorAll('.word').forEach(w=>{
-    if(!w.classList.contains('blue')) w.classList.add('red');
-  });
-}
-
-function keywordScore(target,spoken){
-  const keys=toSet(target), said=toSet(spoken);
-  let hit=0, total=0;
-  keys.forEach(k=>{ if(k.length>2){ total++; if(said.has(k)) hit++; } });
-  return total? Math.round((hit/total)*100) : 0;
-}
-
-function resetVisuals(){
-  sweep.classList.remove('run');
-  void sweep.offsetWidth; // reflow
-  clearHearts();
-  enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
+function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
+function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
+function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');}
+function clearHearts(){enEl.querySelectorAll('.heart').forEach(h=>h.remove());}
+function popHeartAt(el){const h=document.createElement('span');h.className='heart';h.textContent='❤';
+const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
+enEl.appendChild(h);setTimeout(()=>h.remove(),900);}
+function markSpoken(spoken){const s=toSet(spoken);
+enEl.querySelectorAll('.word').forEach(w=>{const v=normalize(w.textContent);if(s.has(v)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w);}});}
+function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red');});}
+function keywordScore(target,spoken){const k=toSet(target),said=toSet(spoken);let hit=0,total=0;k.forEach(x=>{if(x.length>2){total++;if(said.has(x))hit++;}});return total?Math.round((hit/total)*100):0;}
+function resetVisuals(){sweep.classList.remove('run');void sweep.offsetWidth;clearHearts();enEl.querySelectorAll('.word').forEach(w=>w.classList
+.forEach(w=>w.classList.remove('blue','red'));
   scoreBox.style.display='none';
 }
 
-/* ----- UI Text helpers ----- */
+/* UI Text */
 function setReady(){
   meterText.classList.remove('shimmer');
-  meterText.innerHTML = 'Ready<br><small>スタンバイ</small>';
+  meterCore.classList.remove('bigPulse');
+  meterText.innerHTML='Ready<br><small>スタンバイ</small>';
 }
 function setListening(){
   meterText.classList.add('shimmer');
-  meterText.innerHTML = 'Listening<br><small>リスニング中</small>';
+  meterCore.classList.add('bigPulse');
+  meterText.innerHTML='Listening<br><small>リスニング中</small>';
 }
 function setFinished(){
   meterText.classList.remove('shimmer');
-  meterText.innerHTML = 'Finished<br><small>おわり！</small>';
+  meterCore.classList.remove('bigPulse');
+  meterText.innerHTML='Finished<br><small>おわり！</small>';
 }
 
-function showItem(){
-  const it=ITEMS[idx];
-  mountWords(it.en);
-  jpEl.textContent=it.jp;
-  hiraEl.textContent=it.hira;
-  resetVisuals();
-  setReady();
+/* Audio helpers */
+function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
+function playSage(en){
+  if(listening)return;
+  const a=new Audio('./audio/'+stripForFile(en)+'.mp3');
+  a.preload='auto';a.volume=1;a.playbackRate=0.95;
+  a.play().catch(()=>{});
 }
 
-/* ----- Mic permission (only on Start/Retry) ----- */
+/* Mic request */
 async function requestMic(){
   try{
     const s=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -343,87 +242,105 @@ async function requestMic(){
   }
 }
 
-/* ----- Speech Recognition setup ----- */
+/* Recognition factory */
 function makeRecognizer(){
-  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!R) return null;
-  const r = new R();
-  r.lang='en-US';
-  r.continuous=true;
-  r.interimResults=true;
-  try{ r.maxAlternatives=5; }catch(_){}
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R)return null;
+  const r=new R();
+  r.lang='en-US';r.continuous=true;r.interimResults=true;
+  try{r.maxAlternatives=5;}catch(_){}
   return r;
 }
 
-/* ----- Round flow ----- */
+/* Main round */
 async function beginRound(){
-  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!R){ alert("このブラウザでは音声認識が使えません。Chrome を使用してください。"); return; }
-  if(!streamAllowed){ await requestMic(); if(!streamAllowed) return; }
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");return;}
+  if(!streamAllowed){await requestMic();if(!streamAllowed)return;}
 
-  // Start sweep (6s) and lock controls
-  sweep.style.setProperty('--dur','6s');
-  sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run');
-
+  resetVisuals();
   listening=true;
   playBtn.disabled=true;
+  retryBtn.style.display='none';
+  nextBtn.style.display='none';
   setListening();
 
+  // start sweep + mic together
+  sweep.style.setProperty('--dur','6s');
+  sweep.classList.remove('run');void sweep.offsetWidth;sweep.classList.add('run');
+
   let heard="";
-
-  SR = makeRecognizer();
-  if(!SR){ alert("音声認識を初期化できませんでした。"); return; }
-
-  SR.onresult = (e)=>{
-    // aggregate partials quickly
+  SR=makeRecognizer();
+  SR.onresult=(e)=>{
     let chunk="";
     for(let i=e.resultIndex;i<e.results.length;i++){
-      const alt = e.results[i][0];
-      chunk += (alt && alt.transcript ? alt.transcript : "") + " ";
+      const alt=e.results[i][0];
+      chunk+=(alt&&alt.transcript?alt.transcript:" ")+" ";
     }
-    heard = (heard + " " + chunk).trim();
+    heard=(heard+" "+chunk).trim();
     markSpoken(heard);
   };
-  SR.onend = ()=>{
-    // keep it alive while listening
-    if(listening){
-      try{ SR.start(); }catch(_){}
+  SR.onerror=(ev)=>{
+    if(listening){try{SR.abort();}catch(_){}
+      setTimeout(()=>{try{SR.start();}catch(_){}} ,100);
     }
   };
-  SR.onerror = (ev)=>{
-    // keep trying on transient errors / no-speech
-    if(listening){
-      try{ SR.abort(); }catch(_){}
-      setTimeout(()=>{ try{ SR.start(); }catch(_){} }, 120);
-    }
-  };
+  SR.onend=()=>{if(listening){try{SR.start();}catch(_){}}};
+  try{SR.start();}catch(_){}
 
-  try{ SR.start(); }catch(_){}
-
-  // listen for fixed duration
-  await new Promise(r=>setTimeout(r, DUR_MS));
+  // listen full duration
+  await new Promise(r=>setTimeout(r,6000));
 
   listening=false;
+  try{SR.stop();}catch(_){}
   setFinished();
-  try{ SR.stop(); }catch(_){}
-
   finalizeColors();
 
   const s=keywordScore(ITEMS[idx].en,heard);
   scoreBox.textContent="スコア："+s+"％";
   scoreBox.style.display='block';
-
-  await playScoreSound(s);
+  playScoreSound(s);
 
   nextBtn.style.display=(s>=75)?'inline-block':'none';
   retryBtn.style.display=(s<75)?'inline-block':'none';
   playBtn.disabled=false;
 }
 
-/* ----- Buttons ----- */
-beginBtn.onclick=()=>{ showItem(); beginRound(); };
-retryBtn.onclick =()=>{ showItem(); beginRound(); }; // reset then re-listen
-nextBtn.onclick  =()=>{
+/* Score sounds */
+const scoreFiles={
+  low:"assets/audio/0-43.mp3",
+  mid:"assets/audio/44-74.mp3",
+  high:"assets/audio/75-99.mp3",
+  max:"assets/audio/100.mp3"
+};
+let sfx=new Audio();sfx.preload='auto';
+function playScoreSound(score){
+  let src=scoreFiles.low;
+  if(score===100)src=scoreFiles.max;
+  else if(score>=75)src=scoreFiles.high;
+  else if(score>=44)src=scoreFiles.mid;
+  sfx.pause();sfx.src=src;sfx.currentTime=0;sfx.play().catch(()=>{});
+}
+
+/* Display next sentence */
+function showItem(){
+  const it=ITEMS[idx];
+  mountWords(it.en);
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
+  resetVisuals();
+  setReady();
+}
+
+/* Buttons */
+beginBtn.onclick=async()=>{
+  if(!streamAllowed)await requestMic();
+  if(!streamAllowed)return;
+  showItem();
+  beginRound();
+};
+retryBtn.onclick=()=>{showItem();beginRound();};
+nextBtn.onclick=()=>{
   idx++;
   if(idx>=ITEMS.length){
     enEl.textContent="Great work today!";
@@ -438,9 +355,9 @@ nextBtn.onclick  =()=>{
   }
   showItem();
 };
-playBtn.onclick =()=> playSage(ITEMS[idx].en);
+playBtn.onclick=()=>playSage(ITEMS[idx].en);
 
-/* ----- Init (no auto-start) ----- */
+/* Init */
 showItem();
 </script>
 </body>
