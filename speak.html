@@ -19,79 +19,101 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 .wrap{max-width:1100px;margin:auto;padding:0 16px 80px}
 .panel{padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
-.card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
-padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
-.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:4}
+
+.card{
+  position:relative;border:1px solid var(--outline);border-radius:var(--radius);
+  padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)
+}
+
+/* --- Yellow meter runs BEHIND the words --- */
+.sweep{
+  position:absolute;top:0;left:0;height:100%;width:100%;
+  transform:translateX(-100%);
+  background:linear-gradient(0deg,rgba(255,246,128,.92),rgba(255,246,128,.7));
+  mix-blend-mode:screen;opacity:.75;border-radius:6px;
+  z-index:2;pointer-events:none;will-change:transform,opacity;
+}
+.en{
+  font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;
+  position:relative;z-index:3;
+}
 .en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease}
 .en .word.blue{color:#60a5fa}
 .en .word.red{color:#ff5757}
 
-/* --- Yellow meter & reading guide (Safari-friendly keyframes) --- */
-.sweep{
-  position:absolute;top:0;left:0;height:100%;width:100%;
-  transform:translateX(-100%);
-  background:linear-gradient(0deg, rgba(255,246,128,.92), rgba(255,246,128,.7));
-  mix-blend-mode:screen;opacity:.9; /* bold + unmistakable */
-  border-radius:6px;z-index:5;pointer-events:none;
-  will-change:transform, opacity;
-}
+/* Guide bar floats above words for reading aid */
 .guide{
   position:absolute;left:0;bottom:10px;height:6px;width:40%;
   transform:translateX(-150%);
   background:linear-gradient(90deg, rgba(255,246,128,1) 0%, rgba(255,216,64,1) 100%);
   box-shadow:0 0 12px rgba(255,246,128,.9), 0 0 24px rgba(255,216,64,.9);
-  border-radius:4px;z-index:6;pointer-events:none;opacity:.95;
+  border-radius:4px;z-index:4;pointer-events:none;opacity:.95;
 }
+
+/* Safari-friendly keyframes */
 @keyframes sweepAcross { from { transform:translateX(-100%);} to { transform:translateX(0%);} }
 @keyframes guideAcross { from { transform:translateX(-150%);} to { transform:translateX(110%);} }
 .sweep.run{ animation:sweepAcross var(--dur,4s) linear forwards; }
 .guide.run{ animation:guideAcross var(--dur,4s) linear forwards; }
 
-/* Hearts must be on top of meter */
+/* Hearts above everything */
 .heart{
   position:absolute;left:0;top:0;transform:translate(-50%,0);
-  font-size:22px;color:#ff7eb9;opacity:0;z-index:7;
+  font-size:22px;color:#ff7eb9;opacity:0;z-index:6;
   animation:heartUp .9s ease-out forwards;
 }
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
 100%{transform:translate(-50%,-60px) scale(1.4);opacity:0}}
 
-.playBtn{position:absolute;left:16px;top:50%;transform:translateY(-50%);
-width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;
-font-weight:900;font-size:20px;color:#351b00;
-background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);
-box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),
-inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);
-animation:goldPulse 1.8s ease-in-out infinite}
-@keyframes goldPulse{
-0%,100%{box-shadow:0 0 0 3px rgba(255,213,120,.25),0 0 10px rgba(255,214,120,.35),
-inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55);}
-50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),
-inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75);}
+/* Gold play button – Sage only on tap */
+.playBtn{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;
+  font-weight:900;font-size:20px;color:#351b00;
+  background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);
+  box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),
+             inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);
+  animation:goldPulse 1.8s ease-in-out infinite
 }
+@keyframes goldPulse{
+  0%,100%{box-shadow:0 0 0 3px rgba(255,213,120,.25),0 0 10px rgba(255,214,120,.35),
+           inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55)}
+  50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),
+      inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75)}
+}
+
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
+
 .meterWrap{display:flex;justify-content:center;margin:22px 0}
 .meter{position:relative;width:min(64vw,280px);height:min(64vw,280px);display:grid;place-items:center}
-.ring{position:absolute;inset:0;border-radius:50%;
-background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);
--webkit-mask:radial-gradient(circle,transparent 60%,black 62%);
-mask:radial-gradient(circle,transparent 60%,black 62%);
-animation:rainbowCycle 3s linear infinite}
+.ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);
+  -webkit-mask:radial-gradient(circle,transparent 60%,black 62%);
+  mask:radial-gradient(circle,transparent 60%,black 62%);
+  animation:rainbowCycle 3s linear infinite
+}
 @keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
-.meterCore{position:absolute;inset:12%;border-radius:50%;
-background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));
-display:grid;place-items:center;text-align:center;animation:corePulse 3s ease-in-out infinite}
+.meterCore{
+  position:absolute;inset:12%;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));
+  display:grid;place-items:center;text-align:center;animation:corePulse 3s ease-in-out infinite
+}
 @keyframes corePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 .meterText{font-weight:900;font-size:clamp(18px,6vw,28px)}
+
 .btnRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
 .btn{border:none;border-radius:999px;padding:14px 20px;font-weight:900;font-size:clamp(18px,4vw,22px);cursor:pointer}
 .btn.begin{background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
 .btn.retry{background:linear-gradient(180deg,#8ec5ff,#1e6eff);color:#00163a}
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;
-background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
+
+.scoreBox{
+  margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;
+  background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)
+}
 </style>
 </head>
 <body>
@@ -105,8 +127,11 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
 <div class="wrap">
   <div class="panel">
     <div class="card">
-      <button id="playBtn" class="playBtn">▶</button>
+      <!-- meter behind words -->
       <div id="sweep" class="sweep"></div>
+      <!-- play button (Sage only on tap) -->
+      <button id="playBtn" class="playBtn" aria-label="Play sentence audio">▶</button>
+      <!-- guide bar above words -->
       <div id="guide" class="guide"></div>
       <div id="en" class="en">Press スタート to start</div>
     </div>
@@ -132,7 +157,7 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
 <footer>Bryan’s English School</footer>
 
 <script>
-// ====== QUESTIONS (all 15) ======
+/* ====== QUESTIONS (all 15) ====== */
 let ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
 {en:"Why is it important to you?",jp:"あなたにとってなぜ大切ですか。",hira:"(あなた に とって なぜ たいせつ です か)"},
@@ -150,26 +175,59 @@ let ITEMS=[
 {en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ];
-// Shuffle per load
+// Shuffle on load (each visit different order)
 ITEMS = ITEMS.sort(()=>Math.random()-0.5);
 
-// ----- Elements -----
-const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
-const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
-const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
-const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep'),guide=document.getElementById('guide');
+/* ----- Elements ----- */
+const enEl   = document.getElementById('en');
+const jpEl   = document.getElementById('jp');
+const hiraEl = document.getElementById('hira');
+const beginBtn = document.getElementById('beginBtn');
+const retryBtn = document.getElementById('retryBtn');
+const nextBtn  = document.getElementById('nextBtn');
+const scoreBox = document.getElementById('scoreBox');
+const meterText= document.getElementById('meterText');
+const playBtn  = document.getElementById('playBtn');
+const sweep    = document.getElementById('sweep');
+const guide    = document.getElementById('guide');
 
-// ----- Score sounds -----
-const A_0_43=new Audio("assets/audio/0-43.mp3"),
-      A_44_74=new Audio("assets/audio/44-74.mp3"),
-      A_75_99=new Audio("assets/audio/75-99.mp3"),
-      A_100=new Audio("assets/audio/100.mp3");
-[A_0_43,A_44_74,A_75_99,A_100].forEach(a=>{a.preload="auto";a.volume=1;});
+/* ----- Single SFX channel to avoid cut-off ----- */
+let sfx = new Audio();
+sfx.preload = "auto";
+sfx.volume = 1;
+sfx.playbackRate = 0.95; // slightly slower so it’s not rushed
+sfx.preservesPitch = true;
 
-// ----- State -----
-let idx=0,listening=false,SR=null,streamAllowed=false;
+/* Use this for score files to avoid overlap/cuts */
+function playSfx(url){
+  return new Promise(resolve=>{
+    try{
+      sfx.pause();
+      sfx.src = url;
+      sfx.currentTime = 0;
+      const onEnd = ()=>{ sfx.removeEventListener('ended', onEnd); resolve(); };
+      sfx.addEventListener('ended', onEnd, { once:true });
+      // play after buffer is ready (prevents “cut” on Safari)
+      const go = ()=>{ sfx.play().catch(()=>resolve()); };
+      if (sfx.readyState >= 3) go();
+      else sfx.addEventListener('canplaythrough', go, { once:true });
+      sfx.load();
+    }catch(_){ resolve(); }
+  });
+}
 
-// ----- Helpers -----
+/* ----- Score sounds (via playSfx) ----- */
+const SCORE_SOUNDS = {
+  low : "assets/audio/0-43.mp3",
+  mid : "assets/audio/44-74.mp3",
+  high: "assets/audio/75-99.mp3",
+  max : "assets/audio/100.mp3"
+};
+
+/* ----- State ----- */
+let idx=0, listening=false, SR=null, streamAllowed=false;
+
+/* ----- Helpers ----- */
 function normalize(s){
   return s.toLowerCase()
           .replace(/[’‘´`]/g,"'")
@@ -181,39 +239,53 @@ function toSet(s){ return new Set(normalize(s).split(' ').filter(Boolean)); }
 function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 
 function playSage(en){
+  // Sage only when not listening
   if(listening) return;
-  const f='./audio/'+stripForFile(en)+'.mp3';
-  const a=new Audio(f); a.preload='auto'; a.volume=1; a.play().catch(()=>{});
+  const f = './audio/'+stripForFile(en)+'.mp3';
+  const a = new Audio(f);
+  a.preload = 'auto';
+  a.volume = 1;
+  a.playbackRate = 0.95; // slight slow so it’s comfortable
+  const go = ()=> a.play().catch(()=>{});
+  if (a.readyState >= 3) go(); else a.addEventListener('canplaythrough', go, { once:true });
+  a.load();
 }
 
-function mountWords(t){ enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' '); }
+function mountWords(t){
+  enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');
+}
+
 function popHeartAt(el){
   const h=document.createElement('span');h.className='heart';h.textContent='❤';
   const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
   h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
   enEl.appendChild(h);setTimeout(()=>h.remove(),900);
 }
+
 function markSpoken(spoken){
   const spokenSet = toSet(spoken);
   enEl.querySelectorAll('.word').forEach(w=>{
     const val = normalize(w.textContent);
     if(spokenSet.has(val) && !w.classList.contains('blue')){
-      w.classList.add('blue');
-      popHeartAt(w); // PINK hearts on correct
+      w.classList.add('blue');           // correct = blue
+      popHeartAt(w);                     // pink hearts
     }
   });
 }
+
 function finalizeColors(){
   enEl.querySelectorAll('.word').forEach(w=>{
     if(!w.classList.contains('blue')) w.classList.add('red'); // incorrect = red
   });
 }
+
 function keywordScore(target,spoken){
   const keys=toSet(target), said=toSet(spoken);
   let hit=0, total=0;
   keys.forEach(k=>{ if(k.length>2){ total++; if(said.has(k)) hit++; } });
   return total? Math.round((hit/total)*100) : 0;
 }
+
 function showItem(){
   const it=ITEMS[idx];
   mountWords(it.en);
@@ -227,14 +299,7 @@ function showItem(){
   void sweep.offsetWidth; void guide.offsetWidth;
 }
 
-function playScoreSound(score){
-  if(score===100) A_100.play();
-  else if(score>=75) A_75_99.play();
-  else if(score>=44) A_44_74.play();
-  else A_0_43.play();
-}
-
-// ----- Mic perm -----
+/* ----- Mic perm ----- */
 async function requestMic(){
   try{
     const s=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -245,15 +310,27 @@ async function requestMic(){
   }
 }
 
-// ----- Round flow -----
+/* ----- Score sound selector ----- */
+async function playScoreSound(score){
+  if(score===100) return playSfx(SCORE_SOUNDS.max);
+  if(score>=75)   return playSfx(SCORE_SOUNDS.high);
+  if(score>=44)   return playSfx(SCORE_SOUNDS.mid);
+  return playSfx(SCORE_SOUNDS.low);
+}
+
+/* ----- Round flow ----- */
 async function beginRound(){
+  // Activate recognition on Start
   if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
     alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");
     return;
   }
-  if(!streamAllowed){ await requestMic(); if(!streamAllowed) return; }
+  if(!streamAllowed){
+    await requestMic();
+    if(!streamAllowed) return;
+  }
 
-  // kick meter animations (Safari-proof)
+  // Kick meter animations (Safari-proof) & lock Sage
   sweep.style.setProperty('--dur','4s');
   guide.style.setProperty('--dur','4s');
   sweep.classList.remove('run'); guide.classList.remove('run');
@@ -263,15 +340,18 @@ async function beginRound(){
   listening=true; playBtn.disabled=true; meterText.textContent='リスニング中';
 
   SR = new (window.SpeechRecognition||window.webkitSpeechRecognition)();
-  SR.lang='en-US'; SR.continuous=true; SR.interimResults=true;
+  SR.lang='en-US';
+  SR.continuous=true;
+  SR.interimResults=true;
 
   let heard="";
   SR.onresult = (e)=>{
     let txt=""; for(let i=e.resultIndex;i<e.results.length;i++){ txt+=e.results[i][0].transcript+" "; }
     heard=txt.trim();
-    markSpoken(heard); // realtime update
+    markSpoken(heard); // live coloring
   };
-  SR.onend = ()=>{ if(listening) try{ SR.start(); }catch(_){} };
+  // In case iOS/Safari ends early, keep it alive during the meter
+  SR.onend = ()=>{ if(listening) { try{ SR.start(); }catch(_){} } };
 
   try{ SR.start(); }catch(_){}
 
@@ -285,14 +365,17 @@ async function beginRound(){
   meterText.textContent=s+"%";
   scoreBox.textContent="スコア："+s+"％";
   scoreBox.style.display='block';
-  playScoreSound(s);
 
+  // play result sfx safely (no cutting)
+  await playScoreSound(s);
+
+  // Gate next / retry (retry repeats SAME question)
   nextBtn.style.display=(s>=75)?'inline-block':'none';
   retryBtn.style.display=(s<75)?'inline-block':'none';
   playBtn.disabled=false;
 }
 
-// ----- Buttons -----
+/* ----- Buttons ----- */
 beginBtn.onclick=()=>{ showItem(); beginRound(); };
 retryBtn.onclick =()=> beginRound();
 nextBtn.onclick  =()=>{
@@ -312,7 +395,7 @@ nextBtn.onclick  =()=>{
 };
 playBtn.onclick =()=> playSage(ITEMS[idx].en);
 
-// ----- Init -----
+/* ----- Init ----- */
 showItem();
 </script>
 </body>
