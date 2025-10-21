@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Sentence Builder – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
@@ -11,121 +11,73 @@
   --bg:#0b1530; --ink:#fff; --outline:#ffffff26;
   --ok:#22c55e; --heart:#ff4fa6;
   --radius:26px;
-
-  /* Booha confetti palette */
   --pink:#ff7eb9; --mint:#a6f7b2; --blue:#7dd3fc; --yellow:#fff680;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0;}
 body{
-  margin:0;background:#0b1530;color:var(--ink);
+  background:#0b1530;color:var(--ink);
   font-family:system-ui,"Noto Sans JP",sans-serif;-webkit-overflow-scrolling:touch;
 }
-
-/* Header */
 header{text-align:center;padding:26px 12px 12px}
-.h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6.2vw,56px);letter-spacing:.5px;text-transform:uppercase;}
-.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px);margin-top:6px;}
-.h3{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(16px,3.6vw,22px);margin-top:10px;opacity:.9;}
-.h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff;margin-top:2px;}
-
+.h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6.2vw,56px);}
+.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px);}
+.h3{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(16px,3.6vw,22px);}
+.h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff;}
 .wrap{max-width:1100px;margin:0 auto;padding:8px 16px 80px}
 .panel{padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-  box-shadow:0 6px 24px rgba(0,0,0,.4);}
+background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+box-shadow:0 6px 24px rgba(0,0,0,.4);}
 
-/* JP Card – horizontal candy stripes */
+/* Japanese display */
 .jpCard{
-  position:relative;border-radius:var(--radius);overflow:hidden;
-  border:1px solid var(--outline);height:160px;margin-bottom:10px;
-  display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius);
+  border:1px solid var(--outline);
+  height:160px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:10px;
   background:repeating-linear-gradient(to bottom,
-    #ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,
-    #8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);
-  background-size:100% 600px;animation:stripeSlide 18s linear infinite;
+  #ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,
+  #8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);
+  background-size:100% 600px;
+  animation:stripeSlide 18s linear infinite;
 }
 @keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
-.jpText{
-  position:relative;
-  z-index:1;
-  font-weight:900;
-  font-size:46px;
-  color:#0b1530;
-  text-align:center;
-  text-shadow:0 1px 0 rgba(255,255,255,.6);
-  white-space:nowrap;
-  overflow:visible;
-}
+.jpText{font-weight:900;font-size:46px;color:#0b1530;text-shadow:0 1px 0 rgba(255,255,255,.6);}
+.hira{text-align:center;color:#d8e7ff;font-size:clamp(14px,3.5vw,18px);margin-bottom:20px}
 
-.hira{
-  text-align:center;
-  color:#d8e7ff;
-  font-size:clamp(14px,3.5vw,18px);
-  margin-bottom:20px;
-}
-
-@media (max-width:480px){
-  .jpCard{height:178px;}
-  .hira{
-    text-align:center;
-    max-width:92vw;
-    margin:10px auto 20px;
-    line-height:1.3;
-  }
-}
-
-/* areas */
+/* drop areas */
 .wordbank,.sentence{
-  display:flex;flex-wrap:wrap;gap:12px;min-height:64px;padding:12px;margin-bottom:14px;
+  display:flex;flex-wrap:wrap;gap:12px;padding:12px;margin-bottom:14px;
 }
-.wordbank{justify-content:center}
+.wordbank{justify-content:center;}
 .sentence{
-  justify-content:flex-start; /* left align chips */
+  justify-content:flex-start;
   align-items:center;
-  min-height:88px;
+  min-height:120px; /* always open */
   border:1px dashed rgba(255,255,255,.25);
   border-radius:14px;
   padding:16px 12px;
-  position:relative; /* for play button anchoring */
+  position:relative;
 }
 
-/* shimmering gold play button (hidden by default) */
+/* gold play button */
 .playBtn{
-  position:absolute;left:-8px;top:50%;transform:translate(-100%,-50%); /* locked to left side */
-  width:58px;height:58px;border:none;border-radius:50%;
-  cursor:pointer;outline:none;opacity:0;pointer-events:none;
-  background:
-    radial-gradient(circle at 35% 30%, #fff7cc 0 26%, rgba(255,255,255,0) 27%),
-    radial-gradient(circle at 65% 70%, #fff3a3 0 18%, rgba(255,255,255,0) 19%),
-    linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
-  box-shadow:
-    0 0 0 4px rgba(255,215,64,.25),
-    0 0 16px rgba(255,215,64,.85),
-    inset 0 0 14px rgba(255,255,255,.45);
-  transition:opacity .35s ease; /* fade in */
+  position:absolute;
+  left:-8px;top:50%;transform:translate(-100%,-50%);
+  width:58px;height:58px;
+  border:none;border-radius:50%;
+  background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
+  color:#2a1b00;font-weight:900;font-size:26px;
+  box-shadow:0 0 12px rgba(255,215,64,.6),0 0 18px rgba(255,215,64,.9);
+  opacity:0;pointer-events:none;transition:opacity .4s ease;
 }
-.playBtn.show{
-  opacity:1; pointer-events:auto;
-  animation:shimmer 1.6s ease-in-out infinite, twinkle 2.4s ease-in-out infinite;
-}
-.playBtn::before{
-  content:"▶";
-  display:block;text-align:center;line-height:58px;
-  font-weight:900;color:#2a1b00;text-shadow:0 1px 0 rgba(255,255,255,.6);
-}
-@keyframes shimmer{
-  0%{filter:brightness(1)}
-  50%{filter:brightness(1.25)}
-  100%{filter:brightness(1)}
-}
+.playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
+.playBtn::before{content:"▶";display:block;text-align:center;line-height:58px;}
 @keyframes twinkle{
-  0%,100%{box-shadow:
-    0 0 0 4px rgba(255,215,64,.25),
-    0 0 16px rgba(255,215,64,.85),
-    inset 0 0 14px rgba(255,255,255,.45)}
-  50%{box-shadow:
-    0 0 0 6px rgba(255,215,64,.35),
-    0 0 26px rgba(255,215,64,1),
-    inset 0 0 22px rgba(255,255,255,.7)}
+  0%,100%{box-shadow:0 0 12px rgba(255,215,64,.6),0 0 18px rgba(255,215,64,.9);}
+  50%{box-shadow:0 0 18px rgba(255,235,94,1),0 0 28px rgba(255,235,94,1);}
 }
 
 /* chips */
@@ -144,388 +96,159 @@ header{text-align:center;padding:26px 12px 12px}
   background:radial-gradient(circle at 30% 30%,#1ee99a,#15c473,#0ea85d);
   color:#00230f;text-shadow:0 1px 0 rgba(255,255,255,.5);
   box-shadow:0 0 0 5px rgba(34,197,94,.22),0 0 18px rgba(34,197,94,.8);
-  cursor:pointer;transition:opacity .3s ease;
+  cursor:pointer;
 }
+.btn.blue{background:radial-gradient(circle at 30% 30%,#66b3ff,#1e6eff);color:#00163a}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.blue{
-  background:radial-gradient(circle at 30% 30%, #66b3ff, #3e90ff, #1e6eff);
-  color:#00163a;
-  box-shadow:0 0 0 5px rgba(62,144,255,.25), 0 0 18px rgba(62,144,255,.85);
-}
 
-/* progress + correct line */
-#progress{text-align:center;color:#cfe1ff;opacity:.9;font-weight:700;margin-top:2px}
-.correctLine{text-align:center;color:#ffffff;font-weight:900;font-size:clamp(18px,4.8vw,28px);margin-top:12px;opacity:0;transition:.3s}
+/* misc text */
+#progress{text-align:center;color:#cfe1ff;font-weight:700;margin-top:2px}
+.correctLine{text-align:center;color:#fff;font-weight:900;font-size:clamp(18px,4.8vw,28px);margin-top:12px;opacity:0;transition:.3s}
 .correctLine.show{opacity:1}
 
-/* FX layers */
-.fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1000}
-.heart{position:absolute;color:var(--heart);font-size:clamp(50px,9vw,90px);text-shadow:0 4px 0 rgba(0,0,0,.35);animation:heartFly 1200ms ease-out forwards;}
+/* FX */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:1000}
+.heart{position:absolute;color:var(--heart);font-size:clamp(50px,9vw,90px);animation:heartFly 1.2s ease-out forwards;}
 @keyframes heartFly{0%{opacity:0;transform:translate(-50%,-20px) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-240px) scale(1.5)}}
-.smoke{position:absolute;width:clamp(60px,15vw,160px);height:clamp(60px,15vw,160px);border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff,rgba(255,255,255,.7) 60%,rgba(255,255,255,0) 72%);animation:smokeRise 1600ms ease-out forwards;filter:blur(1px);}
+.smoke{position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff,rgba(255,255,255,.6) 60%,rgba(255,255,255,0) 72%);animation:smokeRise 1.6s ease-out forwards;}
 @keyframes smokeRise{0%{opacity:0;transform:translate(-50%,0) scale(.6)}20%{opacity:.9}100%{opacity:0;transform:translate(-50%,-260px) scale(1.4)}}
 
-/* End/result screens */
-.end{
-  position:fixed;inset:0;display:none;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-  padding:0 10px;overflow:hidden;
-}
-.end .msg{font-weight:900;font-size:clamp(26px,6vw,42px);margin:10px auto;}
+/* results */
+.end{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.end .msg{font-weight:900;font-size:clamp(26px,6vw,42px);}
 .end .score{font-weight:900;font-size:clamp(22px,5vw,30px);margin:10px auto 20px;}
-.end.red   {background:#a30606;animation:endGlowRed 3s ease-in-out infinite}
-.end.orange{background:#b85c00;animation:endGlowOrange 3s ease-in-out infinite}
-.end.blue  {background:#063a8f;animation:endGlowBlue 3s ease-in-out infinite}
-.end.gold  {background:#b58900;animation:endGlowGold 3s ease-in-out infinite;position:relative;}
-
-@keyframes endGlowRed{50%{box-shadow:inset 0 0 180px 40px rgba(255,80,80,.65)}}
-@keyframes endGlowOrange{50%{box-shadow:inset 0 0 180px 40px rgba(255,166,58,.65)}}
-@keyframes endGlowBlue{50%{box-shadow:inset 0 0 180px 40px rgba(88,160,255,.65)}}
-@keyframes endGlowGold{50%{box-shadow:inset 0 0 180px 40px rgba(255,215,96,.7)}}
-
-/* Booha pastel confetti (gold only) */
-.confetti{
-  position:absolute;width:12px;height:12px;top:-20px;
-  animation:confettiFall 3s linear infinite;
-}
-@keyframes confettiFall{
-  0%{transform:translateY(0) rotate(0deg);opacity:1}
-  100%{transform:translateY(110vh) rotate(720deg);opacity:0}
-}
-
 footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:700;padding:40px 10px}
 </style>
 </head>
 <body>
 <header>
   <div class="h1">THE BOO-RICULUM</div>
-  <div class="h2">GAMES &amp; QUIZZES</div>
+  <div class="h2">GAMES & QUIZZES</div>
   <div class="h3">January Week 1 – Sentences</div>
   <div class="h4">１月第１週 – 文の練習</div>
 </header>
 
 <div class="wrap">
-  <div class="panel" id="panel">
-    <div class="jpCard"><div id="jp" class="jpText"></div></div>
-    <div id="hira" class="hira"></div>
+<div class="panel" id="panel">
+  <div class="jpCard"><div id="jp" class="jpText"></div></div>
+  <div id="hira" class="hira"></div>
 
-    <div id="bank" class="wordbank"></div>
+  <div id="bank" class="wordbank"></div>
 
-    <!-- Sentence area + play button anchored to its left -->
-    <div style="display:flex; align-items:center; gap:12px;">
-      <button id="playBtn" class="playBtn" title="Play" aria-label="Play"></button>
-      <div id="sentence" class="sentence"></div>
-    </div>
-
-    <div id="correctLine" class="correctLine"></div>
-
-    <!-- Wrong-flow: must fix to correct order; OK enables only when correct -->
-    <div id="okWrap" style="text-align:center;display:none">
-      <div style="margin-top:8px">正しい順番に並べてから OK をクリック</div>
-      <button id="okBtn" class="btn blue" style="margin-top:10px;padding:10px 28px;font-size:clamp(16px,3.8vw,20px)" disabled>OK</button>
-    </div>
-
-    <!-- Right-first-try flow: Next button appears after auto audio -->
-    <div id="nextWrap" style="text-align:center;display:none">
-      <button id="nextBtn" class="btn" style="margin-top:10px;padding:12px 32px">Next</button>
-    </div>
-
-    <button id="checkBtn" class="btn" disabled>Check</button>
-    <div id="progress">1 / 15（0%）</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="playBtn" class="playBtn" title="Play"></button>
+    <div id="sentence" class="sentence"></div>
   </div>
+
+  <div id="correctLine" class="correctLine"></div>
+
+  <div id="okWrap" style="text-align:center;display:none">
+    <div>正しい順番に並べてから OK をクリック</div>
+    <button id="okBtn" class="btn blue" disabled>OK</button>
+  </div>
+
+  <div id="nextWrap" style="text-align:center;display:none">
+    <button id="nextBtn" class="btn">Next</button>
+  </div>
+
+  <button id="checkBtn" class="btn" disabled>Check</button>
+  <div id="progress">1 / 15（0%）</div>
+</div>
 </div>
 
-<!-- Results overlay -->
 <div id="end" class="end">
   <div class="msg" id="endMsg"></div>
   <div class="score" id="scoreText"></div>
-  <button class="btn" onclick="window.location.href='index.html'">メインメニューに戻る (Return to MAIN MENU)</button>
-  <footer style="opacity:.85">Bryan’s English School</footer>
+  <button class="btn" onclick="window.location.href='index.html'">メインメニューに戻る</button>
+  <footer style="opacity:.8">Bryan’s English School</footer>
 </div>
 
 <div id="fx" class="fx"></div>
 <footer>Bryan’s English School</footer>
 
 <script>
-/* ===== Data ===== */
 const DATA=[
-  {en:"I will study every day.",jp:"毎日勉強します。",hira:"まいにち べんきょう します"},
-  {en:"I’m going to try something new.",jp:"新しいことに挑戦します。",hira:"あたらしい こと に ちょうせん します"},
-  {en:"I will do my best this year.",jp:"今年は全力を尽くします。",hira:"ことし は ぜんりょく を つくし ます"},
-  {en:"I will make a new friend.",jp:"新しい友だちを作ります。",hira:"あたらしい ともだち を つくり ます"},
-  {en:"I will not be late anymore.",jp:"もう遅刻しません。",hira:"もう ちこく しません"},
-  {en:"I will help my classmates.",jp:"クラスメイトを手伝います。",hira:"クラスメイト を てつだい ます"},
-  {en:"I will clean my desk today.",jp:"今日は机を片づけます。",hira:"きょう は つくえ を かたづけ ます"},
-  {en:"I will read more books.",jp:"もっと本を読みます。",hira:"もっと ほん を よみ ます"},
-  {en:"I will start a good habit.",jp:"良い習慣を始めます。",hira:"よい しゅうかん を はじめ ます"},
-  {en:"I will speak more English.",jp:"もっと英語を話します。",hira:"もっと えいご を はなし ます"},
-  {en:"I will write in my diary every week.",jp:"毎週日記を書きます。",hira:"まいしゅう にっき を かき ます"},
-  {en:"I will wake up earlier.",jp:"もっと早く起きます。",hira:"もっと はやく おき ます"},
-  {en:"I will listen carefully in class.",jp:"授業でしっかり聞きます。",hira:"じゅぎょう で しっかり きき ます"},
-  {en:"I will smile more.",jp:"もっと笑います。",hira:"もっと わらい ます"},
-  {en:"I will enjoy learning.",jp:"学ぶことを楽しみます。",hira:"まなぶ こと を たのしみ ます"}
+{en:"I will study every day.",jp:"毎日勉強します。",hira:"まいにち べんきょう します"},
+{en:"I will clean my desk today.",jp:"今日は机を片づけます。",hira:"きょう は つくえ を かたづけ ます"},
+{en:"I will speak more English.",jp:"もっと英語を話します。",hira:"もっと えいご を はなし ます"},
+{en:"I will make a new friend.",jp:"新しい友だちを作ります。",hira:"あたらしい ともだち を つくり ます"},
+{en:"I will not be late anymore.",jp:"もう遅刻しません。",hira:"もう ちこく しません"},
+{en:"I will listen carefully in class.",jp:"授業でしっかり聞きます。",hira:"じゅぎょう で しっかり きき ます"},
+{en:"I will read more books.",jp:"もっと本を読みます。",hira:"もっと ほん を よみ ます"},
+{en:"I will write in my diary every week.",jp:"毎週日記を書きます。",hira:"まいしゅう にっき を かき ます"},
+{en:"I will enjoy learning.",jp:"学ぶことを楽しみます。",hira:"まなぶ こと を たのしみ ます"}
 ];
 
-/* ===== Audio (feedback/result) ===== */
-const SOK=new Audio("assets/audio/sugoi.mp3");
-const SBAD=new Audio("assets/audio/yada.mp3");
-const SR0_5=new Audio("assets/audio/result_0-5.mp3");
-const SR6_10=new Audio("assets/audio/result_6-10.mp3");
-const SR11_14=new Audio("assets/audio/result_11-14.mp3");
-const SR15=new Audio("assets/audio/result_15.mp3");
-[SOK,SBAD,SR0_5,SR6_10,SR11_14,SR15].forEach(a=>{a.preload="auto";a.volume=1;});
-
-/* ===== State / DOM ===== */
-let order=shuffle([...DATA.keys()]);
-let i=0,score=0;
-let wrongMode=false; // track if current item already answered wrong
-
-const jp=document.getElementById('jp');
-const hira=document.getElementById('hira');
-const bank=document.getElementById('bank');
-const sent=document.getElementById('sentence');
-const check=document.getElementById('checkBtn');
-const progress=document.getElementById('progress');
-const correctLine=document.getElementById('correctLine');
-const okWrap=document.getElementById('okWrap');
-const okBtn=document.getElementById('okBtn');
-const nextWrap=document.getElementById('nextWrap');
-const nextBtn=document.getElementById('nextBtn');
-const fx=document.getElementById('fx');
-const panel=document.getElementById('panel');
-const end=document.getElementById('end');
-const scoreText=document.getElementById('scoreText');
-const endMsg=document.getElementById('endMsg');
-const playBtn=document.getElementById('playBtn');
-
-/* ===== JP Text Auto-Fit ===== */
-function fitJPText(){
-  const el = jp;
-  if(!el) return;
-  const MAX = 46;
-  const MIN = 18;
-  let size = MAX;
-  el.style.fontSize = size + 'px';
-  el.style.whiteSpace = 'nowrap';
-  const card = el.closest('.jpCard');
-  const limit = (card ? card.clientWidth : el.clientWidth) - 16;
-  let guard = 0;
-  while (el.scrollWidth > limit && size > MIN && guard < 40){
-    size -= 1;
-    el.style.fontSize = size + 'px';
-    guard++;
-  }
-}
-let _fitTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(_fitTimer);
-  _fitTimer = setTimeout(fitJPText, 120);
-});
-
-/* ===== Main Logic ===== */
-const HEART_MS=1200;
-const FINAL_GRACE=1200;
-
-/* Build local audio filename from EN sentence, e.g. "I will study every day." -> "iwillstudyeveryday.mp3" */
-function sentenceFilename(en){
-  return "assets/audio/" + en.toLowerCase().replace(/[^a-z]/g,'') + ".mp3";
-}
-function playSentenceAudio(en){
-  const src = sentenceFilename(en);
-  const a = new Audio(src);
-  a.preload="auto"; a.volume=1;
-  playSafe(a);
-}
+const SOK=new Audio("audio/sugoi.mp3");
+const SBAD=new Audio("audio/yada.mp3");
+let i=0,score=0,wrongMode=false;
+const jp=qs('#jp'),hira=qs('#hira'),bank=qs('#bank'),sent=qs('#sentence');
+const check=qs('#checkBtn'),okWrap=qs('#okWrap'),okBtn=qs('#okBtn'),nextWrap=qs('#nextWrap'),nextBtn=qs('#nextBtn');
+const playBtn=qs('#playBtn'),correctLine=qs('#correctLine'),progress=qs('#progress'),fx=qs('#fx'),panel=qs('#panel'),end=qs('#end'),scoreText=qs('#scoreText'),endMsg=qs('#endMsg');
+function qs(s){return document.querySelector(s)}
 
 function mount(){
-  bank.innerHTML=''; sent.innerHTML='';
-  correctLine.textContent=''; correctLine.classList.remove('show');
-  okWrap.style.display='none'; okBtn.disabled=true;
-  nextWrap.style.display='none';
-  check.disabled=true; check.style.display='block';
-  playBtn.classList.remove('show'); // hidden by default
-  wrongMode=false;
-  updateProgress();
-
-  const item=DATA[order[i]];
-  jp.textContent=item.jp;
-  fitJPText(); // auto-fit Japanese
-  hira.textContent=item.hira || '';
-
-  const words=item.en.trim().split(/\s+/);
-  shuffle(words).forEach((w,idx)=>{
-    const b=document.createElement('button');
-    b.textContent=w; b.className='word';
-    b.style.setProperty('--color', chipColor(idx));
+  bank.innerHTML='';sent.innerHTML='';correctLine.classList.remove('show');
+  playBtn.classList.remove('show');wrongMode=false;
+  okWrap.style.display='none';nextWrap.style.display='none';okBtn.disabled=true;check.disabled=true;
+  const item=DATA[i];jp.textContent=item.jp;hira.textContent=item.hira;
+  const words=item.en.split(/\s+/);shuffle(words).forEach((w,idx)=>{
+    const b=document.createElement('button');b.textContent=w;b.className='word';
+    b.style.setProperty('--color',chipColor(idx));
     b.draggable=true;
     b.addEventListener('dragstart',()=>b.classList.add('drag'));
     b.addEventListener('dragend',()=>b.classList.remove('drag'));
     bank.appendChild(b);
-  });
-  checkWords();
+  });updateProgress();
 }
 
-function currentBuilt(){ return [...sent.children].map(e=>e.textContent).join(' ').trim(); }
-function currentCorrect(){ return DATA[order[i]].en.trim(); }
-function checkWords(){
-  // Check is enabled only when all words moved to sentence area
-  check.disabled = bank.children.length !== 0;
-  if(wrongMode){ okBtn.disabled = (currentBuilt() !== currentCorrect()); }
-}
-
-/* drag-and-drop — freely move chips both directions until "Check" */
 ['bank','sentence'].forEach(id=>{
   const area=document.getElementById(id);
   area.addEventListener('dragover',e=>e.preventDefault());
   area.addEventListener('drop',e=>{
     e.preventDefault();
-    const drag=document.querySelector('.drag'); if(!drag) return;
-    area.appendChild(drag);
-    checkWords();
+    const drag=document.querySelector('.drag');if(!drag)return;
+    area.appendChild(drag);check.disabled=bank.children.length!==0;
+    if(wrongMode) okBtn.disabled=currentBuilt()!==currentCorrect();
   });
 });
 
-/* Answer check */
-check.onclick = async ()=>{
-  const item=DATA[order[i]];
-  const built=currentBuilt();
-  const correct=item.en.trim();
+function currentBuilt(){return [...sent.children].map(e=>e.textContent).join(' ').trim();}
+function currentCorrect(){return DATA[i].en.trim();}
+function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".mp3";}
+function playSage(en){const a=new Audio(filename(en));a.volume=1;playSafe(a);}
+function playSafe(a){try{a.pause();a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});}catch(e){}}
+function bigHearts(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+for(let k=0;k<30;k++){const h=document.createElement('div');h.className='heart';h.textContent='❤';
+h.style.left=x+'px';h.style.top=y+'px';fx.appendChild(h);setTimeout(()=>h.remove(),1200);}}
+function hugeSmoke(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+for(let k=0;k<16;k++){const s=document.createElement('div');s.className='smoke';s.style.left=x+'px';s.style.top=y+'px';fx.appendChild(s);setTimeout(()=>s.remove(),1600);}}
+function chipColor(n){const c=["#ff6ec7","#5ee6ff","#ffd166","#8aff80","#c77dff","#fff680","#ff9a8b","#9bffb7","#7cc6ff","#f7a6ff"];return c[n%c.length];}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function updateProgress(){progress.textContent=`${i+1} / ${DATA.length}`;}
 
+check.onclick=()=>{
+  const correct=currentCorrect(),built=currentBuilt();
   if(built===correct){
     if(!wrongMode){
-      // Correct on first try
-      score++;
-      playSafe(SOK);
-      bigHearts(sent);
-      // after hearts, play Sage local sentence audio
-      setTimeout(()=>playSentenceAudio(correct), 400);
-      // Show Next button (no auto-advance)
-      check.style.display='none';
-      nextWrap.style.display='block';
-    }else{
-      // Was previously wrong; OK button remains the path forward (still counted wrong)
-      okBtn.disabled = (currentBuilt() !== correct);
-    }
+      score++;playSafe(SOK);bigHearts(sent);
+      setTimeout(()=>playSage(correct),400);
+      check.style.display='none';nextWrap.style.display='block';
+    }else okBtn.disabled=false;
   }else{
-    // WRONG: reveal line, smoke, wrong sfx, require fixing before progressing
-    wrongMode=true;
-    correctLine.textContent = "正解：" + correct;
-    correctLine.classList.add('show');
-    hugeSmoke(sent);
-    playSafe(SBAD);
-
-    // Show shimmering gold play button locked to the left of the sentence area (fade-in)
-    playBtn.classList.add('show');
-
-    // Hide Check; show OK flow (but disable until arranged correctly)
-    check.style.display='none';
-    okWrap.style.display='block';
-    okBtn.disabled = (currentBuilt() !== correct);
+    wrongMode=true;playSafe(SBAD);hugeSmoke(sent);
+    correctLine.textContent="正解："+correct;correctLine.classList.add('show');
+    playBtn.classList.add('show');check.style.display='none';okWrap.style.display='block';okBtn.disabled=currentBuilt()!==correct;
   }
 };
-
-/* Wrong-flow OK: only enabled when arrangement equals correct; still counted as wrong */
-okBtn.onclick = ()=>{ next(); };
-
-/* Right-first-try Next */
-nextBtn.onclick = ()=>{ next(); };
-
-function next(){
-  i++;
-  if(i>=DATA.length){
-    setTimeout(finish, FINAL_GRACE);
-    return;
-  }
-  mount();
-}
-
-function updateProgress(){
-  const n=i+1, total=DATA.length;
-  const pct=Math.round(((n-1)/total)*100);
-  progress.textContent = `${n} / ${total}（${pct}%）`;
-}
-
+okBtn.onclick=()=>next();nextBtn.onclick=()=>next();
+playBtn.onclick=()=>{if(wrongMode)playSage(currentCorrect());};
+function next(){i++;if(i>=DATA.length)return finish();check.style.display='block';mount();}
 function finish(){
-  panel.style.display='none';
-  end.style.display='flex';
-  const pct = Math.round((score/DATA.length)*100);
-  scoreText.textContent = `スコア：${score}/${DATA.length}（${pct}%）`;
-
-  let theme = "blue", msgText = "", audio = SR11_14;
-  if(score <= 5){ theme="red"; msgText="ブーリキュラム見てないでしょ！"; audio=SR0_5; }
-  else if(score <= 10){ theme="orange"; msgText="YouTubeばかりじゃなくて、Boo-tube 見よう！"; audio=SR6_10; }
-  else if(score <= 14){ theme="blue"; msgText="いいね！でも満点を目指そう。"; audio=SR11_14; }
-  else { theme="gold"; msgText="あなたは超天才！"; audio=SR15; }
-
-  end.className = `end ${theme}`;
-  endMsg.textContent = msgText;
-  playSafe(audio);
-  if(theme==="gold"){ rainConfetti(); }
-  bigHearts(document.body, 35);
+  panel.style.display='none';end.style.display='flex';
+  scoreText.textContent=`スコア：${score}/${DATA.length}`;
+  endMsg.textContent=score<DATA.length?"Good try!":"Perfect!";
 }
-
-/* ===== FX + Utils ===== */
-function bigHearts(el,count=35){
-  const r=el.getBoundingClientRect(); const x=r.left+r.width/2, y=r.top+r.height/2;
-  for(let k=0;k<count;k++){
-    const h=document.createElement('div'); h.className='heart'; h.textContent='❤';
-    const dx=(Math.random()*window.innerWidth-window.innerWidth/2)*0.3;
-    const dy=(Math.random()*200-100)*0.3;
-    h.style.left=(x+dx)+'px'; h.style.top=(y+dy)+'px';
-    fx.appendChild(h);
-    setTimeout(()=>h.remove(),HEART_MS+200);
-  }
-}
-function hugeSmoke(el,count=18){
-  const r=el.getBoundingClientRect(); const x=r.left+r.width/2, y=r.top+r.height/2;
-  for(let k=0;k<count;k++){
-    const s=document.createElement('div'); s.className='smoke';
-    const a=(Math.random()*Math.PI)-Math.PI/2; const d=Math.random()*260;
-    s.style.left=(x+Math.cos(a)*d)+'px'; s.style.top=(y+Math.sin(a)*d*0.4)+'px';
-    fx.appendChild(s);
-    setTimeout(()=>s.remove(),1600);
-  }
-}
-function rainConfetti(){
-  const colors=[
-    getComputedStyle(document.documentElement).getPropertyValue('--pink').trim() || '#ff7eb9',
-    getComputedStyle(document.documentElement).getPropertyValue('--mint').trim() || '#a6f7b2',
-    getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() || '#7dd3fc',
-    getComputedStyle(document.documentElement).getPropertyValue('--yellow').trim() || '#fff680'
-  ];
-  for(let i=0;i<80;i++){
-    const c=document.createElement('div');
-    c.className='confetti';
-    c.style.background=colors[Math.floor(Math.random()*colors.length)];
-    c.style.left=Math.random()*100+'vw';
-    c.style.animationDelay=(Math.random()*3)+'s';
-    end.appendChild(c);
-  }
-}
-function chipColor(n){
-  const c=["#ff6ec7","#5ee6ff","#ffd166","#8aff80","#c77dff","#fff680","#ff9a8b","#9bffb7","#7cc6ff","#f7a6ff"];
-  return c[n % c.length];
-}
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j=(Math.random()*(i+1))|0;
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function wait(ms){ return new Promise(res=>setTimeout(res,ms)); }
-function playSafe(a){
-  try{ a.pause(); a.currentTime=0; const p=a.play(); if(p&&p.then)p.catch(()=>{}); }
-  catch(e){}
-}
-
-/* Play button handler (appears only in wrong mode) */
-playBtn.addEventListener('click', ()=>{
-  if(!wrongMode) return;
-  const en = currentCorrect();
-  playSentenceAudio(en);
-});
-
 mount();
 </script>
 </body>
