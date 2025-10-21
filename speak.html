@@ -6,6 +6,13 @@
 <title>Booha Speak & Repeat – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+
+<!-- Preload score sounds to avoid cut-offs -->
+<link rel="preload" as="audio" href="assets/audio/0-43.mp3" />
+<link rel="preload" as="audio" href="assets/audio/44-74.mp3" />
+<link rel="preload" as="audio" href="assets/audio/75-99.mp3" />
+<link rel="preload" as="audio" href="assets/audio/100.mp3" />
+
 <style>
 :root{--bg:#0b1530;--ink:#fff;--outline:#ffffff26;--radius:26px;}
 *{box-sizing:border-box;margin:0}
@@ -25,35 +32,24 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
   padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)
 }
 
-/* --- Yellow meter runs BEHIND the words --- */
+/* Sweeping yellow meter (behind words) */
 .sweep{
-  position:absolute;top:0;left:0;height:100%;width:100%;
+  position:absolute;inset:0;height:100%;width:100%;
   transform:translateX(-100%);
   background:linear-gradient(0deg,rgba(255,246,128,.92),rgba(255,246,128,.7));
   mix-blend-mode:screen;opacity:.75;border-radius:6px;
-  z-index:2;pointer-events:none;will-change:transform,opacity;
+  z-index:1;pointer-events:none;will-change:transform,opacity;
 }
+@keyframes sweepAcross { from { transform:translateX(-100%);} to { transform:translateX(0%);} }
+.sweep.run{ animation:sweepAcross var(--dur,4s) linear forwards; }
+
 .en{
   font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;
-  position:relative;z-index:3;
+  position:relative;z-index:5; /* above sweep */
 }
 .en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease, transform .2s ease}
-.en .word.blue{color:#60a5fa;transform:translateY(-8px) scale(1.1);}
+.en .word.blue{color:#60a5fa;transform:translateY(-8px) scale(1.08);} /* pop above sweep */
 .en .word.red{color:#ff5757}
-
-/* Guide bar floats above words */
-.guide{
-  position:absolute;left:0;bottom:10px;height:6px;width:40%;
-  transform:translateX(-150%);
-  background:linear-gradient(90deg, rgba(255,246,128,1) 0%, rgba(255,216,64,1) 100%);
-  box-shadow:0 0 12px rgba(255,246,128,.9), 0 0 24px rgba(255,216,64,.9);
-  border-radius:4px;z-index:4;pointer-events:none;opacity:.95;
-}
-
-@keyframes sweepAcross { from { transform:translateX(-100%);} to { transform:translateX(0%);} }
-@keyframes guideAcross { from { transform:translateX(-150%);} to { transform:translateX(110%);} }
-.sweep.run{ animation:sweepAcross var(--dur,4s) linear forwards; }
-.guide.run{ animation:guideAcross var(--dur,4s) linear forwards; }
 
 /* Hearts */
 .heart{
@@ -64,7 +60,7 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
 100%{transform:translate(-50%,-60px) scale(1.4);opacity:0}}
 
-/* Gold play button */
+/* Gold play button (Sage only on click) */
 .playBtn{
   position:absolute;left:16px;top:50%;transform:translateY(-50%);
   width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;
@@ -83,6 +79,25 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
+
+/* Always-visible rainbow listening circle (centerpiece) */
+.meterWrap{display:flex;justify-content:center;margin:22px 0}
+.meter{position:relative;width:min(64vw,280px);height:min(64vw,280px);display:grid;place-items:center}
+.ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);
+  -webkit-mask:radial-gradient(circle,transparent 60%,black 62%);
+  mask:radial-gradient(circle,transparent 60%,black 62%);
+  animation:rainbowCycle 3s linear infinite
+}
+@keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
+.meterCore{
+  position:absolute;inset:12%;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));
+  display:grid;place-items:center;text-align:center;animation:corePulse 3s ease-in-out infinite
+}
+@keyframes corePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.meterText{font-weight:900;font-size:clamp(18px,6vw,28px)}
 
 .btnRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
 .btn{border:none;border-radius:999px;padding:14px 20px;font-weight:900;font-size:clamp(18px,4vw,22px);cursor:pointer}
@@ -108,19 +123,31 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 <div class="wrap">
   <div class="panel">
     <div class="card">
+      <!-- sweeping meter BEHIND text -->
       <div id="sweep" class="sweep"></div>
-      <button id="playBtn" class="playBtn">▶</button>
-      <div id="guide" class="guide"></div>
+      <!-- play button (Sage only on tap) -->
+      <button id="playBtn" class="playBtn" aria-label="Play sentence audio">▶</button>
+      <!-- sentence -->
       <div id="en" class="en">Press スタート to start</div>
     </div>
+
     <div id="jp" class="jp"></div>
     <div id="hira" class="hira"></div>
+
+    <!-- Always-visible rainbow listening circle -->
+    <div class="meterWrap">
+      <div class="meter">
+        <div class="ring"></div>
+        <div class="meterCore"><div id="meterText" class="meterText">Ready</div></div>
+      </div>
+    </div>
 
     <div class="btnRow">
       <button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
       <button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
       <button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
     </div>
+
     <div id="scoreBox" class="scoreBox" style="display:none"></div>
   </div>
 </div>
@@ -128,7 +155,7 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 <footer>Bryan’s English School</footer>
 
 <script>
-/* ====== DATA ====== */
+/* ====== QUESTIONS (all 15) ====== */
 let ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
 {en:"Why is it important to you?",jp:"あなたにとってなぜ大切ですか。",hira:"(あなた に とって なぜ たいせつ です か)"},
@@ -146,66 +173,232 @@ let ITEMS=[
 {en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ];
+// Shuffle each visit
 ITEMS = ITEMS.sort(()=>Math.random()-0.5);
 
-const enEl=document.getElementById('en');
-const jpEl=document.getElementById('jp');
-const hiraEl=document.getElementById('hira');
-const beginBtn=document.getElementById('beginBtn');
-const retryBtn=document.getElementById('retryBtn');
-const nextBtn=document.getElementById('nextBtn');
-const scoreBox=document.getElementById('scoreBox');
-const playBtn=document.getElementById('playBtn');
-const sweep=document.getElementById('sweep');
-const guide=document.getElementById('guide');
+/* ----- Elements ----- */
+const enEl   = document.getElementById('en');
+const jpEl   = document.getElementById('jp');
+const hiraEl = document.getElementById('hira');
+const beginBtn = document.getElementById('beginBtn');
+const retryBtn = document.getElementById('retryBtn');
+const nextBtn  = document.getElementById('nextBtn');
+const scoreBox = document.getElementById('scoreBox');
+const meterText= document.getElementById('meterText');
+const playBtn  = document.getElementById('playBtn');
+const sweep    = document.getElementById('sweep');
 
+/* ----- Score SFX (pre-warmed) ----- */
+const SCORE_URLS = {
+  low : "assets/audio/0-43.mp3",
+  mid : "assets/audio/44-74.mp3",
+  high: "assets/audio/75-99.mp3",
+  max : "assets/audio/100.mp3"
+};
+// pre-warm into memory/cache
+const _preloads = Object.values(SCORE_URLS).map(u => { const a=new Audio(u); a.preload="auto"; a.load(); return a; });
+
+/* Single SFX channel (prevents overlap & cuts) */
+let sfx = new Audio();
+sfx.preload = "auto";
+sfx.volume = 1;
+sfx.playbackRate = 0.95;
+sfx.preservesPitch = true;
+
+function playSfx(url){
+  return new Promise(resolve=>{
+    try{
+      sfx.pause();
+      sfx.src = url;
+      sfx.currentTime = 0;
+      const onEnd = ()=>{ sfx.removeEventListener('ended', onEnd); resolve(); };
+      sfx.addEventListener('ended', onEnd, { once:true });
+      const go = ()=>{ sfx.play().catch(()=>resolve()); };
+      if (sfx.readyState >= 3) go();
+      else sfx.addEventListener('canplaythrough', go, { once:true });
+      sfx.load();
+    }catch(_){ resolve(); }
+  });
+}
+async function playScoreSound(score){
+  if(score===100) return playSfx(SCORE_URLS.max);
+  if(score>=75)   return playSfx(SCORE_URLS.high);
+  if(score>=44)   return playSfx(SCORE_URLS.mid);
+  return playSfx(SCORE_URLS.low);
+}
+
+/* ----- State ----- */
 let idx=0, listening=false, SR=null, streamAllowed=false;
 
-/* Helpers */
-function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
-function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
+/* ----- Helpers ----- */
+function normalize(s){
+  return s.toLowerCase()
+          .replace(/[’‘´`]/g,"'")
+          .replace(/[^a-z0-9'\s]/g,' ')
+          .replace(/\s+/g,' ')
+          .trim();
+}
+function toSet(s){ return new Set(normalize(s).split(' ').filter(Boolean)); }
 function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
-function playSage(en){if(listening)return;const a=new Audio('./audio/'+stripForFile(en)+'.mp3');a.play().catch(()=>{});}
-function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');}
-function popHeartAt(el){const h=document.createElement('span');h.className='heart';h.textContent='❤';const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';enEl.appendChild(h);setTimeout(()=>h.remove(),900);}
-function markSpoken(spoken){const spokenSet=toSet(spoken);enEl.querySelectorAll('.word').forEach(w=>{const val=normalize(w.textContent);if(spokenSet.has(val)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w);}});}
-function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red');});}
-function keywordScore(target,spoken){const keys=toSet(target),said=toSet(spoken);let hit=0,total=0;keys.forEach(k=>{if(k.length>2){total++;if(said.has(k))hit++;}});return total?Math.round((hit/total)*100):0;}
-function showItem(){const it=ITEMS[idx];mountWords(it.en);jpEl.textContent=it.jp;hiraEl.textContent=it.hira;scoreBox.style.display='none';sweep.classList.remove('run');guide.classList.remove('run');void sweep.offsetWidth;void guide.offsetWidth;}
 
-async function requestMic(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true;}catch(e){alert("マイクが使えません。Chrome でお試しください。");}}
+function playSage(en){
+  // Sage only when clicked (blocked while listening)
+  if(listening) return;
+  const f = './audio/'+stripForFile(en)+'.mp3';
+  const a = new Audio(f);
+  a.preload = 'auto';
+  a.volume = 1;
+  a.playbackRate = 0.95;
+  const go = ()=> a.play().catch(()=>{});
+  if (a.readyState >= 3) go(); else a.addEventListener('canplaythrough', go, { once:true });
+  a.load();
+}
 
+function mountWords(t){
+  enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');
+}
+
+function clearHearts(){
+  enEl.querySelectorAll('.heart').forEach(h=>h.remove());
+}
+function popHeartAt(el){
+  const h=document.createElement('span');h.className='heart';h.textContent='❤';
+  const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
+  h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
+  enEl.appendChild(h);setTimeout(()=>h.remove(),900);
+}
+
+function markSpoken(spoken){
+  const spokenSet = toSet(spoken);
+  enEl.querySelectorAll('.word').forEach(w=>{
+    const val = normalize(w.textContent);
+    if(spokenSet.has(val) && !w.classList.contains('blue')){
+      w.classList.add('blue');           // correct = blue (+ pop)
+      popHeartAt(w);
+    }
+  });
+}
+
+function finalizeColors(){
+  enEl.querySelectorAll('.word').forEach(w=>{
+    if(!w.classList.contains('blue')) w.classList.add('red'); // incorrect = red
+  });
+}
+
+function keywordScore(target,spoken){
+  const keys=toSet(target), said=toSet(spoken);
+  let hit=0, total=0;
+  keys.forEach(k=>{ if(k.length>2){ total++; if(said.has(k)) hit++; } });
+  return total? Math.round((hit/total)*100) : 0;
+}
+
+function resetVisuals(){
+  // stop sweep, clear hearts/colors, hide score
+  sweep.classList.remove('run');
+  void sweep.offsetWidth; // reflow to allow restart
+  clearHearts();
+  enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
+  scoreBox.style.display='none';
+}
+
+function showItem(){
+  const it=ITEMS[idx];
+  mountWords(it.en);
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
+  resetVisuals();
+}
+
+/* ----- Mic perm ----- */
+async function requestMic(){
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t=>t.stop());
+    streamAllowed=true;
+  }catch(e){
+    alert("マイクが使えません。Chrome でお試しください。");
+  }
+}
+
+/* ----- Round flow ----- */
 async function beginRound(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");return;}
-  if(!streamAllowed){await requestMic();if(!streamAllowed)return;}
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");
+    return;
+  }
+  if(!streamAllowed){
+    await requestMic();
+    if(!streamAllowed) return;
+  }
 
-  sweep.style.setProperty('--dur','4s');guide.style.setProperty('--dur','4s');
-  sweep.classList.remove('run');guide.classList.remove('run');void sweep.offsetWidth;void guide.offsetWidth;
-  sweep.classList.add('run');guide.classList.add('run');
+  // Start sweep (4s) and lock controls
+  sweep.style.setProperty('--dur','4s');
+  sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run');
 
-  listening=true;playBtn.disabled=true;
+  listening=true;
+  playBtn.disabled=true;
+  meterText.textContent='Listening…';
 
-  SR=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
-  SR.lang='en-US';SR.continuous=true;SR.interimResults=true;
+  // Start recognition (keeps auto-restarting while listening)
+  SR = new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+  SR.lang='en-US';
+  SR.continuous=true;
+  SR.interimResults=true;
+
   let heard="";
-  SR.onresult=(e)=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";}heard=txt.trim();markSpoken(heard);}
-  SR.onend=()=>{if(listening){try{SR.start();}catch(_){}}}
-  try{SR.start();}catch(_){}
+  SR.onresult = (e)=>{
+    let txt=""; for(let i=e.resultIndex;i<e.results.length;i++){ txt+=e.results[i][0].transcript+" "; }
+    heard=txt.trim();
+    markSpoken(heard); // live detection
+  };
+  SR.onend = ()=>{ if(listening){ try{ SR.start(); }catch(_){} } };
 
+  try{ SR.start(); }catch(_){}
+
+  // listen for fixed duration (sync to sweep)
   await new Promise(r=>setTimeout(r,4000));
-  listening=false;try{SR.stop();}catch(_){}
+
+  listening=false;
+  meterText.textContent='Ready';
+  try{ SR.stop(); }catch(_){}
+
   finalizeColors();
+
   const s=keywordScore(ITEMS[idx].en,heard);
-  scoreBox.textContent="スコア："+s+"％";scoreBox.style.display='block';
+  scoreBox.textContent="スコア："+s+"％";
+  scoreBox.style.display='block';
+
+  // results sfx (preloaded)
+  await playScoreSound(s);
+
+  // gate buttons
   nextBtn.style.display=(s>=75)?'inline-block':'none';
   retryBtn.style.display=(s<75)?'inline-block':'none';
   playBtn.disabled=false;
 }
 
-beginBtn.onclick=()=>{showItem();beginRound();};
-retryBtn.onclick=()=>beginRound();
-nextBtn.onclick=()=>{idx++;if(idx>=ITEMS.length){enEl.textContent="Great work today!";jpEl.textContent="よくできました！";hiraEl.textContent="";nextBtn.style.display='none';retryBtn.style.display='none';beginBtn.style.display='none';return;}showItem();};
-playBtn.onclick=()=>playSage(ITEMS[idx].en);
+/* ----- Buttons ----- */
+beginBtn.onclick=()=>{ showItem(); beginRound(); };
+retryBtn.onclick =()=>{ showItem(); beginRound(); }; // reset then re-listen
+nextBtn.onclick  =()=>{
+  idx++;
+  if(idx>=ITEMS.length){
+    enEl.textContent="Great work today!";
+    jpEl.textContent="よくできました！";
+    hiraEl.textContent="";
+    nextBtn.style.display='none';
+    retryBtn.style.display='none';
+    beginBtn.style.display='none';
+    meterText.textContent='Ready';
+    sweep.classList.remove('run');
+    return;
+  }
+  showItem();
+};
+playBtn.onclick =()=> playSage(ITEMS[idx].en);
+
+/* ----- Init ----- */
+// shuffle already applied above
 showItem();
 </script>
 </body>
