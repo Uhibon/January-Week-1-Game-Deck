@@ -8,25 +8,17 @@
 
 <style>
 :root{
-  --dark:#0b1530;
-  --ink:#ffffff;
-  --green:#22c55e;
-  --red:#e53935;
-  --outline:#ffffffcc;
-  --check:#22c55e;
-  --checkGlow:0 0 12px rgba(34,197,94,.9), 0 0 28px rgba(34,197,94,.5);
-  --gold:#ffd166;
-  --cuteBlue:#60a5fa;
-  --cuteBlueGlow:0 0 14px rgba(96,165,250,.9), 0 0 36px rgba(96,165,250,.55);
-  --cardH: 140px;
-  --actionsH: 72px;
+  --dark:#0b1530; --ink:#ffffff; --green:#22c55e; --red:#e53935;
+  --outline:#ffffffcc; --check:#22c55e;
+  --checkGlow:0 0 12px rgba(34,197,94,.9),0 0 28px rgba(34,197,94,.5);
+  --gold:#ffd166; --cuteBlue:#60a5fa;
+  --cuteBlueGlow:0 0 14px rgba(96,165,250,.9),0 0 36px rgba(96,165,250,.55);
+  --cardH:140px; --actionsH:72px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  min-height:100%;
-  background:var(--dark);
-  color:var(--ink);
+  min-height:100%; background:var(--dark); color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
   overscroll-behavior-y:none;
@@ -34,13 +26,12 @@ body{
 header{padding:20px 16px 10px;text-align:center}
 header h1{
   font-family:'Cinzel',serif;letter-spacing:.5px;
-  font-size:clamp(1.8rem,5.2vw,2.6rem);
-  opacity:.95
+  font-size:clamp(1.8rem,5.2vw,2.6rem);opacity:.95;
 }
 header h2{
   font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;
   font-size:clamp(2.0rem,6.2vw,3rem);
-  text-shadow:0 0 10px rgba(255,255,255,.12)
+  text-shadow:0 0 10px rgba(255,255,255,.12);
 }
 .subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
 .subtitle-stack .en::after{content:" / "; opacity:.8}
@@ -48,7 +39,7 @@ header h2{
   .subtitle-stack{flex-direction:column; gap:.1rem}
   .subtitle-stack .en::after{content:""}
 }
-footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif;}
+footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif}
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 24px}
 .page.active{display:block}
 .round-viewport{width:100%;}
@@ -71,9 +62,8 @@ body.draggingTouch .round-wrap{touch-action:none;}
     position:sticky;bottom:0;z-index:5;height:var(--actionsH);
     display:flex;align-items:center;justify-content:center;
     padding:8px 0 calc(env(safe-area-inset-bottom));
-    background:linear-gradient(180deg,transparent,rgba(11,21,48,.28) 40%,rgba(11,21,48,.55));
-    backdrop-filter:blur(2px);
-    margin-top:6px;
+    background:linear-gradient(180deg,transparent,rgba(11,21,48,.28)40%,rgba(11,21,48,.55));
+    backdrop-filter:blur(2px);margin-top:6px;
   }
 }
 .card{
@@ -81,11 +71,22 @@ body.draggingTouch .round-wrap{touch-action:none;}
   display:flex;align-items:center;justify-content:center;text-align:center;
   font-size:clamp(1.4rem,4.6vw,2.4rem);font-weight:700;line-height:1.2;
   user-select:none;transition:transform .15s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease;
-  word-break:break-word;
+  word-break:break-word;position:relative;
 }
 .card.en{
   color:#000;font-weight:1000;font-size:clamp(1.8rem,5.8vw,3rem);
   letter-spacing:-.01em;text-transform:none;word-break:keep-all;overflow-wrap:normal;hyphens:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.play-btn{
+  width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,#ffd166 0%,#fbbf24 40%,#b45309 100%);
+  display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:1rem;
+  cursor:pointer;box-shadow:0 0 10px rgba(255,215,100,.6),0 0 30px rgba(255,215,100,.3);
+  animation:shimmer 2.5s infinite;flex-shrink:0;
+}
+@keyframes shimmer{
+  0%,100%{filter:brightness(1);}
+  50%{filter:brightness(1.8);}
 }
 .card.jp{
   background:transparent;border:3px dashed var(--outline);color:var(--ink);
@@ -99,9 +100,7 @@ body.draggingTouch .round-wrap{touch-action:none;}
 .card.combined .jpTxt{font-size:.7em;opacity:.98}
 .card.correct{background:var(--green)!important;color:#062a12!important;border:0!important}
 .card.wrong{background:var(--red)!important;color:#fff!important;border:0!important;animation:shake .45s}
-@keyframes shake{
-  0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}
-}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 .actions{display:flex;gap:14px;justify-content:center;margin-top:18px}
 .btn{border:0;border-radius:28px;padding:12px 34px;font-weight:800;font-size:1.1rem;cursor:pointer;transition:transform .08s ease,box-shadow .2s ease,filter .2s ease;touch-action:manipulation;}
 .btn:active{transform:translateY(1px)}
@@ -114,11 +113,11 @@ body.draggingTouch .round-wrap{touch-action:none;}
 .orangeGlow{background:#a34f00;box-shadow:inset 0 0 60px 30px #ff9e2b}
 .blueGlow{background:#0d2b7a;box-shadow:inset 0 0 60px 30px #2b7bff}
 .goldGlow{background:#725c00;box-shadow:inset 0 0 80px 40px #ffd166}
-.confetti{position:fixed;width:12px;height:12px;border-radius:50%;top:-12px;left:0;animation:fall 1.2s linear forwards;pointer-events:none;z-index:10;}
+.confetti{position:fixed;width:12px;height:12px;border-radius:50%;top:-12px;left:0;animation:fall 1.2s linear forwards;pointer-events:none;z-index:10}
 @keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
 .bit{position:fixed;width:14px;height:14px;border-radius:3px;pointer-events:none;z-index:20;animation:pop 760ms ease-out forwards;}
 @keyframes pop{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0.9) rotate(540deg)}}
-.poof{position:fixed;width:40px;height:40px;border-radius:50%;background:radial-gradient(closest-side,rgba(74,222,128,.97)0%,rgba(34,197,94,.7)55%,rgba(34,197,94,0)70%);filter:blur(2px);pointer-events:none;z-index:19;animation:puff 950ms ease-out forwards;}
+.poof{position:fixed;width:40px;height:40px;border-radius:50%;background:radial-gradient(closest-side, rgba(74,222,128,.97)0%, rgba(34,197,94,.7)55%, rgba(34,197,94,0)70%);filter:blur(2px);pointer-events:none;z-index:19;animation:puff 950ms ease-out forwards;}
 @keyframes puff{0%{opacity:.98;transform:translate(-50%,-50%) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
 @keyframes stripesV{from{background-position:0 0}to{background-position:0 var(--cardH)}}
 .sv{background-size:100% var(--cardH);animation:stripesV 3.2s linear infinite;}
@@ -128,33 +127,23 @@ body.draggingTouch .round-wrap{touch-action:none;}
 .sv4{background-image:repeating-linear-gradient(0deg,#fca5a5 0 18px,#86efac 18px 36px,#93c5fd 36px 54px);}
 .sv5{background-image:repeating-linear-gradient(0deg,#f9a8d4 0 18px,#fef08a 18px 36px,#6ee7b7 36px 54px);}
 .drag-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%);will-change:transform;width:46vw;max-width:420px;height:var(--cardH);display:flex;align-items:center;justify-content:center;border-radius:24px;font-weight:1000;color:#000;}
-@media (min-width:701px){.drag-ghost{width:360px;}}
+@media (min-width:701px){.drag-ghost{width:360px}}
 .hoverTarget{box-shadow:0 0 0 4px rgba(255,255,255,.25),0 0 20px rgba(255,255,255,.25);border-color:#fff!important;}
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 </style>
 </head>
-<body>
 
+<body>
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>GAMES &amp; QUIZZES</h2>
-  <div class="subtitle-stack">
-    <div class="en">January Week 1 - Vocabulary</div>
-    <div class="jp">１月第１週 - 語彙</div>
-  </div>
+  <div class="subtitle-stack"><div class="en">January Week 1 - Vocabulary</div><div class="jp">１月第１週 - 語彙</div></div>
   <hr class="sep">
 </header>
 
 <section id="page-round" class="page active">
-  <div class="round-viewport">
-    <div class="round-wrap" id="dragArea">
-      <div id="col-en" class="col"></div>
-      <div id="col-jp" class="col"></div>
-    </div>
-  </div>
-  <div class="actions">
-    <button id="checkBtn" class="btn btn-green" disabled>CHECK</button>
-  </div>
+  <div class="round-viewport"><div class="round-wrap"><div id="col-en" class="col"></div><div id="col-jp" class="col"></div></div></div>
+  <div class="actions"><button id="checkBtn" class="btn btn-green" disabled>CHECK</button></div>
 </section>
 
 <section id="page-results" class="page">
@@ -164,6 +153,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   </div>
   <div class="actions">
     <button id="playAgain" class="btn btn-green">もう一度</button>
+    <button onclick="window.location.href='index.html'" class="btn btn-green">Back to Menu</button>
   </div>
 </section>
 
@@ -177,268 +167,72 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
 <script>
-/* DATA */
-const MASTER = [
-  {en:"goal",jp:"目標",hira:"もくひょう"},
-  {en:"plan",jp:"計画",hira:"けいかく"},
-  {en:"future",jp:"未来",hira:"みらい"},
-  {en:"dream",jp:"夢",hira:"ゆめ"},
-  {en:"challenge",jp:"挑戦",hira:"ちょうせん"},
-  {en:"try",jp:"挑戦する",hira:"ちょうせん する"},
-  {en:"change",jp:"変える",hira:"かえる"},
-  {en:"habit",jp:"習慣",hira:"しゅうかん"},
-  {en:"exercise",jp:"運動",hira:"うんどう"},
-  {en:"study",jp:"勉強",hira:"べんきょう"},
-  {en:"learn",jp:"学ぶ",hira:"まなぶ"},
-  {en:"practice",jp:"練習",hira:"れんしゅう"},
-  {en:"success",jp:"成功",hira:"せいこう"},
-  {en:"focus",jp:"集中",hira:"しゅうちゅう"},
-  {en:"motivation",jp:"やる気",hira:"やるき"}
+const MASTER=[
+  {en:"goal",jp:"目標",hira:"もくひょう"},{en:"plan",jp:"計画",hira:"けいかく"},{en:"future",jp:"未来",hira:"みらい"},
+  {en:"dream",jp:"夢",hira:"ゆめ"},{en:"challenge",jp:"挑戦",hira:"ちょうせん"},{en:"try",jp:"挑戦する",hira:"ちょうせん する"},
+  {en:"change",jp:"変える",hira:"かえる"},{en:"habit",jp:"習慣",hira:"しゅうかん"},{en:"exercise",jp:"運動",hira:"うんどう"},
+  {en:"study",jp:"勉強",hira:"べんきょう"},{en:"learn",jp:"学ぶ",hira:"まなぶ"},{en:"practice",jp:"練習",hira:"れんしゅう"},
+  {en:"success",jp:"成功",hira:"せいこう"},{en:"focus",jp:"集中",hira:"しゅうちゅう"},{en:"motivation",jp:"やる気",hira:"やるき"}
 ];
-
-/* 🎧 Local Sage audio playback */
-function playSage(word){
-  if(!word) return;
-  const audio = new Audio(`audio/${word.toLowerCase()}.mp3`);
-  audio.volume = 1.0;
-  audio.play().catch(()=>{});
-}
-
-/* 🎧 Preload all audio quietly for instant playback */
-window.addEventListener('DOMContentLoaded',()=>{
-  MASTER.forEach(item=>{
-    const a = new Audio(`audio/${item.en.toLowerCase()}.mp3`);
-    a.preload = 'auto';
-    a.load();
-  });
-});
-
-/* State */
-let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[], audioUnlocked=false;
-
-/* Helpers */
-const $ = s=>document.querySelector(s);
+function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{});}
+window.addEventListener("DOMContentLoaded",()=>{MASTER.forEach(i=>{const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);a.preload="auto";a.load();});});
+const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
-function playSfx(id){
-  const src=document.getElementById(id); if(!src) return;
-  const a=src.cloneNode(true); a.setAttribute('playsinline',''); a.currentTime=0; a.volume=src.volume??1;
-  document.body.appendChild(a); a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
-}
-function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
-
-/* Effects */
-function burstConfettiAt(el,count=44){
-  const {x,y}=centerOf(el);
-  for(let i=0;i<count;i++){
-    const b=document.createElement('div'); b.className='bit';
-    b.style.left=x+'px'; b.style.top=y+'px';
-    const ang=Math.random()*2*Math.PI, dist=80+Math.random()*130;
-    b.style.setProperty('--dx', Math.cos(ang)*dist+'px');
-    b.style.setProperty('--dy', Math.sin(ang)*dist-10+'px');
-    b.style.background=`hsl(${Math.random()*360},100%,60%)`;
-    document.body.appendChild(b); setTimeout(()=>b.remove(),820);
-  }
-}
-function fartPoofAt(el){
-  const {x,y}=centerOf(el);
-  const p=document.createElement('div'); p.className='poof';
-  p.style.left=x+'px'; p.style.top=y+'px';
-  document.body.appendChild(p); setTimeout(()=>p.remove(),980);
-}
-
-/* Mobile audio unlock */
-function unlockAudioOnce(){
-  if(audioUnlocked) return;
-  ["s_ding","s_fart","s_r05","s_r610","s_r1114","s_r15"].forEach(id=>{
-    const el=document.getElementById(id);
-    try{ el.volume=1.0; el.currentTime=0; el.play().then(()=>el.pause()).catch(()=>{});}catch(e){}
-  });
-  audioUnlocked=true;
-}
-window.addEventListener('pointerdown', unlockAudioOnce, {once:true});
-
-/* iOS pull-to-refresh guard */
-function installPullToRefreshGuard(){
-  const scroller=document.querySelector('.round-viewport'); if(!scroller)return;
-  let startY=0,startTop=0;
-  scroller.addEventListener('touchstart',e=>{
-    if(e.touches.length!==1)return;
-    startY=e.touches[0].clientY; startTop=scroller.scrollTop;
-  },{passive:true});
-  scroller.addEventListener('touchmove',e=>{
-    if(e.touches.length!==1)return;
-    const y=e.touches[0].clientY,dy=y-startY;
-    const atTop=scroller.scrollTop<=0;
-    const atBottom=scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-1;
-    if((atTop&&dy>0)||(atBottom&&dy<0)){e.preventDefault();}
-  },{passive:false});
-}
-
-/* Init */
-function initGame(){
-  totalScore=0; roundIndex=0; document.body.className='';
-  $("#page-results").classList.remove('active'); $("#page-round").classList.add('active');
-  const shuffled=shuffle([...MASTER]);
-  rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
-  loadRound();
-}
-
-/* Combine helper */
+function playSfx(id){const src=document.getElementById(id);if(!src)return;const a=src.cloneNode(true);a.currentTime=0;document.body.appendChild(a);a.play().catch(()=>{});setTimeout(()=>a.remove(),1800);}
+function centerOf(el){const r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2};}
+function burstConfettiAt(el,c=44){const{ x,y}=centerOf(el);for(let i=0;i<c;i++){const b=document.createElement("div");b.className="bit";b.style.left=x+"px";b.style.top=y+"px";const ang=Math.random()*2*Math.PI,dist=80+Math.random()*130;b.style.setProperty("--dx",Math.cos(ang)*dist+"px");b.style.setProperty("--dy",Math.sin(ang)*dist-10+"px");b.style.background=`hsl(${Math.random()*360},100%,60%)`;document.body.appendChild(b);setTimeout(()=>b.remove(),820);}}
+function fartPoofAt(el){const{ x,y}=centerOf(el);const p=document.createElement("div");p.className="poof";p.style.left=x+"px";p.style.top=y+"px";document.body.appendChild(p);setTimeout(()=>p.remove(),980);}
+let rounds=[],roundIndex=0,totalScore=0,connections={},jpOrder=[];
 function combineIntoJP(jpCard,enText){
-  if(!jpCard||!jpCard.dataset)return;
+  if(!jpCard)return;
   if(jpCard.dataset.connected){
     const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
-    if(old) old.style.visibility='visible';
+    if(old)old.style.visibility="visible";
   }
+  const oldJP=document.querySelector(`.card.jp[data-connected="${enText}"]`);
+  if(oldJP){oldJP.classList.remove("combined","matchedBlue");oldJP.innerHTML=`${oldJP.dataset.jp}\n(${oldJP.dataset.hira})`;oldJP.dataset.connected="";}
   const enCard=document.querySelector(`.en[data-en="${enText}"]`);
-  if(enCard) enCard.style.visibility='hidden';
-  const jp=jpCard.dataset.jp,hira=jpCard.dataset.hira;
-  jpCard.classList.add('combined','matchedBlue'); jpCard.classList.remove('jp');
-  jpCard.innerHTML=`<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
-  jpCard.dataset.connected=enText; connections[jp]=enText;
+  if(enCard)enCard.style.visibility="hidden";
+  jpCard.classList.add("combined","matchedBlue");
+  jpCard.innerHTML=`<div class="enTxt">${enText}</div><div class="jpTxt">${jpCard.dataset.jp}（${jpCard.dataset.hira}）</div>`;
+  jpCard.dataset.connected=enText;connections[jpCard.dataset.jp]=enText;
   $("#checkBtn").disabled=Object.keys(connections).length!==5;
 }
-
-/* Build round */
 function loadRound(){
-  connections={};
-  const set=rounds[roundIndex],colEn=$("#col-en"),colJp=$("#col-jp");
-  colEn.innerHTML=""; colJp.innerHTML="";
-  const stripeClasses=shuffle(['sv1','sv2','sv3','sv4','sv5']);
+  connections={};const set=rounds[roundIndex];const colEn=$("#col-en"),colJp=$("#col-jp");
+  colEn.innerHTML="";colJp.innerHTML="";
+  const stripes=shuffle(['sv1','sv2','sv3','sv4','sv5']);
   shuffle([...set]).forEach((item,idx)=>{
-    const c=document.createElement('div');
-    c.className=`card en sv ${stripeClasses[idx%stripeClasses.length]}`;
-    c.draggable=true;
-    c.textContent=item.en.toLowerCase();
-    c.dataset.en=item.en.toLowerCase();
-    // 🎧 Tap to play local Sage voice
-    c.addEventListener('pointerdown',e=>{
-      if(e.pointerType==='touch'||e.pointerType==='mouse'){playSage(item.en);}
-    });
-    c.addEventListener('dragstart',e=>{
-      e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');
-    });
-    c.addEventListener('dragend',()=>c.classList.remove('dragging'));
+    const c=document.createElement("div");
+    c.className=`card en sv ${stripes[idx%stripes.length]}`;
+    c.draggable=true;c.dataset.en=item.en.toLowerCase();
+    const play=document.createElement("div");
+    play.className="play-btn";
+    play.innerHTML="▶";
+    play.style.animationDelay=`${idx*0.6}s`;
+    play.addEventListener("click",e=>{e.stopPropagation();playSage(item.en);});
+    const label=document.createElement("div");label.textContent=item.en.toLowerCase();
+    c.appendChild(play);c.appendChild(label);
+    c.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/en",c.dataset.en);c.classList.add("dragging");});
+    c.addEventListener("dragend",()=>c.classList.remove("dragging"));
     colEn.appendChild(c);
   });
   shuffle([...set]).forEach(item=>{
-    const c=document.createElement('div');
-    c.className='card jp';
-    c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
+    const c=document.createElement("div");
+    c.className="card jp";c.dataset.jp=item.jp;c.dataset.hira=item.hira;c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
-    c.addEventListener('dragover',e=>e.preventDefault());
-    c.addEventListener('drop',e=>{
-      e.preventDefault();
-      const en=e.dataTransfer.getData('text/en'); if(!en)return;
-      combineIntoJP(c,en);
-    });
+    c.addEventListener("dragover",e=>e.preventDefault());
+    c.addEventListener("drop",e=>{e.preventDefault();const en=e.dataTransfer.getData("text/en");if(!en)return;combineIntoJP(c,en);});
+    c.addEventListener("click",()=>{if(c.dataset.connected){const oldEn=document.querySelector(`.en[data-en="${c.dataset.connected}"]`);if(oldEn)oldEn.style.visibility="visible";c.classList.remove("combined","matchedBlue");c.innerHTML=`${c.dataset.jp}\n(${c.dataset.hira})`;c.dataset.connected="";delete connections[c.dataset.jp];$("#checkBtn").disabled=Object.keys(connections).length!==5;}});
     colJp.appendChild(c);
   });
-  setupTouchDrag();
-  jpOrder=[...colJp.querySelectorAll('[data-jp]')];
+  jpOrder=[...colJp.querySelectorAll("[data-jp]")];
   $("#checkBtn").disabled=true;
 }
-
-/* Touch drag (mobile) */
-function setupTouchDrag(){
-  const enCards=[...document.querySelectorAll('.card.en')];
-  let ghost=null,active=null,hoverJP=null;
-  let startX=0,startY=0,dragging=false,pressTimer=null;
-  const LONG_PRESS_MS=220,MOVE_THRESH=12;
-  function makeGhost(fromCard){
-    const g=fromCard.cloneNode(true);
-    g.className=g.className.replace(/\bcard\b/,'').trim();
-    g.classList.add('drag-ghost');
-    const cs=getComputedStyle(fromCard);
-    g.style.backgroundImage=cs.backgroundImage; g.style.backgroundSize=cs.backgroundSize; g.style.backgroundPosition=cs.backgroundPosition;
-    document.body.appendChild(g); return g;
-  }
-  function beginDrag(e){if(dragging||!active)return; dragging=true; try{active.setPointerCapture(e.pointerId);}catch(_){}
-    document.body.classList.add('draggingTouch'); ghost=makeGhost(active); moveGhost(e);}
-  function pointerDown(e){
-    if(e.pointerType!=='touch'&&e.pointerType!=='pen')return;
-    active=e.currentTarget; startX=e.clientX; startY=e.clientY; dragging=false;
-    clearTimeout(pressTimer); pressTimer=setTimeout(()=>beginDrag(e),LONG_PRESS_MS);
-  }
-  function pointerMove(e){
-    if(!active)return;
-    const dx=Math.abs(e.clientX-startX),dy=Math.abs(e.clientY-startY);
-    if(!dragging&&(dy>dx+8||dx+dy>MOVE_THRESH)){clearTimeout(pressTimer);}
-    if(!dragging&&(dx>dy+10)&&(dx+dy>MOVE_THRESH)){beginDrag(e);}
-    if(dragging){moveGhost(e);e.preventDefault();}
-  }
-  function moveGhost(e){
-    if(!ghost)return;
-    ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    const cand=el&&el.closest&&el.closest('[data-jp]');
-    if(cand!==hoverJP){if(hoverJP)hoverJP.classList.remove('hoverTarget'); hoverJP=cand; if(hoverJP)hoverJP.classList.add('hoverTarget');}
-  }
-  function endDrag(e){
-    clearTimeout(pressTimer);
-    if(!active)return;
-    if(dragging){
-      if(hoverJP)hoverJP.classList.remove('hoverTarget');
-      if(ghost){
-        const el=document.elementFromPoint(e.clientX,e.clientY);
-        const target=el&&el.closest&&el.closest('[data-jp]');
-        if(target){combineIntoJP(target,active.dataset.en);}
-        ghost.remove(); ghost=null;
-      }
-      document.body.classList.remove('draggingTouch');
-    }
-    try{active.releasePointerCapture&&active.releasePointerCapture(e.pointerId);}catch(_){}
-    active=null; hoverJP=null; dragging=false;
-  }
-  enCards.forEach(c=>{c.addEventListener('pointerdown',pointerDown,{passive:true});});
-  window.addEventListener('pointermove',pointerMove,{passive:false});
-  window.addEventListener('pointerup',endDrag,{passive:true});
-  window.addEventListener('pointercancel',endDrag,{passive:true});
-}
-
-/* Check & results */
-$("#checkBtn").addEventListener('click',()=>{
-  $("#checkBtn").disabled=true; let i=0;
-  const step=setInterval(()=>{
-    if(i>=jpOrder.length){clearInterval(step);
-      setTimeout(()=>{roundIndex++; if(roundIndex<3){loadRound();}else{showResults();}},900); return;}
-    const card=jpOrder[i],jp=card.dataset.jp,chosen=card.dataset.connected||"";
-    const correct=rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
-    card.classList.remove('matchedBlue');
-    if(chosen&&chosen===correct){card.classList.remove('wrong');card.classList.add('correct','locked');playSfx('s_ding');burstConfettiAt(card,44);totalScore++;}
-    else{card.classList.remove('correct');card.classList.add('wrong');playSfx('s_fart');fartPoofAt(card);}
-    i++;
-  },850);
-});
-
-function showResults(){
-  $("#page-round").classList.remove('active'); $("#page-results").classList.add('active');
-  const pct=Math.round((totalScore/15)*100);
-  const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");
-  let bg='blueGlow',msg='いいね！あと少しでパーフェクト！',snd=$("#s_r1114");
-  if(totalScore<=5){bg='redGlow';msg='ブーリキュラム見てないでしょ！';snd=$("#s_r05");}
-  else if(totalScore<=10){bg='orangeGlow';msg='YouTube見すぎ！ブーリキュラムもやろう！';snd=$("#s_r610");}
-  else if(totalScore===15){bg='goldGlow';msg='すごい！あなたは地球で一番頭がいい！';snd=$("#s_r15");}
-  document.body.className=bg; msgEl.textContent=msg; scoreEl.textContent=`${totalScore}/15（${pct}%）`;
-  try{snd.currentTime=0; snd.play();}catch(e){}
-  if(totalScore===15){
-    for(let i=0;i<160;i++){
-      setTimeout(()=>{
-        const c=document.createElement('div');
-        c.className='confetti';
-        c.style.left=(Math.random()*100)+'vw';
-        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
-        c.style.animationDuration=(0.9+Math.random()*0.9)+'s';
-        document.body.appendChild(c);
-        setTimeout(()=>c.remove(),1900);
-      },i*10);
-    }
-  }
-}
-$("#playAgain").addEventListener('click',initGame);
-
-/* Start */
-installPullToRefreshGuard();
+function initGame(){totalScore=0;roundIndex=0;document.body.className="";$("#page-results").classList.remove("active");$("#page-round").classList.add("active");const shuffled=shuffle([...MASTER]);rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];loadRound();}
+$("#checkBtn").addEventListener("click",()=>{ $("#checkBtn").disabled=true;let i=0;const step=setInterval(()=>{if(i>=jpOrder.length){clearInterval(step);setTimeout(()=>{roundIndex++;if(roundIndex<3){loadRound();}else{showResults();}},900);return;}const card=jpOrder[i],jp=card.dataset.jp,chosen=card.dataset.connected||"";const correct=rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();card.classList.remove("matchedBlue");if(chosen&&chosen===correct){card.classList.add("correct","locked");playSfx("s_ding");burstConfettiAt(card,44);totalScore++;}else{card.classList.add("wrong");playSfx("s_fart");fartPoofAt(card);}i++;},850);});
+function showResults(){ $("#page-round").classList.remove("active");$("#page-results").classList.add("active");const pct=Math.round((totalScore/15)*100);const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");let bg="blueGlow",msg="いいね！あと少しでパーフェクト！",snd=$("#s_r1114");if(totalScore<=5){bg="redGlow";msg="ブーリキュラム見てないでしょ！";snd=$("#s_r05");}else if(totalScore<=10){bg="orangeGlow";msg="YouTube見すぎ！ブーリキュラムもやろう！";snd=$("#s_r610");}else if(totalScore===15){bg="goldGlow";msg="すごい！あなたは地球で一番頭がいい！";snd=$("#s_r15");}document.body.className=bg;msgEl.textContent=msg;scoreEl.textContent=`${totalScore}/15（${pct}%）`;try{snd.currentTime=0;snd.play();}catch(e){}if(totalScore===15){for(let i=0;i<160;i++){setTimeout(()=>{const c=document.createElement("div");c.className="confetti";c.style.left=(Math.random()*100)+"vw";c.style.background=`hsl(${Math.random()*360},100%,60%)`;c.style.animationDuration=(0.9+Math.random()*0.9)+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),1900);},i*10);}}}
+$("#playAgain").addEventListener("click",initGame);
 initGame();
 </script>
 </body>
