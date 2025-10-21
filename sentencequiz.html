@@ -45,7 +45,7 @@ background-size:100% 600px;animation:stripeSlide 18s linear infinite;}
 
 /* play button */
 .playBtn{
-  position:absolute;left:-8px;top:50%;transform:translate(-100%,-50%);
+  position:absolute;left:12px;top:12px;
   width:58px;height:58px;border:none;border-radius:50%;
   background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
   box-shadow:0 0 12px rgba(255,215,64,.6),0 0 18px rgba(255,215,64,.9);
@@ -109,7 +109,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   <div id="hira" class="hira"></div>
   <div id="bank" class="wordbank"></div>
 
-  <div style="display:flex;align-items:center;gap:12px;">
+  <div style="position:relative;">
     <button id="playBtn" class="playBtn" title="Play"></button>
     <div id="sentence" class="sentence"></div>
   </div>
@@ -160,7 +160,6 @@ const DATA=[
 const SOK=new Audio("assets/audio/sugoi.mp3");
 const SBAD=new Audio("assets/audio/yada.mp3");
 let i=0,score=0,wrongMode=false;
-
 const jp=qs('#jp'),hira=qs('#hira'),bank=qs('#bank'),sent=qs('#sentence');
 const check=qs('#checkBtn'),okWrap=qs('#okWrap'),okBtn=qs('#okBtn'),nextWrap=qs('#nextWrap'),nextBtn=qs('#nextBtn');
 const playBtn=qs('#playBtn'),progress=qs('#progress'),fx=qs('#fx'),panel=qs('#panel'),end=qs('#end'),scoreText=qs('#scoreText'),endMsg=qs('#endMsg');
@@ -194,7 +193,7 @@ function mount(){
 function currentBuilt(){return [...sent.children].map(e=>e.textContent).join(' ').trim();}
 function currentCorrect(){return DATA[i].en.trim();}
 function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".mp3";}
-function playSage(en){const a=new Audio(filename(en));a.volume=1;playSafe(a);}
+function playSage(en,onEnd){const a=new Audio(filename(en));a.volume=1;a.onended=onEnd;playSafe(a);}
 function playSafe(a){try{a.pause();a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});}catch(e){}}
 function bigHearts(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
 for(let k=0;k<3;k++){const h=document.createElement('div');h.className='heart';h.textContent='❤';
@@ -210,14 +209,15 @@ check.onclick=()=>{
   if(built===correct){
     if(!wrongMode){
       score++;playSafe(SOK);bigHearts(sent);
-      setTimeout(()=>{playSage(correct);check.style.display='none';nextWrap.style.display='block';},1600);
+      // Wait for sugoi sound + hearts before Sage
+      setTimeout(()=>playSage(correct,()=>{nextWrap.style.display='block';check.style.display='none';}),1800);
     }else{
       okBtn.textContent="Next";okBtn.disabled=false;
     }
   }else{
     wrongMode=true;playSafe(SBAD);hugeSmoke(sent);
     playBtn.classList.add('show');
-    // Send all chips back to wordbank
+    // Send all chips back
     [...sent.children].forEach(chip=>bank.appendChild(chip));
     check.style.display='none';okWrap.style.display='block';okBtn.disabled=true;
   }
