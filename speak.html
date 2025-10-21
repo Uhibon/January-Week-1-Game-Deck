@@ -21,20 +21,44 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
-.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:3}
+.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:4}
 .en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease}
 .en .word.blue{color:#60a5fa}
 .en .word.red{color:#ff5757}
-.sweep{position:absolute;top:0;left:0;height:100%;width:0;
-background:rgba(255,246,128,.85);mix-blend-mode:screen;
-border-radius:6px;z-index:2;pointer-events:none;}
-.heart{position:absolute;left:0;top:0;transform:translate(-50%,0);
-font-size:22px;color:#ff7eb9;opacity:0;animation:heartUp .9s ease-out forwards}
+
+/* --- Yellow meter & reading guide (Safari-friendly keyframes) --- */
+.sweep{
+  position:absolute;top:0;left:0;height:100%;width:100%;
+  transform:translateX(-100%);
+  background:linear-gradient(0deg, rgba(255,246,128,.92), rgba(255,246,128,.7));
+  mix-blend-mode:screen;opacity:.9; /* bold + unmistakable */
+  border-radius:6px;z-index:5;pointer-events:none;
+  will-change:transform, opacity;
+}
+.guide{
+  position:absolute;left:0;bottom:10px;height:6px;width:40%;
+  transform:translateX(-150%);
+  background:linear-gradient(90deg, rgba(255,246,128,1) 0%, rgba(255,216,64,1) 100%);
+  box-shadow:0 0 12px rgba(255,246,128,.9), 0 0 24px rgba(255,216,64,.9);
+  border-radius:4px;z-index:6;pointer-events:none;opacity:.95;
+}
+@keyframes sweepAcross { from { transform:translateX(-100%);} to { transform:translateX(0%);} }
+@keyframes guideAcross { from { transform:translateX(-150%);} to { transform:translateX(110%);} }
+.sweep.run{ animation:sweepAcross var(--dur,4s) linear forwards; }
+.guide.run{ animation:guideAcross var(--dur,4s) linear forwards; }
+
+/* Hearts must be on top of meter */
+.heart{
+  position:absolute;left:0;top:0;transform:translate(-50%,0);
+  font-size:22px;color:#ff7eb9;opacity:0;z-index:7;
+  animation:heartUp .9s ease-out forwards;
+}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
 100%{transform:translate(-50%,-60px) scale(1.4);opacity:0}}
+
 .playBtn{position:absolute;left:16px;top:50%;transform:translateY(-50%);
-width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;
-display:grid;place-items:center;font-weight:900;font-size:20px;color:#351b00;
+width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;
+font-weight:900;font-size:20px;color:#351b00;
 background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);
 box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),
 inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);
@@ -61,15 +85,13 @@ display:grid;place-items:center;text-align:center;animation:corePulse 3s ease-in
 @keyframes corePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 .meterText{font-weight:900;font-size:clamp(18px,6vw,28px)}
 .btnRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
-.btn{border:none;border-radius:999px;padding:14px 20px;font-weight:900;
-font-size:clamp(18px,4vw,22px);cursor:pointer}
+.btn{border:none;border-radius:999px;padding:14px 20px;font-weight:900;font-size:clamp(18px,4vw,22px);cursor:pointer}
 .btn.begin{background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
 .btn.retry{background:linear-gradient(180deg,#8ec5ff,#1e6eff);color:#00163a}
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;
-padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);
-font-weight:900;font-size:clamp(18px,4.2vw,24px)}
+.scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;
+background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
 </style>
 </head>
 <body>
@@ -85,6 +107,7 @@ font-weight:900;font-size:clamp(18px,4.2vw,24px)}
     <div class="card">
       <button id="playBtn" class="playBtn">▶</button>
       <div id="sweep" class="sweep"></div>
+      <div id="guide" class="guide"></div>
       <div id="en" class="en">Press スタート to start</div>
     </div>
     <div id="jp" class="jp"></div>
@@ -109,6 +132,7 @@ font-weight:900;font-size:clamp(18px,4.2vw,24px)}
 <footer>Bryan’s English School</footer>
 
 <script>
+// ====== QUESTIONS (all 15) ======
 let ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
 {en:"Why is it important to you?",jp:"あなたにとってなぜ大切ですか。",hira:"(あなた に とって なぜ たいせつ です か)"},
@@ -119,68 +143,176 @@ let ITEMS=[
 {en:"What do you want to try this year?",jp:"今年挑戦したいことは何ですか。",hira:"(ことし ちょうせん したい こと は なん です か)"},
 {en:"What’s something new you learned recently?",jp:"最近新しく学んだことは何ですか。",hira:"(さいきん あたらしく まなんだ こと は なん です か)"},
 {en:"Is it easy to keep goals?",jp:"目標を続けるのは簡単ですか。",hira:"(もくひょう を つづける の は かんたん です か)"},
-{en:"What happens when you don’t try?",jp:"挑戦しないとどうなりますか。",hira:"(ちょうせん しない と どう なり ます か)"}
+{en:"What happens when you don’t try?",jp:"挑戦しないとどうなりますか。",hira:"(ちょうせん しない と どう なり ます か)"},
+{en:"What makes you feel proud?",jp:"何があなたを誇らしくさせますか。",hira:"(なに が あなた を ほこらしく させ ます か)"},
+{en:"What’s your dream for the future?",jp:"将来の夢は何ですか。",hira:"(しょうらい の ゆめ は なん です か)"},
+{en:"How do you stay positive?",jp:"どうやって前向きでいられますか。",hira:"(どうやって まえむき で いられ ます か)"},
+{en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
+{en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ];
-ITEMS=ITEMS.sort(()=>Math.random()-0.5);
+// Shuffle per load
+ITEMS = ITEMS.sort(()=>Math.random()-0.5);
 
-const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),
-hiraEl=document.getElementById('hira'),beginBtn=document.getElementById('beginBtn'),
-retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn'),
-scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText'),
-playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep');
+// ----- Elements -----
+const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
+const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
+const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
+const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep'),guide=document.getElementById('guide');
 
+// ----- Score sounds -----
+const A_0_43=new Audio("assets/audio/0-43.mp3"),
+      A_44_74=new Audio("assets/audio/44-74.mp3"),
+      A_75_99=new Audio("assets/audio/75-99.mp3"),
+      A_100=new Audio("assets/audio/100.mp3");
+[A_0_43,A_44_74,A_75_99,A_100].forEach(a=>{a.preload="auto";a.volume=1;});
+
+// ----- State -----
 let idx=0,listening=false,SR=null,streamAllowed=false;
 
-function normalize(s){return s.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
-function wordSet(s){return new Set(normalize(s).split(' '));}
-function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');}
-function popHeart(el){const h=document.createElement('span');h.className='heart';h.textContent='❤';
-const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
-h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
-enEl.appendChild(h);setTimeout(()=>h.remove(),900);}
-function markWords(spoken){
-  const set=wordSet(spoken);
+// ----- Helpers -----
+function normalize(s){
+  return s.toLowerCase()
+          .replace(/[’‘´`]/g,"'")
+          .replace(/[^a-z0-9'\s]/g,' ')
+          .replace(/\s+/g,' ')
+          .trim();
+}
+function toSet(s){ return new Set(normalize(s).split(' ').filter(Boolean)); }
+function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
+
+function playSage(en){
+  if(listening) return;
+  const f='./audio/'+stripForFile(en)+'.mp3';
+  const a=new Audio(f); a.preload='auto'; a.volume=1; a.play().catch(()=>{});
+}
+
+function mountWords(t){ enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' '); }
+function popHeartAt(el){
+  const h=document.createElement('span');h.className='heart';h.textContent='❤';
+  const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
+  h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
+  enEl.appendChild(h);setTimeout(()=>h.remove(),900);
+}
+function markSpoken(spoken){
+  const spokenSet = toSet(spoken);
   enEl.querySelectorAll('.word').forEach(w=>{
-    const t=normalize(w.textContent);
-    if(set.has(t)&&!w.classList.contains('blue')){w.classList.add('blue');popHeart(w);}
+    const val = normalize(w.textContent);
+    if(spokenSet.has(val) && !w.classList.contains('blue')){
+      w.classList.add('blue');
+      popHeartAt(w); // PINK hearts on correct
+    }
   });
 }
-function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red');});}
-function keywordScore(target,spoken){const keys=wordSet(target);let hit=0;keys.forEach(k=>{if(wordSet(spoken).has(k))hit++;});return Math.round((hit/keys.size)*100);}
-function showItem(){const it=ITEMS[idx];mountWords(it.en);jpEl.textContent=it.jp;hiraEl.textContent=it.hira;scoreBox.style.display='none';sweep.style.width='0';}
+function finalizeColors(){
+  enEl.querySelectorAll('.word').forEach(w=>{
+    if(!w.classList.contains('blue')) w.classList.add('red'); // incorrect = red
+  });
+}
+function keywordScore(target,spoken){
+  const keys=toSet(target), said=toSet(spoken);
+  let hit=0, total=0;
+  keys.forEach(k=>{ if(k.length>2){ total++; if(said.has(k)) hit++; } });
+  return total? Math.round((hit/total)*100) : 0;
+}
+function showItem(){
+  const it=ITEMS[idx];
+  mountWords(it.en);
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
+  scoreBox.style.display='none';
+  // reset meter visuals
+  sweep.classList.remove('run');
+  guide.classList.remove('run');
+  // force reflow so Safari restarts animation when class is re-added
+  void sweep.offsetWidth; void guide.offsetWidth;
+}
 
+function playScoreSound(score){
+  if(score===100) A_100.play();
+  else if(score>=75) A_75_99.play();
+  else if(score>=44) A_44_74.play();
+  else A_0_43.play();
+}
+
+// ----- Mic perm -----
 async function requestMic(){
- try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true;}
- catch(e){alert("マイクが使えません。Chromeで再試行してください。");}
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t=>t.stop());
+    streamAllowed=true;
+  }catch(e){
+    alert("マイクが使えません。Chrome でお試しください。");
+  }
 }
 
+// ----- Round flow -----
 async function beginRound(){
- if(!('webkitSpeechRecognition'in window||'SpeechRecognition'in window)){alert("このブラウザでは音声認識を使えません。Chromeを使用してください。");return;}
- if(!streamAllowed){await requestMic();if(!streamAllowed)return;}
- listening=true;playBtn.disabled=true;meterText.textContent='リスニング中';sweep.style.width='0';
- SR=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
- SR.lang='en-US';SR.continuous=true;SR.interimResults=true;
- let heard="";
- SR.onresult=e=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";}heard=txt;markWords(heard);};
- SR.onend=()=>{if(listening)SR.start();};
- SR.start();
- const dur=4000,start=performance.now();
- (function step(t){const p=Math.min((t-start)/dur,1);sweep.style.width=p*100+'%';if(p<1)requestAnimationFrame(step);})(); 
- await new Promise(r=>setTimeout(r,dur));
- listening=false;try{SR.stop();}catch(_){}
- finalizeColors();
- const s=keywordScore(ITEMS[idx].en,heard);
- meterText.textContent=s+"%";scoreBox.textContent="スコア："+s+"％";
- scoreBox.style.display='block';
- nextBtn.style.display=(s>=75)?'inline-block':'none';
- retryBtn.style.display=(s<75)?'inline-block':'none';
- playBtn.disabled=false;
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");
+    return;
+  }
+  if(!streamAllowed){ await requestMic(); if(!streamAllowed) return; }
+
+  // kick meter animations (Safari-proof)
+  sweep.style.setProperty('--dur','4s');
+  guide.style.setProperty('--dur','4s');
+  sweep.classList.remove('run'); guide.classList.remove('run');
+  void sweep.offsetWidth; void guide.offsetWidth; // reflow
+  sweep.classList.add('run'); guide.classList.add('run');
+
+  listening=true; playBtn.disabled=true; meterText.textContent='リスニング中';
+
+  SR = new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+  SR.lang='en-US'; SR.continuous=true; SR.interimResults=true;
+
+  let heard="";
+  SR.onresult = (e)=>{
+    let txt=""; for(let i=e.resultIndex;i<e.results.length;i++){ txt+=e.results[i][0].transcript+" "; }
+    heard=txt.trim();
+    markSpoken(heard); // realtime update
+  };
+  SR.onend = ()=>{ if(listening) try{ SR.start(); }catch(_){} };
+
+  try{ SR.start(); }catch(_){}
+
+  // fixed duration listen (sync with meter)
+  await new Promise(r=>setTimeout(r,4000));
+  listening=false;
+  try{ SR.stop(); }catch(_){}
+
+  finalizeColors();
+  const s=keywordScore(ITEMS[idx].en,heard);
+  meterText.textContent=s+"%";
+  scoreBox.textContent="スコア："+s+"％";
+  scoreBox.style.display='block';
+  playScoreSound(s);
+
+  nextBtn.style.display=(s>=75)?'inline-block':'none';
+  retryBtn.style.display=(s<75)?'inline-block':'none';
+  playBtn.disabled=false;
 }
 
-beginBtn.onclick=()=>{showItem();beginRound();};
-retryBtn.onclick=()=>beginRound();
-nextBtn.onclick=()=>{idx++;if(idx>=ITEMS.length){enEl.textContent="Great work today!";jpEl.textContent="よくできました！";hiraEl.textContent="";nextBtn.style.display='none';retryBtn.style.display='none';beginBtn.style.display='none';meterText.textContent="100%";sweep.style.width='0';return;}showItem();};
-playBtn.onclick=()=>{const f='./audio/'+ITEMS[idx].en.toLowerCase().replace(/[^a-z0-9]/g,'')+'.mp3';new Audio(f).play();};
+// ----- Buttons -----
+beginBtn.onclick=()=>{ showItem(); beginRound(); };
+retryBtn.onclick =()=> beginRound();
+nextBtn.onclick  =()=>{
+  idx++;
+  if(idx>=ITEMS.length){
+    enEl.textContent="Great work today!";
+    jpEl.textContent="よくできました！";
+    hiraEl.textContent="";
+    nextBtn.style.display='none';
+    retryBtn.style.display='none';
+    beginBtn.style.display='none';
+    meterText.textContent="100%";
+    sweep.classList.remove('run'); guide.classList.remove('run');
+    return;
+  }
+  showItem();
+};
+playBtn.onclick =()=> playSage(ITEMS[idx].en);
+
+// ----- Init -----
 showItem();
 </script>
 </body>
