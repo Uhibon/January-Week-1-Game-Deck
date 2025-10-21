@@ -18,11 +18,9 @@
   --gold:#ffd166;
   --cuteBlue:#60a5fa;
   --cuteBlueGlow:0 0 14px rgba(96,165,250,.9), 0 0 36px rgba(96,165,250,.55);
-  --cardH: 140px;         /* desktop card height */
-  --actionsH: 72px;       /* mobile sticky actions height */
+  --cardH: 140px;
+  --actionsH: 72px;
 }
-
-/* base */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -31,11 +29,8 @@ body{
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
-  /* Reduce accidental page pull-to-refresh on capable browsers */
-  overscroll-behavior-y: none;
+  overscroll-behavior-y:none;
 }
-
-/* Header + footer */
 header{padding:20px 16px 10px;text-align:center}
 header h1{
   font-family:'Cinzel',serif;letter-spacing:.5px;
@@ -47,191 +42,94 @@ header h2{
   font-size:clamp(2.0rem,6.2vw,3rem);
   text-shadow:0 0 10px rgba(255,255,255,.12)
 }
-/* Mobile: two lines; Desktop: single line with slash */
 .subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
 .subtitle-stack .en::after{content:" / "; opacity:.8}
 @media (max-width:700px){
   .subtitle-stack{flex-direction:column; gap:.1rem}
   .subtitle-stack .en::after{content:""}
 }
-
-footer{
-  margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;
-  font-family:'Cinzel',serif;
-}
-
-/* Pages */
+footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif;}
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 24px}
 .page.active{display:block}
-
-/* Round viewport + layout */
-.round-viewport{ width:100%; }
-.round-wrap{
-  display:flex;gap:26px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin-top:16px;
-}
+.round-viewport{width:100%;}
+.round-wrap{display:flex;gap:26px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin-top:16px;}
 .col{flex:1 1 420px;max-width:460px;display:flex;flex-direction:column;gap:14px}
-
-/* ✅ Allow vertical scroll gestures anywhere; lock only during active drag */
-.round-viewport,
-.round-wrap,
-.card,
-.col { touch-action: pan-y; }
-body.draggingTouch .round-wrap{ touch-action: none; }
-
-/* MOBILE layout improvements */
+.round-viewport,.round-wrap,.card,.col{touch-action:pan-y;}
+body.draggingTouch .round-wrap{touch-action:none;}
 @media (max-width:700px){
-  :root{ --cardH: 104px; }                 /* smaller, uniform mobile cards */
-  #page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
+  :root{--cardH:104px;}
+  #page-round.page.active{display:flex;flex-direction:column;padding-bottom:0;}
   .round-viewport{
-    flex:1 1 auto;
-    min-height:0;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;      /* smooth iOS scroll */
-    overscroll-behavior-y:contain;         /* reduce bounce where supported */
-    scrollbar-gutter: stable both-edges;   /* keeps scroll easier to grab */
-    padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px); /* keep bottom cards clear of CHECK */
+    flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;scrollbar-gutter:stable both-edges;
+    padding-bottom:calc(var(--actionsH)+env(safe-area-inset-bottom)+14px);
   }
   .round-wrap{flex-wrap:nowrap;gap:10px}
   .col{flex:0 0 50%;max-width:50%}
-  .card{ padding:14px 16px; }
+  .card{padding:14px 16px;}
   .actions{
-    position:sticky; bottom:0; z-index:5;
-    height: var(--actionsH);
-    display:flex; align-items:center; justify-content:center;
-    padding: 8px 0 calc(env(safe-area-inset-bottom));
-    background: linear-gradient(180deg, transparent, rgba(11,21,48,.28) 40%, rgba(11,21,48,.55));
-    backdrop-filter: blur(2px);
-    margin-top: 6px;
+    position:sticky;bottom:0;z-index:5;height:var(--actionsH);
+    display:flex;align-items:center;justify-content:center;
+    padding:8px 0 calc(env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,transparent,rgba(11,21,48,.28) 40%,rgba(11,21,48,.55));
+    backdrop-filter:blur(2px);
+    margin-top:6px;
   }
 }
-
-/* Cards */
 .card{
-  border-radius:24px; 
-  height:var(--cardH);
-  padding:18px 20px;
-  display:flex; align-items:center; justify-content:center; text-align:center;
-  font-size:clamp(1.4rem,4.6vw,2.4rem); font-weight:700; line-height:1.2;
-  user-select:none; transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+  border-radius:24px;height:var(--cardH);padding:18px 20px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:clamp(1.4rem,4.6vw,2.4rem);font-weight:700;line-height:1.2;
+  user-select:none;transition:transform .15s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease;
   word-break:break-word;
 }
 .card.en{
-  color:#000; font-weight:1000;
-  font-size:clamp(1.8rem,5.8vw,3rem);
-  letter-spacing:-.01em; text-transform:none;
-  /* 🚫 Never split words like "motivation" */
-  word-break: keep-all;
-  overflow-wrap: normal;
-  hyphens: none;
+  color:#000;font-weight:1000;font-size:clamp(1.8rem,5.8vw,3rem);
+  letter-spacing:-.01em;text-transform:none;word-break:keep-all;overflow-wrap:normal;hyphens:none;
 }
 .card.jp{
-  background:transparent; border:3px dashed var(--outline); color:var(--ink);
+  background:transparent;border:3px dashed var(--outline);color:var(--ink);
   white-space:pre-line;
 }
-.card.dragging{opacity:.65; transform:scale(1.04)}
-.card.locked{pointer-events:none} /* no dim */
-
-/* Combined before grading */
-.card.combined{ border:0; display:flex; flex-direction:column; gap:8px; }
-.card.matchedBlue{
-  background:var(--cuteBlue)!important; 
-  color:#fff!important; 
-  box-shadow:var(--cuteBlueGlow)!important;
-}
-.card.combined .enTxt{font-size:1.05em; font-weight:1000; letter-spacing:-.01em}
-.card.combined .jpTxt{font-size:.7em; opacity:.98}
-
-/* Grading wins over everything */
-.card.correct{background:var(--green) !important; color:#062a12 !important; border:0 !important}
-.card.wrong  {background:var(--red)   !important; color:#fff     !important; border:0 !important; animation:shake .45s}
+.card.dragging{opacity:.65;transform:scale(1.04)}
+.card.locked{pointer-events:none}
+.card.combined{border:0;display:flex;flex-direction:column;gap:8px;}
+.card.matchedBlue{background:var(--cuteBlue)!important;color:#fff!important;box-shadow:var(--cuteBlueGlow)!important;}
+.card.combined .enTxt{font-size:1.05em;font-weight:1000;letter-spacing:-.01em}
+.card.combined .jpTxt{font-size:.7em;opacity:.98}
+.card.correct{background:var(--green)!important;color:#062a12!important;border:0!important}
+.card.wrong{background:var(--red)!important;color:#fff!important;border:0!important;animation:shake .45s}
 @keyframes shake{
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-8px)}
-  40%{transform:translateX(8px)}
-  60%{transform:translateX(-6px)}
-  80%{transform:translateX(6px)}
+  0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}
 }
-
-/* Buttons */
 .actions{display:flex;gap:14px;justify-content:center;margin-top:18px}
-.btn{
-  border:0; border-radius:28px; padding:12px 34px; font-weight:800; font-size:1.1rem; cursor:pointer;
-  transition:transform .08s ease, box-shadow .2s ease, filter .2s ease;
-  touch-action: manipulation; /* faster taps on mobile */
-}
+.btn{border:0;border-radius:28px;padding:12px 34px;font-weight:800;font-size:1.1rem;cursor:pointer;transition:transform .08s ease,box-shadow .2s ease,filter .2s ease;touch-action:manipulation;}
 .btn:active{transform:translateY(1px)}
-.btn-green{ background:var(--check); color:#062a12; box-shadow:var(--checkGlow) }
-.btn-green:disabled{filter:saturate(.2) brightness(.8); box-shadow:none; cursor:not-allowed}
-
-/* Results */
-#page-results .result-box{
-  min-height:62vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
-}
+.btn-green{background:var(--check);color:#062a12;box-shadow:var(--checkGlow)}
+.btn-green:disabled{filter:saturate(.2) brightness(.8);box-shadow:none;cursor:not-allowed}
+#page-results .result-box{min-height:62vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
 .result-msg{font-family:'Noto Sans JP',sans-serif;font-size:clamp(2.4rem,6.4vw,3.2rem);margin-bottom:18px}
 .result-score{font-size:clamp(1.8rem,5.4vw,2.4rem);opacity:.95}
-
-/* Glow backgrounds */
-.redGlow{background:#900; box-shadow:inset 0 0 60px 30px #ff2b2b}
-.orangeGlow{background:#a34f00; box-shadow:inset 0 0 60px 30px #ff9e2b}
-.blueGlow{background:#0d2b7a; box-shadow:inset 0 0 60px 30px #2b7bff}
-.goldGlow{background:#725c00; box-shadow:inset 0 0 80px 40px #ffd166}
-
-/* Perfect-run confetti rain */
-.confetti{
-  position:fixed; width:12px; height:12px; border-radius:50%;
-  top:-12px; left:0;
-  animation:fall 1.2s linear forwards;
-  pointer-events:none; z-index:10;
-}
-@keyframes fall{
-  0%{transform:translateY(0) rotate(0)}
-  100%{transform:translateY(110vh) rotate(720deg)}
-}
-
-/* Per-card effects */
-.bit{
-  position:fixed; width:14px; height:14px; border-radius:3px;
-  pointer-events:none; z-index:20; animation:pop 760ms ease-out forwards;
-}
-@keyframes pop{
-  0%{opacity:1; transform:translate(0,0) scale(1) rotate(0deg)}
-  100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(0.9) rotate(540deg)}
-}
-.poof{
-  position:fixed; width:40px; height:40px; border-radius:50%;
-  background:radial-gradient(closest-side, rgba(74,222,128,.97) 0%, rgba(34,197,94,.7) 55%, rgba(34,197,94,0) 70%);
-  filter:blur(2px);
-  pointer-events:none; z-index:19;
-  animation:puff 950ms ease-out forwards;
-}
-@keyframes puff{
-  0%{opacity:.98; transform:translate(-50%,-50%) scale(.7)}
-  100%{opacity:0; transform:translate(-50%,-50%) scale(7)}
-}
-
-/* English vertical stripes use card height var */
-@keyframes stripesV{ from{background-position:0 0} to{background-position:0 var(--cardH)} }
-.sv{ background-size:100% var(--cardH); animation:stripesV 3.2s linear infinite; }
-.sv1{ background-image:repeating-linear-gradient(0deg, #ff7eb9 0 18px, #5ee6ff 18px 36px, #ffd166 36px 54px); }
-.sv2{ background-image:repeating-linear-gradient(0deg, #a78bfa 0 18px, #60a5fa 18px 36px, #f472b6 36px 54px); }
-.sv3{ background-image:repeating-linear-gradient(0deg, #34d399 0 18px, #fbbf24 18px 36px, #60a5fa 36px 54px); }
-.sv4{ background-image:repeating-linear-gradient(0deg, #fca5a5 0 18px, #86efac 18px 36px, #93c5fd 36px 54px); }
-.sv5{ background-image:repeating-linear-gradient(0deg, #f9a8d4 0 18px, #fef08a 18px 36px, #6ee7b7 36px 54px); }
-
-/* Touch drag helper visuals */
-.drag-ghost{
-  position:fixed; z-index:9999; pointer-events:none;
-  transform:translate(-50%,-50%); will-change:transform;
-  width:46vw; max-width:420px;
-  height:var(--cardH);
-  display:flex; align-items:center; justify-content:center;
-  border-radius:24px; font-weight:1000; color:#000;
-}
-@media (min-width: 701px){
-  .drag-ghost{ width:360px; }
-}
-.hoverTarget{ box-shadow:0 0 0 4px rgba(255,255,255,.25), 0 0 20px rgba(255,255,255,.25); border-color:#fff !important; }
-
+.redGlow{background:#900;box-shadow:inset 0 0 60px 30px #ff2b2b}
+.orangeGlow{background:#a34f00;box-shadow:inset 0 0 60px 30px #ff9e2b}
+.blueGlow{background:#0d2b7a;box-shadow:inset 0 0 60px 30px #2b7bff}
+.goldGlow{background:#725c00;box-shadow:inset 0 0 80px 40px #ffd166}
+.confetti{position:fixed;width:12px;height:12px;border-radius:50%;top:-12px;left:0;animation:fall 1.2s linear forwards;pointer-events:none;z-index:10;}
+@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
+.bit{position:fixed;width:14px;height:14px;border-radius:3px;pointer-events:none;z-index:20;animation:pop 760ms ease-out forwards;}
+@keyframes pop{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0.9) rotate(540deg)}}
+.poof{position:fixed;width:40px;height:40px;border-radius:50%;background:radial-gradient(closest-side,rgba(74,222,128,.97)0%,rgba(34,197,94,.7)55%,rgba(34,197,94,0)70%);filter:blur(2px);pointer-events:none;z-index:19;animation:puff 950ms ease-out forwards;}
+@keyframes puff{0%{opacity:.98;transform:translate(-50%,-50%) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
+@keyframes stripesV{from{background-position:0 0}to{background-position:0 var(--cardH)}}
+.sv{background-size:100% var(--cardH);animation:stripesV 3.2s linear infinite;}
+.sv1{background-image:repeating-linear-gradient(0deg,#ff7eb9 0 18px,#5ee6ff 18px 36px,#ffd166 36px 54px);}
+.sv2{background-image:repeating-linear-gradient(0deg,#a78bfa 0 18px,#60a5fa 18px 36px,#f472b6 36px 54px);}
+.sv3{background-image:repeating-linear-gradient(0deg,#34d399 0 18px,#fbbf24 18px 36px,#60a5fa 36px 54px);}
+.sv4{background-image:repeating-linear-gradient(0deg,#fca5a5 0 18px,#86efac 18px 36px,#93c5fd 36px 54px);}
+.sv5{background-image:repeating-linear-gradient(0deg,#f9a8d4 0 18px,#fef08a 18px 36px,#6ee7b7 36px 54px);}
+.drag-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%);will-change:transform;width:46vw;max-width:420px;height:var(--cardH);display:flex;align-items:center;justify-content:center;border-radius:24px;font-weight:1000;color:#000;}
+@media (min-width:701px){.drag-ghost{width:360px;}}
+.hoverTarget{box-shadow:0 0 0 4px rgba(255,255,255,.25),0 0 20px rgba(255,255,255,.25);border-color:#fff!important;}
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 </style>
 </head>
@@ -247,7 +145,6 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   <hr class="sep">
 </header>
 
-<!-- PAGE: Round container -->
 <section id="page-round" class="page active">
   <div class="round-viewport">
     <div class="round-wrap" id="dragArea">
@@ -260,7 +157,6 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   </div>
 </section>
 
-<!-- PAGE: Results -->
 <section id="page-results" class="page">
   <div class="result-box">
     <div id="resultMsg" class="result-msg">結果</div>
@@ -273,7 +169,6 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 
 <footer>Bryan's English School</footer>
 
-<!-- Audio -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
@@ -300,6 +195,23 @@ const MASTER = [
   {en:"focus",jp:"集中",hira:"しゅうちゅう"},
   {en:"motivation",jp:"やる気",hira:"やるき"}
 ];
+
+/* 🎧 Local Sage audio playback */
+function playSage(word){
+  if(!word) return;
+  const audio = new Audio(`audio/${word.toLowerCase()}.mp3`);
+  audio.volume = 1.0;
+  audio.play().catch(()=>{});
+}
+
+/* 🎧 Preload all audio quietly for instant playback */
+window.addEventListener('DOMContentLoaded',()=>{
+  MASTER.forEach(item=>{
+    const a = new Audio(`audio/${item.en.toLowerCase()}.mp3`);
+    a.preload = 'auto';
+    a.load();
+  });
+});
 
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[], audioUnlocked=false;
@@ -345,34 +257,21 @@ function unlockAudioOnce(){
 }
 window.addEventListener('pointerdown', unlockAudioOnce, {once:true});
 
-/* iOS pull-to-refresh guard just on the scroll container */
+/* iOS pull-to-refresh guard */
 function installPullToRefreshGuard(){
-  const scroller = document.querySelector('.round-viewport');
-  if(!scroller) return;
-
-  let startY=0, startTop=0;
-
-  // Record where the gesture starts
-  scroller.addEventListener('touchstart', (e)=>{
-    if(e.touches.length!==1) return;
-    startY = e.touches[0].clientY;
-    startTop = scroller.scrollTop;
-  }, {passive:true});
-
-  // If at top and pulling down (or at bottom and pushing up), prevent default to avoid bounce/refresh.
-  scroller.addEventListener('touchmove', (e)=>{
-    if(e.touches.length!==1) return;
-    const y  = e.touches[0].clientY;
-    const dy = y - startY;
-
-    const atTop    = scroller.scrollTop <= 0;
-    const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
-
-    if ((atTop && dy > 0) || (atBottom && dy < 0)) {
-      // Block the browser rubber-band / pull-to-refresh, but ONLY at the edges
-      e.preventDefault();
-    }
-  }, {passive:false});
+  const scroller=document.querySelector('.round-viewport'); if(!scroller)return;
+  let startY=0,startTop=0;
+  scroller.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    startY=e.touches[0].clientY; startTop=scroller.scrollTop;
+  },{passive:true});
+  scroller.addEventListener('touchmove',e=>{
+    if(e.touches.length!==1)return;
+    const y=e.touches[0].clientY,dy=y-startY;
+    const atTop=scroller.scrollTop<=0;
+    const atBottom=scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-1;
+    if((atTop&&dy>0)||(atBottom&&dy<0)){e.preventDefault();}
+  },{passive:false});
 }
 
 /* Init */
@@ -384,224 +283,144 @@ function initGame(){
   loadRound();
 }
 
-/* Combine helper (used by both mouse & touch) */
-function combineIntoJP(jpCard, enText){
-  if(!jpCard || !jpCard.dataset) return;
+/* Combine helper */
+function combineIntoJP(jpCard,enText){
+  if(!jpCard||!jpCard.dataset)return;
   if(jpCard.dataset.connected){
     const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
     if(old) old.style.visibility='visible';
   }
   const enCard=document.querySelector(`.en[data-en="${enText}"]`);
   if(enCard) enCard.style.visibility='hidden';
-
-  const jp = jpCard.dataset.jp, hira = jpCard.dataset.hira;
+  const jp=jpCard.dataset.jp,hira=jpCard.dataset.hira;
   jpCard.classList.add('combined','matchedBlue'); jpCard.classList.remove('jp');
-  jpCard.innerHTML = `<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
-  jpCard.dataset.connected = enText;
-  connections[jp] = enText;
-
-  $("#checkBtn").disabled = Object.keys(connections).length !== 5;
+  jpCard.innerHTML=`<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
+  jpCard.dataset.connected=enText; connections[jp]=enText;
+  $("#checkBtn").disabled=Object.keys(connections).length!==5;
 }
 
-/* Build a round */
+/* Build round */
 function loadRound(){
   connections={};
-  const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
+  const set=rounds[roundIndex],colEn=$("#col-en"),colJp=$("#col-jp");
   colEn.innerHTML=""; colJp.innerHTML="";
-
   const stripeClasses=shuffle(['sv1','sv2','sv3','sv4','sv5']);
-
   shuffle([...set]).forEach((item,idx)=>{
     const c=document.createElement('div');
-    c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
-    c.draggable=true;                    // desktop dnd
+    c.className=`card en sv ${stripeClasses[idx%stripeClasses.length]}`;
+    c.draggable=true;
     c.textContent=item.en.toLowerCase();
     c.dataset.en=item.en.toLowerCase();
-    c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');});
+    // 🎧 Tap to play local Sage voice
+    c.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='touch'||e.pointerType==='mouse'){playSage(item.en);}
+    });
+    c.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');
+    });
     c.addEventListener('dragend',()=>c.classList.remove('dragging'));
     colEn.appendChild(c);
   });
-
   shuffle([...set]).forEach(item=>{
     const c=document.createElement('div');
     c.className='card jp';
     c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
-    // desktop drop targets
-    c.addEventListener('dragover', e=>e.preventDefault());
-    c.addEventListener('drop', e=>{
+    c.addEventListener('dragover',e=>e.preventDefault());
+    c.addEventListener('drop',e=>{
       e.preventDefault();
-      const en=e.dataTransfer.getData('text/en'); if(!en) return;
-      combineIntoJP(c, en);
+      const en=e.dataTransfer.getData('text/en'); if(!en)return;
+      combineIntoJP(c,en);
     });
     colJp.appendChild(c);
   });
-
-  // Touch dragging setup
   setupTouchDrag();
-
   jpOrder=[...colJp.querySelectorAll('[data-jp]')];
   $("#checkBtn").disabled=true;
 }
 
-/* Touch drag & drop (mobile): long-press or diagonal move to start; scroll otherwise */
+/* Touch drag (mobile) */
 function setupTouchDrag(){
-  const enCards = [...document.querySelectorAll('.card.en')];
-
-  let ghost=null, active=null, hoverJP=null;
-  let startX=0, startY=0, dragging=false;
-  let pressTimer=null;
-
-  const LONG_PRESS_MS = 220;   // hold to start drag
-  const MOVE_THRESH  = 12;     // px before considering deliberate move
-
+  const enCards=[...document.querySelectorAll('.card.en')];
+  let ghost=null,active=null,hoverJP=null;
+  let startX=0,startY=0,dragging=false,pressTimer=null;
+  const LONG_PRESS_MS=220,MOVE_THRESH=12;
   function makeGhost(fromCard){
-    const g = fromCard.cloneNode(true);
-    g.className = g.className.replace(/\bcard\b/,'').trim();
+    const g=fromCard.cloneNode(true);
+    g.className=g.className.replace(/\bcard\b/,'').trim();
     g.classList.add('drag-ghost');
-    const cs = getComputedStyle(fromCard);
-    g.style.backgroundImage  = cs.backgroundImage;
-    g.style.backgroundSize   = cs.backgroundSize;
-    g.style.backgroundPosition = cs.backgroundPosition;
-    document.body.appendChild(g);
-    return g;
+    const cs=getComputedStyle(fromCard);
+    g.style.backgroundImage=cs.backgroundImage; g.style.backgroundSize=cs.backgroundSize; g.style.backgroundPosition=cs.backgroundPosition;
+    document.body.appendChild(g); return g;
   }
-
-  function beginDrag(e){
-    if (dragging || !active) return;
-    dragging = true;
-    try{ active.setPointerCapture(e.pointerId); }catch(_){}
-    document.body.classList.add('draggingTouch');
-    ghost = makeGhost(active);
-    moveGhost(e);
-  }
-
+  function beginDrag(e){if(dragging||!active)return; dragging=true; try{active.setPointerCapture(e.pointerId);}catch(_){}
+    document.body.classList.add('draggingTouch'); ghost=makeGhost(active); moveGhost(e);}
   function pointerDown(e){
-    if(e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
-    active = e.currentTarget;
-    startX = e.clientX; startY = e.clientY;
-    dragging = false;
-
-    clearTimeout(pressTimer);
-    pressTimer = setTimeout(()=> beginDrag(e), LONG_PRESS_MS);
+    if(e.pointerType!=='touch'&&e.pointerType!=='pen')return;
+    active=e.currentTarget; startX=e.clientX; startY=e.clientY; dragging=false;
+    clearTimeout(pressTimer); pressTimer=setTimeout(()=>beginDrag(e),LONG_PRESS_MS);
   }
-
   function pointerMove(e){
-    if(!active) return;
-
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-
-    // Cancel long-press if clearly scrolling vertically or we moved enough
-    if (!dragging && (dy > dx + 8 || dx + dy > MOVE_THRESH)) {
-      clearTimeout(pressTimer);
-    }
-    // Start drag immediately on clear sideways/diagonal motion
-    if (!dragging && (dx > dy + 10) && (dx + dy > MOVE_THRESH)) {
-      beginDrag(e);
-    }
-
-    if (dragging){
-      moveGhost(e);
-      e.preventDefault(); // actively block scroll only during drag
-    }
+    if(!active)return;
+    const dx=Math.abs(e.clientX-startX),dy=Math.abs(e.clientY-startY);
+    if(!dragging&&(dy>dx+8||dx+dy>MOVE_THRESH)){clearTimeout(pressTimer);}
+    if(!dragging&&(dx>dy+10)&&(dx+dy>MOVE_THRESH)){beginDrag(e);}
+    if(dragging){moveGhost(e);e.preventDefault();}
   }
-
   function moveGhost(e){
-    if(!ghost) return;
-    ghost.style.left = e.clientX + 'px';
-    ghost.style.top  = e.clientY + 'px';
-    const el = document.elementFromPoint(e.clientX, e.clientY);
-    const cand = el && el.closest && el.closest('[data-jp]');
-    if(cand !== hoverJP){
-      if(hoverJP) hoverJP.classList.remove('hoverTarget');
-      hoverJP = cand;
-      if(hoverJP) hoverJP.classList.add('hoverTarget');
-    }
+    if(!ghost)return;
+    ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    const cand=el&&el.closest&&el.closest('[data-jp]');
+    if(cand!==hoverJP){if(hoverJP)hoverJP.classList.remove('hoverTarget'); hoverJP=cand; if(hoverJP)hoverJP.classList.add('hoverTarget');}
   }
-
   function endDrag(e){
     clearTimeout(pressTimer);
-    if(!active) return;
-
+    if(!active)return;
     if(dragging){
-      if(hoverJP) hoverJP.classList.remove('hoverTarget');
+      if(hoverJP)hoverJP.classList.remove('hoverTarget');
       if(ghost){
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        const target = el && el.closest && el.closest('[data-jp]');
-        if(target){ combineIntoJP(target, active.dataset.en); }
-        ghost.remove(); ghost = null;
+        const el=document.elementFromPoint(e.clientX,e.clientY);
+        const target=el&&el.closest&&el.closest('[data-jp]');
+        if(target){combineIntoJP(target,active.dataset.en);}
+        ghost.remove(); ghost=null;
       }
       document.body.classList.remove('draggingTouch');
     }
-
-    try{ active.releasePointerCapture && active.releasePointerCapture(e.pointerId); }catch(_){}
+    try{active.releasePointerCapture&&active.releasePointerCapture(e.pointerId);}catch(_){}
     active=null; hoverJP=null; dragging=false;
   }
-
-  enCards.forEach(c=>{
-    c.addEventListener('pointerdown', pointerDown, {passive:true});
-  });
-  // passive:false so preventDefault works while dragging to stop scroll
-  window.addEventListener('pointermove',  pointerMove, {passive:false});
-  window.addEventListener('pointerup',    endDrag,     {passive:true});
-  window.addEventListener('pointercancel',endDrag,     {passive:true});
+  enCards.forEach(c=>{c.addEventListener('pointerdown',pointerDown,{passive:true});});
+  window.addEventListener('pointermove',pointerMove,{passive:false});
+  window.addEventListener('pointerup',endDrag,{passive:true});
+  window.addEventListener('pointercancel',endDrag,{passive:true});
 }
 
-/* Check flow (top -> bottom) */
+/* Check & results */
 $("#checkBtn").addEventListener('click',()=>{
-  $("#checkBtn").disabled=true;
-  let i=0;
+  $("#checkBtn").disabled=true; let i=0;
   const step=setInterval(()=>{
-    if(i>=jpOrder.length){
-      clearInterval(step);
-      setTimeout(()=>{
-        roundIndex++;
-        if(roundIndex<3){ loadRound(); } else { showResults(); }
-      },900);
-      return;
-    }
-    const card=jpOrder[i], jp=card.dataset.jp;
-    const chosen=card.dataset.connected||"";
-    const correct = rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
-
+    if(i>=jpOrder.length){clearInterval(step);
+      setTimeout(()=>{roundIndex++; if(roundIndex<3){loadRound();}else{showResults();}},900); return;}
+    const card=jpOrder[i],jp=card.dataset.jp,chosen=card.dataset.connected||"";
+    const correct=rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
     card.classList.remove('matchedBlue');
-
-    if(chosen && chosen===correct){
-      card.classList.remove('wrong');
-      card.classList.add('correct','locked');
-      playSfx('s_ding');
-      burstConfettiAt(card,44);
-      totalScore++;
-    }else{
-      card.classList.remove('correct');
-      card.classList.add('wrong');
-      playSfx('s_fart');
-      fartPoofAt(card);
-    }
+    if(chosen&&chosen===correct){card.classList.remove('wrong');card.classList.add('correct','locked');playSfx('s_ding');burstConfettiAt(card,44);totalScore++;}
+    else{card.classList.remove('correct');card.classList.add('wrong');playSfx('s_fart');fartPoofAt(card);}
     i++;
   },850);
 });
 
-/* Results */
 function showResults(){
-  $("#page-round").classList.remove('active');
-  $("#page-results").classList.add('active');
-
+  $("#page-round").classList.remove('active'); $("#page-results").classList.add('active');
   const pct=Math.round((totalScore/15)*100);
-  const msgEl=$("#resultMsg"), scoreEl=$("#resultScore");
-
-  let bg='blueGlow', msg='いいね！あと少しでパーフェクト！', snd=$("#s_r1114");
-  if(totalScore<=5){ bg='redGlow'; msg='ブーリキュラム見てないでしょ！'; snd=$("#s_r05"); }
-  else if(totalScore<=10){ bg='orangeGlow'; msg='YouTube見すぎ！ブーリキュラムもやろう！'; snd=$("#s_r610"); }
-  else if(totalScore===15){ bg='goldGlow'; msg='すごい！あなたは地球で一番頭がいい！'; snd=$("#s_r15"); }
-
-  document.body.className=bg;
-  msgEl.textContent=msg;
-  scoreEl.textContent=`${totalScore}/15（${pct}%）`;
-
-  try{ snd.currentTime=0; snd.play(); }catch(e){}
-
+  const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");
+  let bg='blueGlow',msg='いいね！あと少しでパーフェクト！',snd=$("#s_r1114");
+  if(totalScore<=5){bg='redGlow';msg='ブーリキュラム見てないでしょ！';snd=$("#s_r05");}
+  else if(totalScore<=10){bg='orangeGlow';msg='YouTube見すぎ！ブーリキュラムもやろう！';snd=$("#s_r610");}
+  else if(totalScore===15){bg='goldGlow';msg='すごい！あなたは地球で一番頭がいい！';snd=$("#s_r15");}
+  document.body.className=bg; msgEl.textContent=msg; scoreEl.textContent=`${totalScore}/15（${pct}%）`;
+  try{snd.currentTime=0; snd.play();}catch(e){}
   if(totalScore===15){
     for(let i=0;i<160;i++){
       setTimeout(()=>{
@@ -612,12 +431,11 @@ function showResults(){
         c.style.animationDuration=(0.9+Math.random()*0.9)+'s';
         document.body.appendChild(c);
         setTimeout(()=>c.remove(),1900);
-      }, i*10);
+      },i*10);
     }
   }
 }
-
-$("#playAgain").addEventListener('click', initGame);
+$("#playAgain").addEventListener('click',initGame);
 
 /* Start */
 installPullToRefreshGuard();
