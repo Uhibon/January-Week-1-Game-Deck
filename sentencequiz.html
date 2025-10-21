@@ -14,10 +14,7 @@
   --pink:#ff7eb9; --mint:#a6f7b2; --blue:#7dd3fc; --yellow:#fff680;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{
-  background:#0b1530;color:var(--ink);
-  font-family:system-ui,"Noto Sans JP",sans-serif;-webkit-overflow-scrolling:touch;
-}
+body{background:#0b1530;color:var(--ink);font-family:system-ui,"Noto Sans JP",sans-serif;-webkit-overflow-scrolling:touch;}
 header{text-align:center;padding:26px 12px 12px}
 .h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6.2vw,56px);}
 .h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px);}
@@ -25,49 +22,29 @@ header{text-align:center;padding:26px 12px 12px}
 .h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff;}
 .wrap{max-width:1100px;margin:0 auto;padding:8px 16px 80px}
 .panel{padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
-background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-box-shadow:0 6px 24px rgba(0,0,0,.4);}
+background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));box-shadow:0 6px 24px rgba(0,0,0,.4);}
 
 /* Japanese display */
 .jpCard{
-  border-radius:var(--radius);
-  border:1px solid var(--outline);
-  height:160px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:10px;
-  background:repeating-linear-gradient(to bottom,
-  #ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,
-  #8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);
-  background-size:100% 600px;
-  animation:stripeSlide 18s linear infinite;
+  border-radius:var(--radius);border:1px solid var(--outline);height:160px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:10px;
+  background:repeating-linear-gradient(to bottom,#ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,#8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);
+  background-size:100% 600px;animation:stripeSlide 18s linear infinite;
 }
 @keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
 .jpText{font-weight:900;font-size:46px;color:#0b1530;text-shadow:0 1px 0 rgba(255,255,255,.6);}
 .hira{text-align:center;color:#d8e7ff;font-size:clamp(14px,3.5vw,18px);margin-bottom:20px}
 
 /* drop areas */
-.wordbank,.sentence{
-  display:flex;flex-wrap:wrap;gap:12px;padding:12px;margin-bottom:14px;
-}
+.wordbank,.sentence{display:flex;flex-wrap:wrap;gap:12px;padding:12px;margin-bottom:14px;}
 .wordbank{justify-content:center;}
-.sentence{
-  justify-content:flex-start;
-  align-items:center;
-  min-height:120px; /* always open */
-  border:1px dashed rgba(255,255,255,.25);
-  border-radius:14px;
-  padding:16px 12px;
-  position:relative;
-}
+.sentence{justify-content:flex-start;align-items:center;min-height:120px;
+  border:1px dashed rgba(255,255,255,.25);border-radius:14px;padding:16px 12px;position:relative;}
 
 /* gold play button */
 .playBtn{
-  position:absolute;
-  left:-8px;top:50%;transform:translate(-100%,-50%);
-  width:58px;height:58px;
-  border:none;border-radius:50%;
+  position:absolute;left:-8px;top:50%;transform:translate(-100%,-50%);
+  width:58px;height:58px;border:none;border-radius:50%;
   background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
   color:#2a1b00;font-weight:900;font-size:26px;
   box-shadow:0 0 12px rgba(255,215,64,.6),0 0 18px rgba(255,215,64,.9);
@@ -81,12 +58,10 @@ box-shadow:0 6px 24px rgba(0,0,0,.4);}
 }
 
 /* chips */
-.word{
-  padding:14px 18px;font-weight:900;font-size:clamp(18px,4.2vw,26px);
+.word{padding:14px 18px;font-weight:900;font-size:clamp(18px,4.2vw,26px);
   border:none;border-radius:20px;cursor:grab;user-select:none;
   box-shadow:0 0 0 4px var(--color),0 10px 22px rgba(0,0,0,.35);
-  background:#fff;color:#06101f;text-shadow:0 1px 0 rgba(255,255,255,.65);
-}
+  background:#fff;color:#06101f;text-shadow:0 1px 0 rgba(255,255,255,.65);}
 .word:active{transform:scale(.96)}
 
 /* buttons */
@@ -140,8 +115,6 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     <div id="sentence" class="sentence"></div>
   </div>
 
-  <div id="correctLine" class="correctLine"></div>
-
   <div id="okWrap" style="text-align:center;display:none">
     <div>正しい順番に並べてから OK をクリック</div>
     <button id="okBtn" class="btn blue" disabled>OK</button>
@@ -152,7 +125,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   </div>
 
   <button id="checkBtn" class="btn" disabled>Check</button>
-  <div id="progress">1 / 15（0%）</div>
+  <div id="progress">1 / 15</div>
 </div>
 </div>
 
@@ -176,20 +149,26 @@ const DATA=[
 {en:"I will listen carefully in class.",jp:"授業でしっかり聞きます。",hira:"じゅぎょう で しっかり きき ます"},
 {en:"I will read more books.",jp:"もっと本を読みます。",hira:"もっと ほん を よみ ます"},
 {en:"I will write in my diary every week.",jp:"毎週日記を書きます。",hira:"まいしゅう にっき を かき ます"},
-{en:"I will enjoy learning.",jp:"学ぶことを楽しみます。",hira:"まなぶ こと を たのしみ ます"}
+{en:"I will enjoy learning.",jp:"学ぶことを楽しみます。",hira:"まなぶ こと を たのしみ ます"},
+{en:"I will try new things.",jp:"新しいことに挑戦します。",hira:"あたらしい こと に ちょうせん します"},
+{en:"I will help my friends.",jp:"友だちを助けます。",hira:"ともだち を たすけ ます"},
+{en:"I will eat more vegetables.",jp:"もっと野菜を食べます。",hira:"もっと やさい を たべ ます"},
+{en:"I will sleep early.",jp:"早く寝ます。",hira:"はやく ね ます"},
+{en:"I will do my homework first.",jp:"まず宿題をします。",hira:"まず しゅくだい を し ます"},
+{en:"I will be kind to everyone.",jp:"みんなにやさしくします。",hira:"みんな に やさしく し ます"}
 ];
 
-const SOK=new Audio("audio/sugoi.mp3");
-const SBAD=new Audio("audio/yada.mp3");
+const SOK=new Audio("assets/audio/sugoi.mp3");
+const SBAD=new Audio("assets/audio/yada.mp3");
 let i=0,score=0,wrongMode=false;
+
 const jp=qs('#jp'),hira=qs('#hira'),bank=qs('#bank'),sent=qs('#sentence');
 const check=qs('#checkBtn'),okWrap=qs('#okWrap'),okBtn=qs('#okBtn'),nextWrap=qs('#nextWrap'),nextBtn=qs('#nextBtn');
-const playBtn=qs('#playBtn'),correctLine=qs('#correctLine'),progress=qs('#progress'),fx=qs('#fx'),panel=qs('#panel'),end=qs('#end'),scoreText=qs('#scoreText'),endMsg=qs('#endMsg');
+const playBtn=qs('#playBtn'),progress=qs('#progress'),fx=qs('#fx'),panel=qs('#panel'),end=qs('#end'),scoreText=qs('#scoreText'),endMsg=qs('#endMsg');
 function qs(s){return document.querySelector(s)}
 
 function mount(){
-  bank.innerHTML='';sent.innerHTML='';correctLine.classList.remove('show');
-  playBtn.classList.remove('show');wrongMode=false;
+  bank.innerHTML='';sent.innerHTML='';playBtn.classList.remove('show');wrongMode=false;
   okWrap.style.display='none';nextWrap.style.display='none';okBtn.disabled=true;check.disabled=true;
   const item=DATA[i];jp.textContent=item.jp;hira.textContent=item.hira;
   const words=item.en.split(/\s+/);shuffle(words).forEach((w,idx)=>{
@@ -219,10 +198,10 @@ function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".m
 function playSage(en){const a=new Audio(filename(en));a.volume=1;playSafe(a);}
 function playSafe(a){try{a.pause();a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});}catch(e){}}
 function bigHearts(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
-for(let k=0;k<30;k++){const h=document.createElement('div');h.className='heart';h.textContent='❤';
+for(let k=0;k<50;k++){const h=document.createElement('div');h.className='heart';h.textContent='❤';
 h.style.left=x+'px';h.style.top=y+'px';fx.appendChild(h);setTimeout(()=>h.remove(),1200);}}
 function hugeSmoke(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
-for(let k=0;k<16;k++){const s=document.createElement('div');s.className='smoke';s.style.left=x+'px';s.style.top=y+'px';fx.appendChild(s);setTimeout(()=>s.remove(),1600);}}
+for(let k=0;k<30;k++){const s=document.createElement('div');s.className='smoke';s.style.left=x+'px';s.style.top=y+'px';fx.appendChild(s);setTimeout(()=>s.remove(),1600);}}
 function chipColor(n){const c=["#ff6ec7","#5ee6ff","#ffd166","#8aff80","#c77dff","#fff680","#ff9a8b","#9bffb7","#7cc6ff","#f7a6ff"];return c[n%c.length];}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function updateProgress(){progress.textContent=`${i+1} / ${DATA.length}`;}
@@ -232,18 +211,36 @@ check.onclick=()=>{
   if(built===correct){
     if(!wrongMode){
       score++;playSafe(SOK);bigHearts(sent);
-      setTimeout(()=>playSage(correct),400);
-      check.style.display='none';nextWrap.style.display='block';
-    }else okBtn.disabled=false;
+      setTimeout(()=>playSage(correct),800);
+      setTimeout(()=>{check.style.display='none';nextWrap.style.display='block';},1800);
+    }else{
+      okBtn.textContent="Next";
+      okBtn.disabled=false;
+    }
   }else{
     wrongMode=true;playSafe(SBAD);hugeSmoke(sent);
-    correctLine.textContent="正解："+correct;correctLine.classList.add('show');
-    playBtn.classList.add('show');check.style.display='none';okWrap.style.display='block';okBtn.disabled=currentBuilt()!==correct;
+    playBtn.classList.add('show');
+    check.style.display='none';okWrap.style.display='block';okBtn.disabled=true;
+    playSage(correct);
   }
 };
-okBtn.onclick=()=>next();nextBtn.onclick=()=>next();
+
+okBtn.onclick=()=>{
+  if(wrongMode && okBtn.textContent==="Next"){next();}
+  else if(wrongMode && currentBuilt()===currentCorrect()){
+    okBtn.textContent="Next";
+    okBtn.disabled=false;
+  }
+};
+nextBtn.onclick=()=>next();
 playBtn.onclick=()=>{if(wrongMode)playSage(currentCorrect());};
-function next(){i++;if(i>=DATA.length)return finish();check.style.display='block';mount();}
+
+function next(){
+  i++;
+  if(i>=DATA.length)return finish();
+  check.style.display='block';
+  mount();
+}
 function finish(){
   panel.style.display='none';end.style.display='flex';
   scoreText.textContent=`スコア：${score}/${DATA.length}`;
