@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0b1530; --ink:#fff; --outline:#ffffff26;
-  --ok:#22c55e; --heart:#ff4fa6; --radius:26px;
+  --heart:#ff4fa6; --radius:26px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#0b1530;color:var(--ink);font-family:system-ui,"Noto Sans JP",sans-serif;}
@@ -23,7 +23,7 @@ header{text-align:center;padding:26px 12px 12px}
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
 box-shadow:0 6px 24px rgba(0,0,0,.4);}
 
-/* Japanese card */
+/* Japanese display */
 .jpCard{border-radius:var(--radius);border:1px solid var(--outline);height:160px;
 display:flex;align-items:center;justify-content:center;margin-bottom:10px;
 background:repeating-linear-gradient(to bottom,#ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,
@@ -43,17 +43,17 @@ background-size:100% 600px;animation:stripeSlide 18s linear infinite;}
   border-radius:14px;padding:16px 12px;position:relative;
 }
 
-/* play button */
+/* gold play button (above sentence) */
 .playBtn{
-  position:absolute;left:12px;top:12px;
-  width:58px;height:58px;border:none;border-radius:50%;
+  position:absolute;top:-70px;left:50%;transform:translateX(-50%);
+  width:68px;height:68px;border:none;border-radius:50%;
   background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
   box-shadow:0 0 12px rgba(255,215,64,.6),0 0 18px rgba(255,215,64,.9);
-  color:#2a1b00;font-weight:900;font-size:26px;
+  color:#2a1b00;font-weight:900;font-size:30px;
   opacity:0;pointer-events:none;transition:opacity .4s ease;
 }
 .playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
-.playBtn::before{content:"▶";display:block;text-align:center;line-height:58px;}
+.playBtn::before{content:"▶";display:block;text-align:center;line-height:68px;}
 @keyframes twinkle{
   0%,100%{box-shadow:0 0 12px rgba(255,215,64,.6),0 0 18px rgba(255,215,64,.9);}
   50%{box-shadow:0 0 18px rgba(255,235,94,1),0 0 28px rgba(255,235,94,1);}
@@ -69,11 +69,13 @@ background:#fff;color:#06101f;text-shadow:0 1px 0 rgba(255,255,255,.65);}
 /* buttons */
 .btn{display:block;margin:16px auto 8px;border:none;border-radius:999px;
 padding:16px 36px;font-weight:900;font-size:clamp(18px,4vw,22px);
-background:radial-gradient(circle at 30% 30%,#1ee99a,#15c473,#0ea85d);
-color:#00230f;text-shadow:0 1px 0 rgba(255,255,255,.5);
-box-shadow:0 0 0 5px rgba(34,197,94,.22),0 0 18px rgba(34,197,94,.8);
 cursor:pointer;}
-.btn.blue{background:radial-gradient(circle at 30% 30%,#66b3ff,#1e6eff);color:#00163a}
+.btn.green{background:radial-gradient(circle at 30% 30%,#1ee99a,#15c473,#0ea85d);color:#00230f;
+box-shadow:0 0 0 5px rgba(34,197,94,.22),0 0 18px rgba(34,197,94,.8);}
+.btn.blue{background:radial-gradient(circle at 30% 30%,#66b3ff,#1e6eff);color:#00163a;
+box-shadow:0 0 0 5px rgba(102,179,255,.22),0 0 18px rgba(102,179,255,.8);}
+.btn.pink{background:radial-gradient(circle at 30% 30%,#ff90e8,#ff53c2,#ff2fa6);color:#30001a;
+box-shadow:0 0 0 5px rgba(255,83,194,.25),0 0 18px rgba(255,83,194,.7);}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 
 /* FX */
@@ -116,14 +118,14 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
   <div id="okWrap" style="text-align:center;display:none">
     <div>正しい順番に並べてから OK をクリック</div>
-    <button id="okBtn" class="btn blue" disabled>OK</button>
+    <button id="okBtn" class="btn pink" disabled>OK</button>
   </div>
 
   <div id="nextWrap" style="text-align:center;display:none">
-    <button id="nextBtn" class="btn">Next</button>
+    <button id="nextBtn" class="btn blue">Next</button>
   </div>
 
-  <button id="checkBtn" class="btn" disabled>Check</button>
+  <button id="checkBtn" class="btn green" disabled>Check</button>
   <div id="progress">1 / 15</div>
 </div>
 </div>
@@ -131,7 +133,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 <div id="end" class="end">
   <div class="msg" id="endMsg"></div>
   <div class="score" id="scoreText"></div>
-  <button class="btn" onclick="window.location.href='index.html'">メインメニューに戻る</button>
+  <button class="btn blue" onclick="window.location.href='index.html'">Back to Main Menu</button>
   <footer style="opacity:.8">Bryan’s English School</footer>
 </div>
 
@@ -168,6 +170,7 @@ function qs(s){return document.querySelector(s)}
 function mount(){
   bank.innerHTML='';sent.innerHTML='';playBtn.classList.remove('show');wrongMode=false;
   okWrap.style.display='none';nextWrap.style.display='none';okBtn.disabled=true;check.disabled=true;
+  check.onclick=null; // reset single-click
   const item=DATA[i];jp.textContent=item.jp;hira.textContent=item.hira;
   const words=item.en.split(/\s+/);shuffle(words).forEach((w,idx)=>{
     const b=document.createElement('button');b.textContent=w;b.className='word';
@@ -177,6 +180,7 @@ function mount(){
     b.addEventListener('dragend',()=>b.classList.remove('drag'));
     bank.appendChild(b);
   });updateProgress();
+  check.onclick=()=>handleCheckOnce();
 }
 
 ['bank','sentence'].forEach(id=>{
@@ -190,10 +194,12 @@ function mount(){
   });
 });
 
+function handleCheckOnce(){check.disabled=true;checkLogic();}
+
 function currentBuilt(){return [...sent.children].map(e=>e.textContent).join(' ').trim();}
 function currentCorrect(){return DATA[i].en.trim();}
 function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".mp3";}
-function playSage(en,onEnd){const a=new Audio(filename(en));a.volume=1;a.onended=onEnd;playSafe(a);}
+function playSage(en,onEnd){const a=new Audio(filename(en));a.volume=1;if(onEnd)a.onended=onEnd;playSafe(a);}
 function playSafe(a){try{a.pause();a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});}catch(e){}}
 function bigHearts(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
 for(let k=0;k<3;k++){const h=document.createElement('div');h.className='heart';h.textContent='❤';
@@ -204,30 +210,24 @@ function chipColor(n){const c=["#ff6ec7","#5ee6ff","#ffd166","#8aff80","#c77dff"
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function updateProgress(){progress.textContent=`${i+1} / ${DATA.length}`;}
 
-check.onclick=()=>{
+function checkLogic(){
   const correct=currentCorrect(),built=currentBuilt();
   if(built===correct){
     if(!wrongMode){
       score++;playSafe(SOK);bigHearts(sent);
-      // Wait for sugoi sound + hearts before Sage
-      setTimeout(()=>playSage(correct,()=>{nextWrap.style.display='block';check.style.display='none';}),1800);
-    }else{
-      okBtn.textContent="Next";okBtn.disabled=false;
-    }
+      setTimeout(()=>playSage(correct,()=>{nextWrap.style.display='block';}),1800);
+    }else{okBtn.textContent="Next";okBtn.disabled=false;}
   }else{
     wrongMode=true;playSafe(SBAD);hugeSmoke(sent);
     playBtn.classList.add('show');
-    // Send all chips back
     [...sent.children].forEach(chip=>bank.appendChild(chip));
     check.style.display='none';okWrap.style.display='block';okBtn.disabled=true;
   }
-};
+}
 
 okBtn.onclick=()=>{
   if(wrongMode && okBtn.textContent==="Next"){next();}
-  else if(wrongMode && currentBuilt()===currentCorrect()){
-    okBtn.textContent="Next";okBtn.disabled=false;
-  }
+  else if(wrongMode && currentBuilt()===currentCorrect()){okBtn.textContent="Next";okBtn.disabled=false;}
 };
 nextBtn.onclick=()=>next();
 playBtn.onclick=()=>{if(wrongMode)playSage(currentCorrect());};
