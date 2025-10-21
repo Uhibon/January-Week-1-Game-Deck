@@ -75,7 +75,47 @@ header{text-align:center;padding:26px 12px 12px}
 
 /* areas */
 .wordbank,.sentence{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;min-height:64px;padding:12px;margin-bottom:14px;}
-.sentence{justify-content:flex-start;min-height:88px;border:1px dashed rgba(255,255,255,.25);border-radius:14px;padding:16px 12px}
+.sentence{
+  justify-content:flex-start;min-height:88px;border:1px dashed rgba(255,255,255,.25);
+  border-radius:14px;padding:16px 12px;position:relative; /* for play button anchoring */
+}
+
+/* shimmering gold play button (hidden by default) */
+.playBtn{
+  position:absolute;left:-8px;top:50%;transform:translate(-100%,-50%); /* locked to left side */
+  width:58px;height:58px;border:none;border-radius:50%;
+  cursor:pointer;outline:none;
+  background:
+    radial-gradient(circle at 35% 30%, #fff7cc 0 26%, rgba(255,255,255,.0) 27%),
+    radial-gradient(circle at 65% 70%, #fff3a3 0 18%, rgba(255,255,255,.0) 19%),
+    linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
+  box-shadow:
+    0 0 0 4px rgba(255,215,64,.25),
+    0 0 16px rgba(255,215,64,.85),
+    inset 0 0 14px rgba(255,255,255,.45);
+  display:none;
+}
+.playBtn::before{
+  content:"▶";
+  display:block;text-align:center;line-height:58px;
+  font-weight:900;color:#2a1b00;text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+@keyframes shimmer{
+  0%{filter:brightness(1)}
+  50%{filter:brightness(1.25)}
+  100%{filter:brightness(1)}
+}
+@keyframes twinkle{
+  0%,100%{box-shadow:
+    0 0 0 4px rgba(255,215,64,.25),
+    0 0 16px rgba(255,215,64,.85),
+    inset 0 0 14px rgba(255,255,255,.45)}
+  50%{box-shadow:
+    0 0 0 6px rgba(255,215,64,.35),
+    0 0 26px rgba(255,215,64,1),
+    inset 0 0 22px rgba(255,255,255,.7)}
+}
+.playBtn.shimmer{animation:shimmer 1.6s ease-in-out infinite, twinkle 2.4s ease-in-out infinite}
 
 /* chips */
 .word{padding:14px 18px;font-weight:900;font-size:clamp(18px,4.2vw,26px);
@@ -157,12 +197,24 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     <div id="hira" class="hira"></div>
 
     <div id="bank" class="wordbank"></div>
-    <div id="sentence" class="sentence"></div>
+
+    <!-- Sentence area + play button anchored to its left -->
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button id="playBtn" class="playBtn shimmer" title="Play" aria-label="Play"></button>
+      <div id="sentence" class="sentence"></div>
+    </div>
 
     <div id="correctLine" class="correctLine"></div>
+
+    <!-- Wrong-flow: must fix to correct order; OK enables only when correct -->
     <div id="okWrap" style="text-align:center;display:none">
-      <div style="margin-top:8px">正しい文を読んで OK をクリック</div>
-      <button id="okBtn" class="btn blue" style="margin-top:10px;padding:10px 28px;font-size:clamp(16px,3.8vw,20px)">OK</button>
+      <div style="margin-top:8px">正しい順番に並べてから OK をクリック</div>
+      <button id="okBtn" class="btn blue" style="margin-top:10px;padding:10px 28px;font-size:clamp(16px,3.8vw,20px)" disabled>OK</button>
+    </div>
+
+    <!-- Right-first-try flow: Next button appears after auto audio -->
+    <div id="nextWrap" style="text-align:center;display:none">
+      <button id="nextBtn" class="btn" style="margin-top:10px;padding:12px 32px">Next</button>
     </div>
 
     <button id="checkBtn" class="btn" disabled>Check</button>
@@ -201,7 +253,7 @@ const DATA=[
   {en:"I will enjoy learning.",jp:"学ぶことを楽しみます。",hira:"まなぶ こと を たのしみ ます"}
 ];
 
-/* ===== Audio ===== */
+/* ===== Audio (feedback/result) ===== */
 const SOK=new Audio("assets/audio/sugoi.mp3");
 const SBAD=new Audio("assets/audio/yada.mp3");
 const SR0_5=new Audio("assets/audio/result_0-5.mp3");
@@ -213,6 +265,7 @@ const SR15=new Audio("assets/audio/result_15.mp3");
 /* ===== State / DOM ===== */
 let order=shuffle([...DATA.keys()]);
 let i=0,score=0;
+let wrongMode=false; // track if current item already answered wrong
 
 const jp=document.getElementById('jp');
 const hira=document.getElementById('hira');
@@ -223,11 +276,14 @@ const progress=document.getElementById('progress');
 const correctLine=document.getElementById('correctLine');
 const okWrap=document.getElementById('okWrap');
 const okBtn=document.getElementById('okBtn');
+const nextWrap=document.getElementById('nextWrap');
+const nextBtn=document.getElementById('nextBtn');
 const fx=document.getElementById('fx');
 const panel=document.getElementById('panel');
 const end=document.getElementById('end');
 const scoreText=document.getElementById('scoreText');
 const endMsg=document.getElementById('endMsg');
+const playBtn=document.getElementById('playBtn');
 
 /* ===== JP Text Auto-Fit ===== */
 function fitJPText(){
@@ -255,14 +311,17 @@ window.addEventListener('resize', () => {
 
 /* ===== Main Logic ===== */
 const HEART_MS=1200;
-const CORRECT_PAUSE=2200;
 const FINAL_GRACE=1200;
 
 function mount(){
   bank.innerHTML=''; sent.innerHTML='';
   correctLine.textContent=''; correctLine.classList.remove('show');
   okWrap.style.display='none';
+  nextWrap.style.display='none';
+  okBtn.disabled=true;
   check.disabled=true; check.style.display='block';
+  playBtn.style.display='none';
+  wrongMode=false;
   updateProgress();
 
   const item=DATA[order[i]];
@@ -283,8 +342,11 @@ function mount(){
   checkWords();
 }
 
-function checkWords(){ check.disabled = bank.children.length !== 0; }
+function currentBuilt(){ return [...sent.children].map(e=>e.textContent).join(' ').trim(); }
+function currentCorrect(){ return DATA[order[i]].en.trim(); }
+function checkWords(){ check.disabled = bank.children.length !== 0; if(wrongMode){ okBtn.disabled = (currentBuilt() !== currentCorrect()); } }
 
+/* drag-and-drop */
 ['bank','sentence'].forEach(id=>{
   const area=document.getElementById(id);
   area.addEventListener('dragover',e=>e.preventDefault());
@@ -296,28 +358,62 @@ function checkWords(){ check.disabled = bank.children.length !== 0; }
   });
 });
 
+/* Build local audio filename from EN sentence, e.g. "I will study every day." -> "iwillstudyeveryday.mp3" */
+function sentenceFilename(en){
+  return "assets/audio/" + en.toLowerCase().replace(/[^a-z]/g,'') + ".mp3";
+}
+function playSentenceAudio(en){
+  const src = sentenceFilename(en);
+  const a = new Audio(src);
+  a.preload="auto"; a.volume=1;
+  playSafe(a);
+}
+
+/* Answer check */
 check.onclick = async ()=>{
   const item=DATA[order[i]];
-  const built=[...sent.children].map(e=>e.textContent).join(' ').trim();
+  const built=currentBuilt();
   const correct=item.en.trim();
 
   if(built===correct){
-    score++;
-    await playSafe(SOK);
-    bigHearts(sent);
-    await wait(CORRECT_PAUSE);
-    next();
+    if(!wrongMode){
+      // Correct on first try
+      score++;
+      playSafe(SOK);
+      bigHearts(sent);
+      // Auto-play Sage local audio for the sentence
+      playSentenceAudio(correct);
+      // Show Next button (no auto-advance)
+      check.style.display='none';
+      nextWrap.style.display='block';
+    }else{
+      // Was previously wrong; OK button will handle advancing
+      okBtn.disabled=false; // in case it's somehow still disabled
+    }
   }else{
+    // WRONG: reveal line, smoke, wrong sfx, require fixing before progressing
+    wrongMode=true;
     correctLine.textContent = "正解：" + correct;
     correctLine.classList.add('show');
     hugeSmoke(sent);
     playSafe(SBAD);
+    // Show shimmering gold play button locked to the left of the sentence area
+    playBtn.style.display='block';
+    playBtn.classList.add('shimmer');
+    // Hide Check; show OK flow (but disable until arranged correctly)
     check.style.display='none';
     okWrap.style.display='block';
+    okBtn.disabled = (currentBuilt() !== correct);
   }
 };
 
-okBtn.onclick = ()=>{ okWrap.style.display='none'; next(); };
+/* Wrong-flow OK: only enabled when arrangement equals correct; still counted as wrong */
+okBtn.onclick = ()=>{
+  next();
+};
+
+/* Right-first-try Next */
+nextBtn.onclick = ()=>{ next(); };
 
 function next(){
   i++;
@@ -407,6 +503,14 @@ function playSafe(a){
   try{ a.pause(); a.currentTime=0; const p=a.play(); if(p&&p.then)p.catch(()=>{}); }
   catch(e){}
 }
+
+/* Play button handler (appears only in wrong mode) */
+playBtn.addEventListener('click', ()=>{
+  if(!wrongMode) return;
+  const en = currentCorrect();
+  playSentenceAudio(en);
+});
+
 mount();
 </script>
 </body>
