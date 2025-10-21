@@ -23,7 +23,7 @@ header{text-align:center;padding:26px 12px 12px}
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
 box-shadow:0 6px 24px rgba(0,0,0,.4);}
 
-/* Japanese display */
+/* JP card */
 .jpCard{border-radius:var(--radius);border:1px solid var(--outline);height:160px;
 display:flex;align-items:center;justify-content:center;margin-bottom:10px;
 background:repeating-linear-gradient(to bottom,#ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,
@@ -43,7 +43,7 @@ background-size:100% 600px;animation:stripeSlide 18s linear infinite;}
   border-radius:14px;padding:16px 12px;position:relative;
 }
 
-/* gold play button (UNDER the sentence, LEFT side) */
+/* play button (bottom left) */
 .playBtn{
   position:absolute;left:12px;bottom:-60px;
   width:54px;height:54px;border:none;border-radius:50%;
@@ -80,24 +80,26 @@ box-shadow:0 0 0 5px rgba(255,83,194,.25),0 0 18px rgba(255,83,194,.7);}
 
 /* FX */
 .fx{position:fixed;inset:0;pointer-events:none;z-index:1000}
-.heart{position:absolute;color:var(--heart);font-size:clamp(46px,8vw,84px);
-animation:heartFly 1.2s ease-out forwards;}
+.heart{
+  position:absolute;color:var(--heart);font-size:clamp(50px,8vw,90px);
+  animation:heartFly 1.8s ease-out forwards;
+}
 @keyframes heartFly{
   0%{opacity:0;transform:translate(-50%,-10px) scale(.7)}
-  20%{opacity:1}
-  100%{opacity:0;transform:translate(var(--dx),calc(-200px - var(--up))) scale(1.3)}
+  15%{opacity:1}
+  100%{opacity:0;transform:translate(var(--dx),calc(-300px - var(--up))) scale(1.3)}
 }
 .smoke{
   position:absolute;border-radius:50%;
-  width:var(--w,78px);height:var(--h,78px);
+  width:var(--w,80px);height:var(--h,80px);
   background:radial-gradient(circle at 40% 40%,#fff,rgba(255,255,255,.6) 55%,rgba(255,255,255,0) 72%);
-  filter:blur(0.5px);
-  animation:smokeRise 1.2s ease-out forwards;
+  filter:blur(0.6px);
+  animation:smokeRise 1.8s ease-out forwards;
 }
 @keyframes smokeRise{
   0%{opacity:0;transform:translate(-50%,0) scale(.7)}
   20%{opacity:.9}
-  100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-180px - var(--up))) scale(1.1)}
+  100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-200px - var(--up))) scale(1.2)}
 }
 
 /* results */
@@ -129,7 +131,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
   <div id="okWrap" style="text-align:center;display:none">
     <div>正しい順番に並べてから OK をクリック</div>
-    <button id="okBtn" class="btn pink" disabled>OK</button>
+    <button id="okBtn" class="btn green" disabled>Next</button>
   </div>
 
   <div id="nextWrap" style="text-align:center;display:none">
@@ -178,16 +180,15 @@ function qs(s){return document.querySelector(s)}
 
 function sfx(name){
   const a=new Audio(`assets/audio/${name}.mp3`);
-  a.volume=1; a.play().catch(()=>{});
+  a.volume=1;a.play().catch(()=>{});
 }
 function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".mp3";}
 function playSage(en,onEnd){
-  const a=new Audio(filename(en));
-  let done=false;
-  a.onended=()=>{ if(done)return; done=true; if(onEnd) onEnd(); };
-  a.onerror=()=>{ if(done)return; done=true; if(onEnd) onEnd(); };
-  a.play().catch(()=>{ if(!done){done=true; if(onEnd) onEnd();} });
-  setTimeout(()=>{ if(!done){done=true; if(onEnd) onEnd();} },7000);
+  const a=new Audio(filename(en));let done=false;
+  a.onended=()=>{if(done)return;done=true;if(onEnd)onEnd();};
+  a.onerror=()=>{if(done)return;done=true;if(onEnd)onEnd();};
+  a.play().catch(()=>{if(!done){done=true;if(onEnd)onEnd();}});
+  setTimeout(()=>{if(!done){done=true;if(onEnd)onEnd();}},7000);
 }
 
 function mount(){
@@ -195,8 +196,6 @@ function mount(){
   playBtn.classList.remove('show');wrongMode=false;
   okWrap.style.display='none';nextWrap.style.display='none';
   okBtn.disabled=true;check.disabled=true;check.style.display='block';
-  check.onclick=null;
-
   const item=DATA[i];jp.textContent=item.jp;hira.textContent=item.hira;
   const words=item.en.trim().split(/\s+/);shuffle(words).forEach((w,idx)=>{
     const b=document.createElement('button');b.textContent=w;b.className='word';
@@ -230,19 +229,20 @@ function checkLogic(){
   if(built===correct){
     if(!wrongMode){
       score++;sfx('sugoi');heartsBurst(sent);
-      setTimeout(()=>{playSage(correct,()=>{nextWrap.style.display='block';});},700);
-    }else{okBtn.textContent="Next";okBtn.disabled=false;}
+      setTimeout(()=>{playSage(correct,()=>{nextWrap.style.display='block';});},1800);
+    }else{
+      okBtn.textContent="Next";okBtn.disabled=false;
+    }
   }else{
     wrongMode=true;sfx('yada');smokeBurst(sent);
     playBtn.classList.add('show');
+    [...sent.querySelectorAll('.word')].forEach(ch=>bank.appendChild(ch)); // return chips
     check.style.display='none';okWrap.style.display='block';okBtn.disabled=true;
   }
 }
 
-okBtn.onclick=()=>{
-  if(wrongMode && okBtn.textContent==="Next"){next();}
-  else if(wrongMode && currentBuilt()===currentCorrect()){okBtn.textContent="Next";okBtn.disabled=false;}
-};
+okBtn.onclick=()=>{if(wrongMode && okBtn.textContent==="Next"){next();}
+  else if(wrongMode && currentBuilt()===currentCorrect()){okBtn.textContent="Next";okBtn.disabled=false;}};
 nextBtn.onclick=()=>next();
 playBtn.onclick=()=>{if(wrongMode)playSage(currentCorrect());};
 
@@ -256,34 +256,34 @@ function finish(){
   endMsg.textContent=score<DATA.length?"Good try!":"Perfect!";
 }
 
-/* ---- FX ---- */
+/* FX */
 function heartsBurst(el){
   const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
-  const radius=42;
+  const radius=70;
   for(let n=0;n<5;n++){
-    const angle=(-60+n*30)*Math.PI/180;
-    const dx=Math.cos(angle)*radius+(Math.random()*6-3);
-    const up=40+Math.random()*30;
+    const angle=(-80+n*40)*Math.PI/180;
+    const dx=Math.cos(angle)*radius+(Math.random()*8-4);
+    const up=60+Math.random()*40;
     const h=document.createElement('div');h.className='heart';h.textContent='❤';
     h.style.left=cx+'px';h.style.top=cy+'px';
     h.style.setProperty('--dx',dx+'px');
     h.style.setProperty('--up',up+'px');
     fx.appendChild(h);
-    setTimeout(()=>h.remove(),1200);
+    setTimeout(()=>h.remove(),1800);
   }
 }
 function smokeBurst(el){
   const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
   for(let k=0;k<3;k++){
     const s=document.createElement('div');s.className='smoke';
-    const w=68+Math.random()*14;
+    const w=70+Math.random()*20;
     s.style.setProperty('--w',w+'px');
     s.style.setProperty('--h',w+'px');
     s.style.left=cx+'px';s.style.top=cy+'px';
-    s.style.setProperty('--sx',(Math.random()<.5?-1:1)*(10+Math.random()*18)+'px');
-    s.style.setProperty('--up',(20+Math.random()*25)+'px');
+    s.style.setProperty('--sx',(Math.random()<.5?-1:1)*(15+Math.random()*25)+'px');
+    s.style.setProperty('--up',(30+Math.random()*35)+'px');
     fx.appendChild(s);
-    setTimeout(()=>s.remove(),1200);
+    setTimeout(()=>s.remove(),1800);
   }
 }
 function chipColor(n){
