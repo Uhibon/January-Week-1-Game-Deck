@@ -21,13 +21,16 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
-.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:1;}
-.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .25s ease}
+.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:1}
+.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease}
 .en .word.blue{color:#60a5fa}
 .en .word.red{color:#ff5757}
-.sweep{position:absolute;top:0;left:0;height:100%;width:0;
-background:rgba(255,246,128,.8);mix-blend-mode:screen;border-radius:6px;
-transition:none;z-index:0;pointer-events:none;}
+.sweep{
+  position:absolute;top:0;left:0;height:100%;width:0;
+  background:rgba(255,246,128,.9);
+  mix-blend-mode:screen;border-radius:6px;
+  transition:none;z-index:2;pointer-events:none; /* over the text */
+}
 .heart{position:absolute;left:0;top:0;transform:translate(-50%,0);font-size:22px;color:#ff7eb9;opacity:0;
 animation:heartUp .9s ease-out forwards}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
@@ -125,7 +128,7 @@ let ITEMS=[
 {en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ];
-// Shuffle on load
+// Shuffle each load
 ITEMS = ITEMS.sort(()=>Math.random()-0.5);
 
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
@@ -142,110 +145,182 @@ A_100=new Audio("assets/audio/100.mp3");
 
 let idx=0,listening=false,currentSage=null,SR,streamAllowed=false;
 
+// ---------- UTIL: robust normalization ----------
+function normalize(s){
+  return s
+    .toLowerCase()
+    .replace(/[’‘´`]/g,"'")              // unify apostrophes
+    .replace(/[^a-z0-9'\s]/g,' ')        // strip punctuation except apostrophe
+    .replace(/\s+/g,' ')                 // collapse spaces
+    .trim();
+}
+function toWordSet(s){
+  const words = normalize(s).split(' ').filter(Boolean);
+  return new Set(words);
+}
 function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
+
+// ---------- Sage local play ----------
 function playSage(en){
- if(listening)return;
+ if(listening) return;
  const f='./audio/'+stripForFile(en)+'.mp3';
  if(currentSage){currentSage.pause();currentSage=null;}
- const a=new Audio(f);a.preload='auto';a.volume=1;a.play().catch(()=>{});currentSage=a;
+ const a=new Audio(f);a.preload='auto';a.volume=1;a.play().catch(()=>{});
+ currentSage=a;
 }
-function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');}
+
+// ---------- UI helpers ----------
+function mountWords(t){
+  enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');
+}
 function popHeartAt(el){
- const h=document.createElement('span');h.className='heart';h.textContent='❤';
- const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
- h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
- enEl.appendChild(h);setTimeout(()=>h.remove(),900);
+  const h=document.createElement('span');h.className='heart';h.textContent='❤';
+  const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();
+  h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
+  enEl.appendChild(h);setTimeout(()=>h.remove(),900);
 }
-function markSpoken(txt){
- if(!txt)return;
- const set=new Set(txt.toLowerCase().split(' '));
- enEl.querySelectorAll('.word').forEach(w=>{
-   const s=w.textContent.toLowerCase();
-   if(set.has(s)&&!w.classList.contains('blue')){
-     w.classList.add('blue');popHeartAt(w);
-   }
- });
+function markSpoken(spoken){
+  if(!spoken) return;
+  const spokenSet = toWordSet(spoken);
+  enEl.querySelectorAll('.word').forEach(w=>{
+    const word = normalize(w.textContent);
+    if(spokenSet.has(word) && !w.classList.contains('blue')){
+      w.classList.add('blue');
+      popHeartAt(w); // PINK hearts only on correct
+    }
+  });
+}
+function finalizeColors(){
+  enEl.querySelectorAll('.word').forEach(w=>{
+    if(!w.classList.contains('blue')) w.classList.add('red'); // incorrect -> red, no hearts here
+  });
 }
 function keywordScore(target,spoken){
- const keys=target.toLowerCase().split(' ').filter(w=>w.length>2);
- const said=' '+spoken.toLowerCase()+' ';
- let hit=0;for(const k of keys){if(said.includes(' '+k+' '))hit++;}
- return Math.round((hit/keys.length)*100);
+  const keys = toWordSet(target);
+  let hit=0, total=0;
+  keys.forEach(k=>{
+    if(k.length>2){ total++; if(toWordSet(spoken).has(k)) hit++; }
+  });
+  return total? Math.round((hit/total)*100) : 0;
 }
 function showItem(){
- const it=ITEMS[idx];mountWords(it.en);
- jpEl.textContent=it.jp;hiraEl.textContent=it.hira;scoreBox.style.display='none';
- sweep.style.width='0';
+  const it=ITEMS[idx];
+  mountWords(it.en);
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
+  scoreBox.style.display='none';
+  sweep.style.width='0';
 }
+
+// ---------- Sounds by score ----------
 function playScoreSound(score){
- if(score===100)A_100.play();
- else if(score>=75)A_75_99.play();
- else if(score>=44)A_44_74.play();
- else A_0_43.play();
+  if(score===100) A_100.play();
+  else if(score>=75) A_75_99.play();
+  else if(score>=44) A_44_74.play();
+  else A_0_43.play();
 }
 
+// ---------- Mic permission ----------
 async function requestMic(){
- try{
-   const s=await navigator.mediaDevices.getUserMedia({audio:true});
-   s.getTracks().forEach(t=>t.stop());
-   streamAllowed=true;
- }catch(e){alert("マイクが使えません。ブラウザ設定を確認してください。");}
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t=>t.stop());
+    streamAllowed=true;
+  }catch(e){
+    alert("マイクが使えません。ブラウザ設定を確認してください。");
+  }
 }
 
+// ---------- Begin listening round ----------
 async function beginRound(){
- if(!streamAllowed){await requestMic();return;}
- listening=true;playBtn.disabled=true;meterText.textContent='リスニング中';
- sweep.style.width='0';sweep.style.transition='none';
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    alert("音声認識がこのブラウザでは使えません。Chrome をお試しください。");
+    return;
+  }
+  if(!streamAllowed){
+    await requestMic();
+    if(!streamAllowed) return;
+    // ensure we actually start after permission:
+    // fall through to start immediately
+  }
 
- SR=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
- SR.lang='en-US';SR.continuous=false;SR.interimResults=true;
- let heard="";
- SR.onresult=e=>{
-   let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";}
-   heard=txt.trim();markSpoken(heard);
- };
- SR.start();
+  listening=true;
+  playBtn.disabled=true;
+  meterText.textContent='リスニング中';
+  sweep.style.width='0';
+  sweep.style.transition='none';
 
- // Animate yellow meter over sentence
- const dur=3000,start=performance.now();
- (function step(t){
-   const p=Math.min((t-start)/dur,1);
-   sweep.style.width=p*100+'%';
-   if(p<1)requestAnimationFrame(step);
- })();
+  SR = new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+  SR.lang='en-US';
+  SR.continuous=true;          // keep streaming during the window
+  SR.interimResults=true;
 
- await new Promise(r=>setTimeout(r,3000));
- SR.stop();listening=false;playBtn.disabled=false;
+  let heard = "";
 
- const s=keywordScore(ITEMS[idx].en,heard);
- enEl.querySelectorAll('.word').forEach(w=>{
-   if(!w.classList.contains('blue'))w.classList.add('red');
- });
- meterText.textContent=s+"%";
- scoreBox.textContent="スコア："+s+"％";
- scoreBox.style.display='block';
- playScoreSound(s);
- nextBtn.style.display=(s>=75)?'inline-block':'none';
- retryBtn.style.display=(s<75)?'inline-block':'none';
+  SR.onresult = (e)=>{
+    let txt="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      txt += e.results[i][0].transcript + " ";
+    }
+    heard = txt.trim();
+    markSpoken(heard); // live-mark correct words blue + hearts
+  };
+  SR.onerror = ()=>{};
+  SR.onend = ()=>{}; // we'll stop manually
+
+  // Start recognition (must be in user-gesture chain)
+  try{ SR.start(); }catch(_){ /* ignore repeated start */ }
+
+  // Animate yellow sweep OVER the sentence for 3 seconds
+  const dur=3000, start=performance.now();
+  (function step(t){
+    const p=Math.min((t-start)/dur,1);
+    sweep.style.width=(p*100)+'%';
+    if(p<1) requestAnimationFrame(step);
+  })();
+
+  // Wait, then stop and score
+  await new Promise(r=>setTimeout(r,dur));
+  try{ SR.stop(); }catch(_){}
+  listening=false;
+  playBtn.disabled=false;
+
+  // Color remaining words red (no hearts)
+  finalizeColors();
+
+  const s = keywordScore(ITEMS[idx].en, heard);
+  meterText.textContent = s + "%";
+  scoreBox.textContent = "スコア："+s+"％";
+  scoreBox.style.display='block';
+  playScoreSound(s);
+
+  nextBtn.style.display = (s>=75)?'inline-block':'none';
+  retryBtn.style.display = (s<75)?'inline-block':'none';
 }
 
-beginBtn.onclick=()=>{showItem();beginRound();};
-retryBtn.onclick=()=>beginRound();
-nextBtn.onclick=()=>{
- idx++;
- if(idx>=ITEMS.length){
-   enEl.textContent="Great work today!";
-   jpEl.textContent="よくできました！";
-   hiraEl.textContent="";
-   nextBtn.style.display='none';
-   retryBtn.style.display='none';
-   beginBtn.style.display='none';
-   meterText.textContent="100%";
-   return;
- }
- showItem();
+// ---------- Buttons ----------
+const playCurrent = ()=>playSage(ITEMS[idx].en);
+
+beginBtn.onclick = ()=>{ showItem(); beginRound(); };
+retryBtn.onclick = ()=>beginRound();
+nextBtn.onclick = ()=>{
+  idx++;
+  if(idx>=ITEMS.length){
+    enEl.textContent="Great work today!";
+    jpEl.textContent="よくできました！";
+    hiraEl.textContent="";
+    nextBtn.style.display='none';
+    retryBtn.style.display='none';
+    beginBtn.style.display='none';
+    meterText.textContent="100%";
+    sweep.style.width='0';
+    return;
+  }
+  showItem();
 };
-playBtn.onclick=()=>playSage(ITEMS[idx].en);
+playBtn.onclick = playCurrent;
+
+// Initial render
 showItem();
 </script>
 </body>
