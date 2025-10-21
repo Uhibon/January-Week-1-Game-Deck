@@ -22,9 +22,11 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
 .en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative}
-.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s ease}
+.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .25s ease}
 .en .word.blue{color:#60a5fa}
 .en .word.red{color:#ff5757}
+.sweep{position:absolute;top:0;left:0;height:100%;width:0;background:rgba(255,246,128,.8);
+mix-blend-mode:screen;border-radius:6px;transition:none;z-index:0}
 .heart{position:absolute;left:0;top:0;transform:translate(-50%,0);font-size:22px;color:#ff7eb9;opacity:0;
 animation:heartUp .9s ease-out forwards}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
@@ -42,7 +44,6 @@ inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55);}
 50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),
 inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75);}
 }
-.sweep{position:absolute;top:0;left:-100%;width:100%;height:100%;background:#fff680;opacity:.85;z-index:0;filter:blur(2px)}
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
 .meterWrap{display:flex;justify-content:center;margin:22px 0}
@@ -51,7 +52,7 @@ inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75);}
 background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);
 -webkit-mask:radial-gradient(circle,transparent 60%,black 62%);
 mask:radial-gradient(circle,transparent 60%,black 62%);
-animation:rainbowCycle 2.8s linear infinite}
+animation:rainbowCycle 3s linear infinite}
 @keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
 .meterCore{position:absolute;inset:12%;border-radius:50%;
 background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));
@@ -70,10 +71,10 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
 </head>
 <body>
 <header>
-<div class="h1">THE BOO-RICULUM</div>
-<div class="h2">SPEAK & REPEAT</div>
-<div class="h3">January Week 1 – Speaking Practice</div>
-<div class="h4">１月第１週 – スピーキング練習</div>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">SPEAK & REPEAT</div>
+  <div class="h3">January Week 1 – Speaking Practice</div>
+  <div class="h4">１月第１週 – スピーキング練習</div>
 </header>
 
 <div class="wrap">
@@ -135,7 +136,7 @@ A_75_99=new Audio("assets/audio/75-99.mp3"),
 A_100=new Audio("assets/audio/100.mp3");
 [A_0_43,A_44_74,A_75_99,A_100].forEach(a=>{a.preload="auto";a.volume=1;});
 
-let idx=0,listening=false,currentSage=null,SR;
+let idx=0,listening=false,currentSage=null,SR,streamAllowed=false;
 
 function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
 function playSage(en){
@@ -156,7 +157,9 @@ function markSpoken(txt){
  const set=new Set(txt.toLowerCase().split(' '));
  enEl.querySelectorAll('.word').forEach(w=>{
    const s=w.textContent.toLowerCase();
-   if(set.has(s)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w);}
+   if(set.has(s)&&!w.classList.contains('blue')){
+     w.classList.add('blue');popHeartAt(w);
+   }
  });
 }
 function keywordScore(target,spoken){
@@ -168,6 +171,7 @@ function keywordScore(target,spoken){
 function showItem(){
  const it=ITEMS[idx];mountWords(it.en);
  jpEl.textContent=it.jp;hiraEl.textContent=it.hira;scoreBox.style.display='none';
+ sweep.style.width='0';
 }
 function playScoreSound(score){
  if(score===100)A_100.play();
@@ -175,9 +179,20 @@ function playScoreSound(score){
  else if(score>=44)A_44_74.play();
  else A_0_43.play();
 }
+
+// ensure mic permission only once
+async function requestMic(){
+ try{
+   const s=await navigator.mediaDevices.getUserMedia({audio:true});
+   s.getTracks().forEach(t=>t.stop());
+   streamAllowed=true;
+ }catch(e){alert("マイクが使えません。ブラウザ設定を確認してください。");}
+}
+
 async function beginRound(){
+ if(!streamAllowed){await requestMic();return;} // wait until user grants permission
  listening=true;playBtn.disabled=true;meterText.textContent='リスニング中';
- sweep.style.left='-100%';sweep.style.transition='none';
+ sweep.style.width='0';
  SR=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
  SR.lang='en-US';SR.continuous=false;SR.interimResults=true;
  let heard="";
@@ -185,11 +200,12 @@ async function beginRound(){
    let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";}
    heard=txt.trim();markSpoken(heard);
  };
+ SR.onend=()=>{};
  SR.start();
  const dur=3000,start=performance.now();
  (function step(t){
    const p=Math.min((t-start)/dur,1);
-   sweep.style.left=(p*100-100)+'%';
+   sweep.style.width=p*100+'%';
    if(p<1)requestAnimationFrame(step);
  })();
  await new Promise(r=>setTimeout(r,3000));
