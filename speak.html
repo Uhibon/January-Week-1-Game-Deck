@@ -21,12 +21,13 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
 .card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
-.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative}
+.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:1;}
 .en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .25s ease}
 .en .word.blue{color:#60a5fa}
 .en .word.red{color:#ff5757}
-.sweep{position:absolute;top:0;left:0;height:100%;width:0;background:rgba(255,246,128,.8);
-mix-blend-mode:screen;border-radius:6px;transition:none;z-index:0}
+.sweep{position:absolute;top:0;left:0;height:100%;width:0;
+background:rgba(255,246,128,.8);mix-blend-mode:screen;border-radius:6px;
+transition:none;z-index:0;pointer-events:none;}
 .heart{position:absolute;left:0;top:0;transform:translate(-50%,0);font-size:22px;color:#ff7eb9;opacity:0;
 animation:heartUp .9s ease-out forwards}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
@@ -96,8 +97,8 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
 
     <div class="btnRow">
       <button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
-      <button id="retryBtn" class="btn retry" style="display:none">もう一回</button>
-      <button id="nextBtn" class="btn next" style="display:none">つぎへ</button>
+      <button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
+      <button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
     </div>
     <div id="scoreBox" class="scoreBox" style="display:none"></div>
   </div>
@@ -106,7 +107,8 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
 <footer>Bryan’s English School</footer>
 
 <script>
-const ITEMS=[
+// ====== QUESTIONS ======
+let ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
 {en:"Why is it important to you?",jp:"あなたにとってなぜ大切ですか。",hira:"(あなた に とって なぜ たいせつ です か)"},
 {en:"How will you reach your goal?",jp:"どうやって目標を達成しますか。",hira:"(どうやって もくひょう を たっせい します か)"},
@@ -123,6 +125,8 @@ const ITEMS=[
 {en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ];
+// Shuffle on load
+ITEMS = ITEMS.sort(()=>Math.random()-0.5);
 
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),
@@ -180,7 +184,6 @@ function playScoreSound(score){
  else A_0_43.play();
 }
 
-// ensure mic permission only once
 async function requestMic(){
  try{
    const s=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -190,9 +193,10 @@ async function requestMic(){
 }
 
 async function beginRound(){
- if(!streamAllowed){await requestMic();return;} // wait until user grants permission
+ if(!streamAllowed){await requestMic();return;}
  listening=true;playBtn.disabled=true;meterText.textContent='リスニング中';
- sweep.style.width='0';
+ sweep.style.width='0';sweep.style.transition='none';
+
  SR=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
  SR.lang='en-US';SR.continuous=false;SR.interimResults=true;
  let heard="";
@@ -200,16 +204,19 @@ async function beginRound(){
    let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";}
    heard=txt.trim();markSpoken(heard);
  };
- SR.onend=()=>{};
  SR.start();
+
+ // Animate yellow meter over sentence
  const dur=3000,start=performance.now();
  (function step(t){
    const p=Math.min((t-start)/dur,1);
    sweep.style.width=p*100+'%';
    if(p<1)requestAnimationFrame(step);
  })();
+
  await new Promise(r=>setTimeout(r,3000));
  SR.stop();listening=false;playBtn.disabled=false;
+
  const s=keywordScore(ITEMS[idx].en,heard);
  enEl.querySelectorAll('.word').forEach(w=>{
    if(!w.classList.contains('blue'))w.classList.add('red');
@@ -221,10 +228,23 @@ async function beginRound(){
  nextBtn.style.display=(s>=75)?'inline-block':'none';
  retryBtn.style.display=(s<75)?'inline-block':'none';
 }
+
 beginBtn.onclick=()=>{showItem();beginRound();};
 retryBtn.onclick=()=>beginRound();
-nextBtn.onclick=()=>{idx++;if(idx>=ITEMS.length){enEl.textContent="Great work today!";
-jpEl.textContent="よくできました！";hiraEl.textContent="";nextBtn.style.display='none';retryBtn.style.display='none';beginBtn.style.display='none';return;}showItem();};
+nextBtn.onclick=()=>{
+ idx++;
+ if(idx>=ITEMS.length){
+   enEl.textContent="Great work today!";
+   jpEl.textContent="よくできました！";
+   hiraEl.textContent="";
+   nextBtn.style.display='none';
+   retryBtn.style.display='none';
+   beginBtn.style.display='none';
+   meterText.textContent="100%";
+   return;
+ }
+ showItem();
+};
 playBtn.onclick=()=>playSage(ITEMS[idx].en);
 showItem();
 </script>
