@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Eigo Adventure – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#0b1530; --ink:#fff;
-  --gold1:#fdd86d; --gold2:#ffb347;
+  --bg:#0b1530; 
+  --ink:#fff;
+  --gold1:#fdd86d; 
+  --gold2:#ffb347;
   --outline:#ffffff26;
   --radius:26px;
   --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
@@ -30,7 +32,7 @@ body{
   overflow-x:hidden;
 }
 
-/* header/footer same style as sentence quiz */
+/* HEADER & FOOTER */
 header{
   width:100%;
   text-align:center;
@@ -59,14 +61,14 @@ footer{
   width:100%;
   text-align:center;
   font-size:0.8rem;
-  color:rgba(255,255,255,.8);
+  color:rgba(255,255,255,.9);
   opacity:0.9;
   padding:1rem 0;
   margin-top:auto;
   font-family:'Cinzel',serif;
 }
 
-/* main */
+/* MAIN */
 main{
   flex:1;
   display:flex;
@@ -80,21 +82,20 @@ main{
   padding:1rem;
 }
 
-/* rainbow Sage box */
+/* Sage’s speaking box */
 #sageBox{
   width:100%;
-  min-height:140px;
+  min-height:150px;
   border-radius:var(--radius);
   overflow:hidden;
   position:relative;
   margin-bottom:1.2rem;
-  font-family:'Cinzel',serif;
-  font-size:1.8rem;
+  font-size:2rem;
   font-weight:900;
-  text-shadow:0 0 10px rgba(255,255,255,.5);
   display:flex;
   align-items:center;
   justify-content:center;
+  text-align:center;
 }
 #sageBox::before{
   content:'';
@@ -102,15 +103,21 @@ main{
   inset:0;
   background:repeating-linear-gradient(
     to bottom,
-    #ff5fa2 0%, #ff5fa2 16.6%,
-    #ffd23f 16.6%, #ffd23f 33.3%,
-    #82eefd 33.3%, #82eefd 50%,
-    #82f7a3 50%, #82f7a3 66.6%,
-    #f9a6ff 66.6%, #f9a6ff 83.3%,
-    #fef9c3 83.3%, #fef9c3 100%
+    #ffb6c1 0%, #ffb6c1 8.3%,
+    #ffd23f 8.3%, #ffd23f 16.6%,
+    #a8e6cf 16.6%, #a8e6cf 25%,
+    #82eefd 25%, #82eefd 33.3%,
+    #f9a6ff 33.3%, #f9a6ff 41.6%,
+    #fef9c3 41.6%, #fef9c3 50%,
+    #b5f5e1 50%, #b5f5e1 58.3%,
+    #ffd6ff 58.3%, #ffd6ff 66.6%,
+    #ffadad 66.6%, #ffadad 75%,
+    #fdffb6 75%, #fdffb6 83.3%,
+    #caffbf 83.3%, #caffbf 91.6%,
+    #9bf6ff 91.6%, #9bf6ff 100%
   );
-  background-size:100% 300%;
-  animation:stripeMove 6s linear infinite;
+  background-size:100% 400%;
+  animation:stripeMove 8s linear infinite;
   z-index:0;
 }
 @keyframes stripeMove{
@@ -120,33 +127,37 @@ main{
 #sageText{
   position:relative;
   z-index:1;
-  color:#000;
+  color:#fff;
   padding:0 1rem;
+  font-weight:700;
+  text-shadow:
+    0 0 8px #000,
+    0 0 16px #000;
 }
 .word{
   opacity:0;
-  margin:0 0.4rem;
+  margin:0 0.45rem;
   transition:opacity .25s ease;
 }
 
-/* student box */
+/* Student box */
 #studentBox{
   width:100%;
   min-height:100px;
   background:#fff;
   border-radius:var(--radius);
   margin-bottom:1.8rem;
-  box-shadow:inset 0 0 20px rgba(0,0,0,.1);
+  box-shadow:inset 0 0 20px rgba(0,0,0,.15);
 }
 
-/* options */
+/* Answer sentences */
 .option{
   border:2px solid var(--outline);
   border-radius:var(--radius);
-  padding:1rem;
+  padding:1.2rem;
   margin:0.6rem 0;
   width:100%;
-  font-size:1.3rem;
+  font-size:1.4rem;
   font-weight:700;
   opacity:0.9;
   transition:all .4s ease;
@@ -157,7 +168,7 @@ main{
   opacity:1;
 }
 
-/* next btn (temp for testing) */
+/* Next button (temporary for testing) */
 #btnNext{
   margin-top:1.5rem;
   padding:0.8rem 2.2rem;
@@ -174,8 +185,8 @@ main{
 #btnNext:hover{transform:scale(1.05);}
 </style>
 </head>
-<body>
 
+<body>
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>Eigo Adventure – January Week 1</h2>
@@ -187,23 +198,47 @@ main{
   <div id="studentBox"></div>
 
   <div id="options">
-    <div class="option">I brush my teeth.</div>
-    <div class="option">I eat breakfast.</div>
-    <div class="option">I go to school.</div>
-    <div class="option">I play soccer.</div>
+    <div class="option">I brush my teeth every morning before breakfast.</div>
+    <div class="option">I eat breakfast with my family every morning.</div>
+    <div class="option">I go to school at seven thirty every day.</div>
+    <div class="option">I play games on Sundays after lunch.</div>
   </div>
 
   <button id="btnNext">Next ➜</button>
 </main>
 
-<footer>Bryan’s English School © 2025</footer>
+<footer>Bryan’s English School</footer>
 
 <script>
 const questions=[
-  {q:"What do you do every morning?", options:["I brush my teeth.","I eat breakfast.","I go to school.","I play soccer."]},
-  {q:"What do you eat for breakfast?", options:["I eat rice.","I drink milk.","I read a book.","I run fast."]},
-  {q:"What time do you go to bed?", options:["At nine.","At ten.","At noon.","At midnight."]},
-  {q:"What do you like to do on Sunday?", options:["I play games.","I cook dinner.","I wash my car.","I do homework."]}
+  {q:"What do you do every morning?",
+   options:[
+     "I brush my teeth every morning before breakfast.",
+     "I eat breakfast with my family every morning.",
+     "I go to school at seven thirty every day.",
+     "I play games on Sundays after lunch."
+   ]},
+  {q:"What do you eat for breakfast?",
+   options:[
+     "I eat rice and eggs every morning for breakfast.",
+     "I drink milk and eat toast before school.",
+     "I eat pancakes with my family on Sundays.",
+     "I eat fruit and yogurt every morning."
+   ]},
+  {q:"What time do you go to bed?",
+   options:[
+     "I go to bed at ten o’clock every night.",
+     "I brush my teeth and sleep at ten every night.",
+     "I go to bed after I finish my homework.",
+     "I take a shower and go to bed at nine thirty."
+   ]},
+  {q:"What do you like to do on Sunday?",
+   options:[
+     "I play games with my friends on Sunday afternoon.",
+     "I cook dinner for my family on Sundays.",
+     "I go shopping with my mother every Sunday.",
+     "I clean my room and watch TV on Sunday mornings."
+   ]}
 ];
 let current=0;
 
@@ -222,6 +257,7 @@ function animateSageText(text){
     setTimeout(()=>span.style.opacity=1,250*i);
   });
 }
+
 function randomGlow(){
   options.forEach(o=>o.classList.remove("glow"));
   const i=Math.floor(Math.random()*options.length);
