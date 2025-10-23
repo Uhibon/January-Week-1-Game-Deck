@@ -8,12 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#0b1530; 
-  --ink:#fff;
-  --gold1:#fdd86d; 
-  --gold2:#ffb347;
-  --outline:#ffffff26;
-  --radius:26px;
+  --bg:#0b1530; --ink:#fff;
+  --gold1:#fdd86d; --gold2:#ffb347;
+  --outline:#ffffff26; --radius:26px;
   --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
   --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
 }
@@ -25,163 +22,37 @@ body{
   background:var(--bg);
   color:var(--ink);
   min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  overflow-x:hidden;
+  display:flex;flex-direction:column;align-items:center;overflow-x:hidden;
 }
 
-/* HEADER & FOOTER */
-header{
-  width:100%;
-  text-align:center;
-  padding:1.5rem 0 1rem;
-  color:var(--ink);
-  font-family:'Cinzel',serif;
-  background:var(--bg);
-}
-header h1{
-  font-size:2.2rem;
-  letter-spacing:2px;
-  text-shadow:0 0 10px rgba(255,255,255,.5);
-}
-header h2{
-  font-size:1.2rem;
-  font-weight:700;
-  color:var(--gold1);
-  text-shadow:var(--goldGlow);
-}
-header p{
-  font-size:0.9rem;
-  opacity:0.8;
-}
-
-footer{
-  width:100%;
-  text-align:center;
-  font-size:0.8rem;
-  color:rgba(255,255,255,.9);
-  opacity:0.9;
-  padding:1rem 0;
-  margin-top:auto;
-  font-family:'Cinzel',serif;
-}
+/* HEADER + FOOTER */
+header{text-align:center;padding:1.5rem 0 1rem;font-family:'Cinzel',serif;}
+header h1{font-size:2.2rem;letter-spacing:2px;text-shadow:0 0 10px rgba(255,255,255,.5);}
+header h2{font-size:1.2rem;color:var(--gold1);text-shadow:var(--goldGlow);}
+header p{font-size:0.9rem;opacity:0.8;}
+footer{text-align:center;font-size:0.8rem;color:rgba(255,255,255,.9);padding:1rem 0;font-family:'Cinzel',serif;margin-top:auto;}
 
 /* MAIN */
-main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  width:100%;
-  max-width:700px;
-  margin-top:2rem;
-  text-align:center;
-  padding:1rem;
-}
+main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;margin-top:2rem;text-align:center;padding:1rem;}
 
-/* Sage’s speaking box */
-#sageBox{
-  width:100%;
-  min-height:150px;
-  border-radius:var(--radius);
-  overflow:hidden;
-  position:relative;
-  margin-bottom:1.2rem;
-  font-size:2rem;
-  font-weight:900;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-#sageBox::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:repeating-linear-gradient(
-    to bottom,
-    #ffb6c1 0%, #ffb6c1 8.3%,
-    #ffd23f 8.3%, #ffd23f 16.6%,
-    #a8e6cf 16.6%, #a8e6cf 25%,
-    #82eefd 25%, #82eefd 33.3%,
-    #f9a6ff 33.3%, #f9a6ff 41.6%,
-    #fef9c3 41.6%, #fef9c3 50%,
-    #b5f5e1 50%, #b5f5e1 58.3%,
-    #ffd6ff 58.3%, #ffd6ff 66.6%,
-    #ffadad 66.6%, #ffadad 75%,
-    #fdffb6 75%, #fdffb6 83.3%,
-    #caffbf 83.3%, #caffbf 91.6%,
-    #9bf6ff 91.6%, #9bf6ff 100%
-  );
-  background-size:100% 400%;
-  animation:stripeMove 8s linear infinite;
-  z-index:0;
-}
-@keyframes stripeMove{
-  0%{background-position:0 0;}
-  100%{background-position:0 100%;}
-}
-#sageText{
-  position:relative;
-  z-index:1;
-  color:#fff;
-  padding:0 1rem;
-  font-weight:700;
-  text-shadow:
-    0 0 8px #000,
-    0 0 16px #000;
-}
-.word{
-  opacity:0;
-  margin:0 0.45rem;
-  transition:opacity .25s ease;
-}
+/* Sage box */
+#sageBox{width:100%;min-height:150px;border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:1.2rem;font-size:2rem;font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;}
+#sageBox::before{content:'';position:absolute;inset:0;z-index:0;animation:stripeMove 8s linear infinite;background-size:100% 400%;}
+@keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
+#sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
+.word{opacity:0;margin:0 0.45rem;transition:opacity .25s ease;}
 
 /* Student box */
-#studentBox{
-  width:100%;
-  min-height:100px;
-  background:#fff;
-  border-radius:var(--radius);
-  margin-bottom:1.8rem;
-  box-shadow:inset 0 0 20px rgba(0,0,0,.15);
-}
+#studentBox{width:100%;min-height:100px;background:#fff;border-radius:var(--radius);margin-bottom:1.8rem;box-shadow:inset 0 0 20px rgba(0,0,0,.15);}
 
-/* Answer sentences */
-.option{
-  border:2px solid var(--outline);
-  border-radius:var(--radius);
-  padding:1.2rem;
-  margin:0.6rem 0;
-  width:100%;
-  font-size:1.4rem;
-  font-weight:700;
-  opacity:0.9;
-  transition:all .4s ease;
-}
-.option.glow{
-  box-shadow:var(--blueGlow);
-  border-color:#60a5fa;
-  opacity:1;
-}
+/* Answer options */
+.option{border:2px solid var(--outline);border-radius:var(--radius);padding:1.2rem;margin:0.6rem 0;width:100%;font-size:1.4rem;font-weight:700;opacity:0.9;transition:all .4s ease;}
+.option.glow{box-shadow:var(--blueGlow);border-color:#60a5fa;opacity:1;}
 
-/* Next button (temporary for testing) */
-#btnNext{
-  margin-top:1.5rem;
-  padding:0.8rem 2.2rem;
-  border:none;
-  border-radius:50px;
-  background:linear-gradient(45deg,var(--gold1),var(--gold2));
-  color:#000;
-  font-family:'Cinzel',serif;
-  font-size:1.1rem;
-  cursor:pointer;
-  box-shadow:var(--goldGlow);
-  transition:transform .2s;
-}
+/* Next button (for testing) */
+#btnNext{margin-top:1.5rem;padding:0.8rem 2.2rem;border:none;border-radius:50px;
+background:linear-gradient(45deg,var(--gold1),var(--gold2));
+color:#000;font-family:'Cinzel',serif;font-size:1.1rem;cursor:pointer;box-shadow:var(--goldGlow);transition:transform .2s;}
 #btnNext:hover{transform:scale(1.05);}
 </style>
 </head>
@@ -198,10 +69,10 @@ main{
   <div id="studentBox"></div>
 
   <div id="options">
-    <div class="option">I brush my teeth every morning before breakfast.</div>
-    <div class="option">I eat breakfast with my family every morning.</div>
-    <div class="option">I go to school at seven thirty every day.</div>
-    <div class="option">I play games on Sundays after lunch.</div>
+    <div class="option"></div>
+    <div class="option"></div>
+    <div class="option"></div>
+    <div class="option"></div>
   </div>
 
   <button id="btnNext">Next ➜</button>
@@ -210,39 +81,125 @@ main{
 <footer>Bryan’s English School</footer>
 
 <script>
+/* 15 questions (fun + functional) */
 const questions=[
-  {q:"What do you do every morning?",
-   options:[
-     "I brush my teeth every morning before breakfast.",
-     "I eat breakfast with my family every morning.",
-     "I go to school at seven thirty every day.",
-     "I play games on Sundays after lunch."
-   ]},
-  {q:"What do you eat for breakfast?",
-   options:[
-     "I eat rice and eggs every morning for breakfast.",
-     "I drink milk and eat toast before school.",
-     "I eat pancakes with my family on Sundays.",
-     "I eat fruit and yogurt every morning."
-   ]},
-  {q:"What time do you go to bed?",
-   options:[
-     "I go to bed at ten o’clock every night.",
-     "I brush my teeth and sleep at ten every night.",
-     "I go to bed after I finish my homework.",
-     "I take a shower and go to bed at nine thirty."
-   ]},
-  {q:"What do you like to do on Sunday?",
-   options:[
-     "I play games with my friends on Sunday afternoon.",
-     "I cook dinner for my family on Sundays.",
-     "I go shopping with my mother every Sunday.",
-     "I clean my room and watch TV on Sunday mornings."
-   ]}
+{q:"What do you do every morning?",
+ options:[
+ "I brush my teeth every morning before breakfast.",
+ "I stretch and feed my cat every morning before breakfast.",
+ "I play video games every morning before breakfast.",
+ "I dance with my mirror every morning before breakfast."
+]},
+{q:"What do you eat for breakfast?",
+ options:[
+ "I eat toast and eggs for breakfast.",
+ "I drink coffee and run around for breakfast.",
+ "I play soccer for breakfast.",
+ "I eat rice and miso soup for breakfast."
+]},
+{q:"What time do you eat breakfast?",
+ options:[
+ "I eat breakfast at seven o’clock every morning.",
+ "I eat breakfast at midnight because I’m a ninja.",
+ "I eat breakfast after brushing my teeth.",
+ "I eat breakfast at six thirty before school."
+]},
+{q:"What time do you go to school?",
+ options:[
+ "I go to school at seven thirty every morning.",
+ "I go to school at ten because my bed loves me.",
+ "I go to school at eight after breakfast.",
+ "I ride my bike to school at seven forty-five."
+]},
+{q:"What do you bring to school?",
+ options:[
+ "I bring my textbooks and my lunch to school.",
+ "I bring my pet turtle to school.",
+ "I bring my pencil case and notebook to school.",
+ "I bring my robot army to school."
+]},
+{q:"What do you do after school?",
+ options:[
+ "I do my homework after school.",
+ "I play games with my friends after school.",
+ "I take a nap after school on the bus.",
+ "I fight dragons after school."
+]},
+{q:"What do you do before bed?",
+ options:[
+ "I brush my teeth before bed every night.",
+ "I read a book before bed.",
+ "I watch scary movies before bed.",
+ "I dance with ghosts before bed."
+]},
+{q:"What time do you go to bed?",
+ options:[
+ "I go to bed at ten o’clock every night.",
+ "I go to bed at nine after watching TV.",
+ "I go to bed at sunrise because I’m a vampire.",
+ "I go to bed after finishing my homework."
+]},
+{q:"What do you like to do on Sunday?",
+ options:[
+ "I play games with my friends on Sunday afternoon.",
+ "I cook dinner for my family on Sundays.",
+ "I go shopping with my mother on Sundays.",
+ "I fly to Mars on Sunday to see aliens."
+]},
+{q:"What do you do on rainy days?",
+ options:[
+ "I read books and drink hot chocolate on rainy days.",
+ "I sing songs outside on rainy days.",
+ "I draw pictures in my notebook on rainy days.",
+ "I run barefoot in puddles on rainy days."
+]},
+{q:"What do you do on your birthday?",
+ options:[
+ "I eat cake with my family on my birthday.",
+ "I go swimming in winter on my birthday.",
+ "I open presents and say thank you on my birthday.",
+ "I invite my dog to a party on my birthday."
+]},
+{q:"What do you eat for lunch?",
+ options:[
+ "I eat curry rice for lunch at school.",
+ "I eat pizza with chopsticks for lunch.",
+ "I eat sandwiches and salad for lunch.",
+ "I eat ice cream for lunch when no one sees me."
+]},
+{q:"What do you do after dinner?",
+ options:[
+ "I help my parents clean the table after dinner.",
+ "I do my homework after dinner.",
+ "I play the drums after dinner.",
+ "I take my dog for a walk after dinner."
+]},
+{q:"What do you do on Saturday?",
+ options:[
+ "I play soccer with my friends on Saturday.",
+ "I sleep all day on Saturday.",
+ "I clean my room and do laundry on Saturday.",
+ "I become a superhero on Saturday night."
+]},
+{q:"What do you study at school?",
+ options:[
+ "I study English and math at school.",
+ "I study sleeping at school.",
+ "I study Japanese history at school.",
+ "I study science and music at school."
+]}
 ];
-let current=0;
 
+/* pastel rainbow sets (rotate each question) */
+const stripeSets=[
+"repeating-linear-gradient(to bottom,#ffb6c1 0%,#ffd23f 10%,#a8e6cf 20%,#82eefd 30%,#f9a6ff 40%,#fef9c3 50%,#b5f5e1 60%,#ffd6ff 70%,#ffadad 80%,#9bf6ff 90%,#caffbf 100%)",
+"repeating-linear-gradient(to bottom,#fdffb6 0%,#caffbf 10%,#9bf6ff 20%,#a0c4ff 30%,#bdb2ff 40%,#ffc6ff 50%,#fffffc 60%,#ffadad 70%,#ffd6a5 80%,#caffbf 90%,#9bf6ff 100%)",
+"repeating-linear-gradient(to bottom,#f9a6ff 0%,#82eefd 10%,#fef9c3 20%,#ffd6ff 30%,#caffbf 40%,#ffb6c1 50%,#b5f5e1 60%,#ffd23f 70%,#a8e6cf 80%,#ffadad 90%,#9bf6ff 100%)"
+];
+
+let current=0;
 const sageText=document.getElementById("sageText");
+const sageBox=document.getElementById("sageBox");
 const options=document.querySelectorAll(".option");
 const btnNext=document.getElementById("btnNext");
 
@@ -254,7 +211,7 @@ function animateSageText(text){
     span.className="word";
     span.textContent=w;
     sageText.appendChild(span);
-    setTimeout(()=>span.style.opacity=1,250*i);
+    setTimeout(()=>span.style.opacity=1,220*i);
   });
 }
 
@@ -268,6 +225,9 @@ setInterval(randomGlow,1200);
 function loadQuestion(){
   const q=questions[current];
   animateSageText(q.q);
+  const setIndex=current%stripeSets.length;
+  sageBox.style.setProperty("--stripeSet",stripeSets[setIndex]);
+  sageBox.style.setProperty("background",stripeSets[setIndex]);
   const optionDivs=document.querySelectorAll(".option");
   q.options.forEach((t,i)=>optionDivs[i].textContent=t);
 }
