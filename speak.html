@@ -7,11 +7,16 @@
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 
-<!-- Preload score sounds -->
+<!-- Preload per-question score sounds -->
 <link rel="preload" as="audio" href="assets/audio/0-43.mp3" />
 <link rel="preload" as="audio" href="assets/audio/44-74.mp3" />
 <link rel="preload" as="audio" href="assets/audio/75-99.mp3" />
 <link rel="preload" as="audio" href="assets/audio/100.mp3" />
+<!-- Preload final result sounds -->
+<link rel="preload" as="audio" href="assets/audio/result_0-5.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_6-10.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_11-14.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_15.mp3" />
 
 <style>
 :root{--bg:#0b1530;--ink:#fff;--outline:#ffffff26;--radius:26px;}
@@ -80,6 +85,7 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 #resultMsg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(26px,6vw,48px);margin-bottom:10px;color:#fff}
 #resultScore{font-weight:900;font-size:clamp(20px,5vw,34px);color:#cfe1ff;margin-bottom:18px}
 .btn.menu{display:inline-block;margin-top:6px;background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
+.btn.restart{display:inline-block;margin-top:6px;background:linear-gradient(180deg,#8ec5ff,#1e6eff);color:#00163a}
 /* Glow backgrounds */
 body.redGlow{background:#3b0d0d;}
 body.orangeGlow{background:#3b2a0d;}
@@ -132,29 +138,50 @@ body.goldGlow{background:#2b2509;}
   <div class="result-card">
     <div id="resultMsg">いいね！あと少しでパーフェクト！</div>
     <div id="resultScore">0/15（0%）</div>
-    <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+    <div class="btnRow" style="justify-content:center">
+      <button id="restartBtn" class="btn restart">もう一度<br><small>Restart</small></button>
+      <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+    </div>
   </div>
-  <!-- Result sounds -->
-  <audio id="s_r05" src="assets/audio/r05.mp3" preload="auto"></audio>
-  <audio id="s_r610" src="assets/audio/r610.mp3" preload="auto"></audio>
-  <audio id="s_r1114" src="assets/audio/r1114.mp3" preload="auto"></audio>
-  <audio id="s_r15" src="assets/audio/r15.mp3" preload="auto"></audio>
+  <!-- Final result sounds -->
+  <audio id="res_05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
+  <audio id="res_610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+  <audio id="res_1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+  <audio id="res_15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 </div>
 
 <script>
 const DUR_MS=6000; // mic & meter duration (must match CSS --dur)
-let idx=0,listening=false,SR=null,streamAllowed=false,totalScore=0; // totalScore counts 100% clears
+let idx=0,listening=false,SR=null,streamAllowed=false;
+
+// -------- NEW: first-attempt tracking for averaging --------
+const firstScores = new Array(15).fill(null);   // store 0–100 for first attempt only
+let firstPerfectCount = 0;                       // for X/15 display like screenshot
+
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
 const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
 const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep'),meterCore=document.getElementById('meterCore');
 const counter=document.getElementById('counter');
 
-/* preload Sage + score audio */
+/* preload Sage sentence audio (local /audio) */
 const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
 sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3');a.preload='auto';a.load();});
-const scoreAudio={low:new Audio('assets/audio/0-43.mp3'),mid:new Audio('assets/audio/44-74.mp3'),high:new Audio('assets/audio/75-99.mp3'),max:new Audio('assets/audio/100.mp3')};
+
+/* per-question score sounds */
+const scoreAudio={
+  low:new Audio('assets/audio/0-43.mp3'),
+  mid:new Audio('assets/audio/44-74.mp3'),
+  high:new Audio('assets/audio/75-99.mp3'),
+  max:new Audio('assets/audio/100.mp3')
+};
 Object.values(scoreAudio).forEach(a=>{a.preload='auto';a.load();});
+
+/* final result sounds */
+const res05 = document.getElementById('res_05');
+const res610 = document.getElementById('res_610');
+const res1114 = document.getElementById('res_1114');
+const res15 = document.getElementById('res_15');
 
 const ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
@@ -198,9 +225,9 @@ function markSpoken(sp){
 function finalizeColors(){ enEl.querySelectorAll('.word').forEach(w=>{ if(!w.classList.contains('blue')) w.classList.add('red'); }); }
 function keywordScore(t,sp){ const k=toSet(t),said=toSet(sp); let hit=0,total=0; k.forEach(x=>{ if(x.length>2){ total++; if(said.has(x)) hit++; } }); return total?Math.round((hit/total)*100):0; }
 
-function setReady(){ meterText.classList.remove('shimmer'); meterCore.classList.remove('bigPulse'); meterText.innerHTML='Ready<br><small>スタンバイ</small>'; } 
-function setListening(){ meterText.classList.remove('shimmer'); meterCore.classList.remove('bigPulse'); meterText.textContent='Listening'; }
-function setFinished(){ meterText.classList.remove('shimmer'); meterCore.classList.remove('bigPulse'); meterText.innerHTML='Finished<br><small>おわり！</small>'; } 
+function setReady(){ meterText.classList.remove('shimmer'); meterText.innerHTML='Ready<br><small>スタンバイ</small>'; } 
+function setListening(){ meterText.textContent='Listening'; }
+function setFinished(){ meterText.innerHTML='Finished<br><small>おわり！</small>'; } 
 
 /* Audio */
 function stripForFile(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,''); }
@@ -224,10 +251,13 @@ function stopSweep(){ sweep.classList.remove('run'); }
 
 function updateCounter(){ counter.textContent = `${idx+1} / 15`; }
 
-/* Score SFX with retry */
+/* Score SFX — only for FIRST attempt on each question */
 function playScoreSound(score){
-  let a=scoreAudio.low; if(score===100) a=scoreAudio.max; else if(score>=75) a=scoreAudio.high; else if(score>=44) a=scoreAudio.mid;
-  try{a.currentTime=0; a.play().catch(()=>{ setTimeout(()=>{ a.play().catch(()=>{}); }, 150); });}catch(e){}
+  let a=scoreAudio.low;
+  if(score===100) a=scoreAudio.max;
+  else if(score>=75) a=scoreAudio.high;
+  else if(score>=44) a=scoreAudio.mid;
+  try{a.currentTime=0; a.play().catch(()=>{ setTimeout(()=>{ a.play().catch(()=>{}); }, 120); });}catch(e){}
 }
 
 /* Round flow */
@@ -239,13 +269,13 @@ async function beginRound(){
   resetVisuals();
   playBtn.disabled=true; retryBtn.style.display='none'; nextBtn.style.display='none';
 
-  // Countdown: numbers only, each with a different color
+  // Countdown
   const colors=['#ff7eb9','#7dd3fc','#a6f7b2','#fff680'];
-  const showNum = async (n, i)=>{ meterText.innerHTML = `<span class=\"popNum\" style=\"color:${colors[i]}\">${n}</span>`; await sleep(700); };
+  const showNum = async (n, i)=>{ meterText.innerHTML = `<span class="popNum" style="color:${colors[i]}">${n}</span>`; await sleep(700); };
   await showNum(3,0); await showNum(2,1); await showNum(1,2);
-  meterText.innerHTML = `<span class=\"popNum\" style=\"color:${colors[3]}\">GO!</span>`; await sleep(350);
+  meterText.innerHTML = `<span class="popNum" style="color:${colors[3]}">GO!</span>`; await sleep(350);
 
-  // Start mic FIRST, then warm-up, then UI/meter
+  // Start mic THEN meter
   listening=true; SR = makeRecognizer(); let heard="";
   if(SR){
     SR.onresult=(e)=>{ let txt=""; for(let i=e.resultIndex;i<e.results.length;i++){ txt += e.results[i][0].transcript + " "; } heard=(heard+" "+txt).trim(); markSpoken(heard); };
@@ -253,8 +283,7 @@ async function beginRound(){
     try{ SR.start(); }catch(_){ }
   }
 
-  // ✅ Warm-up delay so first word is captured
-  await sleep(700);
+  await sleep(700); // warm-up
 
   setListening();
   startSweep();
@@ -264,11 +293,19 @@ async function beginRound(){
   listening=false; try{ SR&&SR.stop(); }catch(_){}
   setFinished(); stopSweep(); finalizeColors();
 
-  // Score & buttons (no skipping): 100% -> Next; otherwise Retry
+  // Score
   const s=keywordScore(ITEMS[idx].en,heard);
   scoreBox.textContent="スコア："+s+"％"; scoreBox.style.display='block';
-  playScoreSound(s);
-  if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; totalScore++; }
+
+  // First-attempt recording + sound
+  if(firstScores[idx] === null){
+    firstScores[idx] = s;
+    if(s===100) firstPerfectCount++;
+    playScoreSound(s);
+  }
+
+  // Buttons (keep your existing rule: Next only on 100)
+  if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; }
   else { retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
   playBtn.disabled=false;
 }
@@ -284,20 +321,33 @@ function showItem(){
 }
 
 /* RESULTS */
-function $(sel){return document.querySelector(sel);} 
+function avgPercent(){
+  const sum = firstScores.reduce((a,b)=>a+(b??0),0);
+  return Math.round(sum/15);
+}
 function showResults(){
-  $("#page-results").style.display="flex";
-  const pct=Math.round((totalScore/15)*100);
-  const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");
-  let bg="blueGlow",msg="いいね！あと少しでパーフェクト！",snd=$("#s_r1114");
-  if(totalScore<=5){bg="redGlow";msg="ブーリキュラム見てないでしょ！";snd=$("#s_r05");}
-  else if(totalScore<=10){bg="orangeGlow";msg="YouTube見すぎ！ブーリキュラムもやろう！";snd=$("#s_r610");}
-  else if(totalScore===15){bg="goldGlow";msg="すごい！あなたは地球で一番頭がいい！";snd=$("#s_r15");}
-  document.body.className=bg;
-  msgEl.textContent=msg;
-  scoreEl.textContent=`${totalScore}/15（${pct}%）`;
-  try{snd.currentTime=0;snd.play();}catch(e){}
-  if(totalScore===15){
+  const page=document.getElementById("page-results");
+  page.style.display="flex";
+
+  const pct = avgPercent();
+  const msgEl=document.getElementById("resultMsg");
+  const scoreEl=document.getElementById("resultScore");
+
+  // Color band + message + sound
+  let bg="blueGlow", msg="いいね！あと少しでパーフェクト！", snd=res1114;
+  if(pct<=43){ bg="redGlow"; msg="ブーリキュラム見てないでしょ！"; snd=res05; }
+  else if(pct<=74){ bg="orangeGlow"; msg="YouTube見すぎ！ブーリキュラムもやろう！"; snd=res610; }
+  else if(pct===100){ bg="goldGlow"; msg="すごい！あなたは地球で一番頭がいい！"; snd=res15; }
+
+  document.body.className = bg;
+  // Keep the screenshot format: X/15 (Y%)
+  scoreEl.textContent = `${firstPerfectCount}/15（${pct}%）`;
+  msgEl.textContent = msg;
+
+  try{ snd.currentTime=0; snd.play(); }catch(e){}
+
+  // Confetti only for perfect (gold)
+  if(pct===100){
     for(let i=0;i<160;i++){
       setTimeout(()=>{
         const c=document.createElement("div");
@@ -317,15 +367,24 @@ beginBtn.onclick=async()=>{ if(!streamAllowed) await requestMic(); if(!streamAll
 retryBtn.onclick=()=>{ showItem(); beginRound(); };
 nextBtn.onclick=()=>{
   idx++;
-  if(idx>=ITEMS.length){ // after pressing Next on last question
+  if(idx>=ITEMS.length){ // done
     showResults();
     nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none';
     return;
   }
   showItem();
-  nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block'; // New question requires Start
+  nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block';
 };
 playBtn.onclick=()=>{ const a=new Audio('./audio/'+stripForFile(ITEMS[idx].en)+'.mp3'); a.preload='auto'; a.play().catch(()=>{}); };
+document.getElementById('restartBtn').onclick=()=>{ // reset everything
+  document.getElementById('page-results').style.display='none';
+  document.body.className = '';
+  for(let i=0;i<firstScores.length;i++) firstScores[i]=null;
+  firstPerfectCount=0;
+  idx=0;
+  showItem();
+  beginBtn.style.display='inline-block'; retryBtn.style.display='none'; nextBtn.style.display='none';
+};
 
 /* Init */
 showItem();
