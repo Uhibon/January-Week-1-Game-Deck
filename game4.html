@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;
-  --outline:#ffffff26;--radius:24px;
+  --silver:#cfd8dc;--purple:#c084fc;--outline:#ffffff26;--radius:24px;
   --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
   --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
 }
@@ -27,8 +27,7 @@ footer{text-align:center;font-size:clamp(0.7rem,2.2vw,0.9rem);color:rgba(255,255
   padding:1rem 0;font-family:'Cinzel',serif;margin-top:auto;}
 main{flex:1;display:flex;flex-direction:column;align-items:center;
   width:100%;max-width:700px;margin-top:1.5rem;text-align:center;padding:0 1rem;}
-
-/* Sage box */
+.sageWrapper{position:relative;width:100%;}
 #sageBox{
   width:100%;min-height:150px;border-radius:var(--radius);
   overflow:hidden;position:relative;margin-bottom:1rem;
@@ -38,30 +37,55 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;
 #sageBox::before{
   content:'';position:absolute;inset:0;z-index:0;
   animation:stripeMove 8s linear infinite;background-size:100% 300%;
+  background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);
 }
 @keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
 #sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;
   font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
 .word{opacity:0;margin:0 0.45rem;transition:opacity .25s ease;}
-
-/* Student box */
+.playBtn{
+  position:absolute;left:-18px;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;animation:shimmer 2s infinite;
+}
+.playBtn::after{
+  content:"▶";color:#000;font-size:1.2rem;font-weight:900;
+}
+@keyframes shimmer{
+  0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}
+  50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}
+}
+.studentWrapper{position:relative;width:100%;}
 #studentBox{
   width:100%;min-height:90px;background:#fff;border-radius:var(--radius);
   margin-bottom:1.4rem;box-shadow:inset 0 0 20px rgba(0,0,0,.15);
+  color:#000;font-size:1.3rem;display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;
 }
-
-/* Options */
+.micBtn{
+  position:absolute;right:-18px;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,var(--silver),var(--purple));
+  box-shadow:0 0 12px rgba(255,255,255,.4),0 0 24px rgba(192,132,252,.4);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;animation:micPulse 3s infinite;
+}
+.micBtn::after{content:"🎤";font-size:1.3rem;}
+.micBtn.active{animation:micGlow 1s infinite alternate;}
+@keyframes micPulse{0%,100%{opacity:.8;}50%{opacity:1;}}
+@keyframes micGlow{
+  from{box-shadow:0 0 10px #c084fc,0 0 20px #a855f7;}
+  to{box-shadow:0 0 20px #e879f9,0 0 40px #f0abfc;}
+}
 .option{
   border:2px solid var(--outline);border-radius:var(--radius);
   padding:1rem;margin:0.5rem 0;width:100%;
   font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;
-  opacity:0.9;transition:all .3s ease;cursor:pointer;
+  opacity:0.9;transition:all .4s ease;
 }
 .option.glow{box-shadow:var(--blueGlow);border-color:#60a5fa;opacity:1;}
-.option.correct{border-color:#22c55e;box-shadow:0 0 15px #22c55e;}
-.option.wrong{border-color:#e11d48;box-shadow:0 0 15px #e11d48;}
-
-/* Next button */
 #btnNext{
   margin-top:1rem;padding:0.7rem 2rem;border:none;border-radius:50px;
   background:linear-gradient(45deg,var(--gold1),var(--gold2));
@@ -80,14 +104,23 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;
 </header>
 
 <main>
-  <div id="sageBox"><div id="sageText"></div></div>
-  <div id="studentBox"></div>
+  <div class="sageWrapper">
+    <div class="playBtn" id="playBtn"></div>
+    <div id="sageBox"><div id="sageText"></div></div>
+  </div>
+
+  <div class="studentWrapper">
+    <div id="studentBox"></div>
+    <div class="micBtn" id="micBtn"></div>
+  </div>
+
   <div id="options">
     <div class="option"></div>
     <div class="option"></div>
     <div class="option"></div>
     <div class="option"></div>
   </div>
+
   <button id="btnNext">Next ➜</button>
 </main>
 
@@ -95,180 +128,160 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;
 
 <script>
 const questions=[
-{q:"What do you do every morning?",a:0,options:[
+{q:"What do you do every morning?",options:[
 "I brush my teeth every morning before breakfast.",
 "I play video games every morning before breakfast.",
 "I stretch and feed my cat every morning before breakfast.",
-"I dance with my mirror every morning before breakfast."
-]},
-{q:"What do you eat for breakfast?",a:3,options:[
+"I dance with my mirror every morning before breakfast."]},
+{q:"What do you eat for breakfast?",options:[
 "I eat toast and eggs for breakfast.",
 "I drink coffee and run around for breakfast.",
 "I play soccer for breakfast.",
-"I eat rice and miso soup for breakfast."
-]},
-{q:"What time do you eat breakfast?",a:0,options:[
+"I eat rice and miso soup for breakfast."]},
+{q:"What time do you eat breakfast?",options:[
 "I eat breakfast at seven o’clock every morning.",
 "I eat breakfast at midnight because I’m a ninja.",
 "I eat breakfast after brushing my teeth.",
-"I eat breakfast at six thirty before school."
-]},
-{q:"What time do you go to school?",a:2,options:[
+"I eat breakfast at six thirty before school."]},
+{q:"What time do you go to school?",options:[
 "I go to school at seven thirty every morning.",
 "I go to school at ten because my bed loves me.",
 "I go to school at eight after breakfast.",
-"I ride my bike to school at seven forty-five."
-]},
-{q:"What do you bring to school?",a:2,options:[
+"I ride my bike to school at seven forty-five."]},
+{q:"What do you bring to school?",options:[
 "I bring my textbooks and my lunch to school.",
 "I bring my pet turtle to school.",
 "I bring my pencil case and notebook to school.",
-"I bring my robot army to school."
-]},
-{q:"What do you do after school?",a:0,options:[
+"I bring my robot army to school."]},
+{q:"What do you do after school?",options:[
 "I do my homework after school.",
 "I play games with my friends after school.",
 "I take a nap after school on the bus.",
-"I fight dragons after school."
-]},
-{q:"What do you do before bed?",a:0,options:[
+"I fight dragons after school."]},
+{q:"What do you do before bed?",options:[
 "I brush my teeth before bed every night.",
 "I read a book before bed.",
 "I watch scary movies before bed.",
-"I dance with ghosts before bed."
-]},
-{q:"What time do you go to bed?",a:3,options:[
+"I dance with ghosts before bed."]},
+{q:"What time do you go to bed?",options:[
 "I go to bed at ten o’clock every night.",
 "I go to bed at nine after watching TV.",
 "I go to bed at sunrise because I’m a vampire.",
-"I go to bed after finishing my homework."
-]},
-{q:"What do you like to do on Sunday?",a:1,options:[
+"I go to bed after finishing my homework."]},
+{q:"What do you like to do on Sunday?",options:[
 "I play games with my friends on Sunday afternoon.",
 "I cook dinner for my family on Sundays.",
 "I go shopping with my mother on Sundays.",
-"I fly to Mars on Sunday to see aliens."
-]},
-{q:"What do you do on rainy days?",a:0,options:[
+"I fly to Mars on Sunday to see aliens."]},
+{q:"What do you do on rainy days?",options:[
 "I read books and drink hot chocolate on rainy days.",
 "I sing songs outside on rainy days.",
 "I draw pictures in my notebook on rainy days.",
-"I run barefoot in puddles on rainy days."
-]},
-{q:"What do you do on your birthday?",a:2,options:[
+"I run barefoot in puddles on rainy days."]},
+{q:"What do you do on your birthday?",options:[
 "I eat cake with my family on my birthday.",
 "I go swimming in winter on my birthday.",
 "I open presents and say thank you on my birthday.",
-"I invite my dog to a party on my birthday."
-]},
-{q:"What do you eat for lunch?",a:2,options:[
+"I invite my dog to a party on my birthday."]},
+{q:"What do you eat for lunch?",options:[
 "I eat curry rice for lunch at school.",
 "I eat pizza with chopsticks for lunch.",
 "I eat sandwiches and salad for lunch.",
-"I eat ice cream for lunch when no one sees me."
-]},
-{q:"What do you do after dinner?",a:1,options:[
+"I eat ice cream for lunch when no one sees me."]},
+{q:"What do you do after dinner?",options:[
 "I help my parents clean the table after dinner.",
 "I do my homework after dinner.",
 "I play the drums after dinner.",
-"I take my dog for a walk after dinner."
-]},
-{q:"What do you do on Saturday?",a:0,options:[
+"I take my dog for a walk after dinner."]},
+{q:"What do you do on Saturday?",options:[
 "I play soccer with my friends on Saturday.",
 "I sleep all day on Saturday.",
 "I clean my room and do laundry on Saturday.",
-"I become a superhero on Saturday night."
-]},
-{q:"What do you study at school?",a:3,options:[
+"I become a superhero on Saturday night."]},
+{q:"What do you study at school?",options:[
 "I study English and math at school.",
 "I study sleeping at school.",
 "I study Japanese history at school.",
-"I study science and music at school."
-]}
+"I study science and music at school."]}
 ];
 
-const stripeColors=[
-"#ffb6c1,#ffd23f,#82eefd,#f9a6ff,#fef9c3",
-"#caffbf,#9bf6ff,#a0c4ff,#bdb2ff,#ffc6ff",
-"#ffadad,#ffd6a5,#fdffb6,#caffbf,#9bf6ff",
-"#a8e6cf,#dcedc1,#ffd3b6,#ffaaa5,#ff8b94",
-"#fde2e4,#fad2e1,#c5dedd,#dbe7e4,#f0efeb",
-"#fdfd96,#ffdab9,#b0e0e6,#c1fba4,#e6a8d7",
-"#fff1c1,#ffe0ac,#ffb7c3,#c8b6ff,#b8c0ff",
-"#ffd6a5,#caffbf,#9bf6ff,#a0c4ff,#bdb2ff",
-"#ffc6ff,#fffffc,#ffadad,#ffd6a5,#caffbf",
-"#b5ead7,#c7ceea,#ffdac1,#ff9aa2,#e2f0cb",
-"#d0f4de,#a9def9,#e4c1f9,#fcf6bd,#f694c1",
-"#ffe4c4,#faf0e6,#e0ffff,#f5f5dc,#fffacd",
-"#e7c6ff,#bbd0ff,#c8e7ff,#f6e6cb,#fffbe7",
-"#d4f1f4,#75e6da,#189ab4,#05445e,#ffecd1",
-"#f9dcc4,#fcd5ce,#f8edeb,#e8e8e4,#ece4db"
-];
-
-const correctLines=["Yes, good job!","Wow, nice work!","You're a genius!"];
-const wrongLines=[
-  "Sorry, that's wrong.",
-  "No, that's not right either.",
-  "You need to check the Boo-riculum."
-];
-
-let current=0, wrongCount=0;
+let current=0;
 const sageText=document.getElementById("sageText");
-const sageBox=document.getElementById("sageBox");
+const playBtn=document.getElementById("playBtn");
+const micBtn=document.getElementById("micBtn");
+const studentBox=document.getElementById("studentBox");
 const options=document.querySelectorAll(".option");
 const btnNext=document.getElementById("btnNext");
+let recog,listening=false;
 
-function makeStripeGradient(colors){
-  return `repeating-linear-gradient(to bottom, ${colors.join(",")})`;
+/* ------------ helpers ------------ */
+function sanitizeFile(text){
+  return text.toLowerCase().replace(/[^a-z0-9\s']/gi,"").replace(/\s+/g,"_")+".mp3";
 }
-
 function animateSageText(text){
   sageText.innerHTML="";
-  const words=text.split(" ");
-  words.forEach((w,i)=>{
+  text.split(" ").forEach((w,i)=>{
     const span=document.createElement("span");
     span.className="word";
     span.textContent=w;
     sageText.appendChild(span);
-    setTimeout(()=>span.style.opacity=1,200*i);
+    setTimeout(()=>span.style.opacity=1,220*i);
   });
 }
-
-function speakReaction(line){
-  sageText.textContent=line;
-  // hook for future Sage audio playback here
+function playSageAudio(text){
+  const file="audio/"+sanitizeFile(text);
+  const audio=new Audio(file);
+  audio.play().catch(()=>console.log("Missing:",file));
+  return audio;
 }
 
-function handleChoice(i,el){
-  options.forEach(o=>o.classList.remove("correct","wrong"));
-  if(i===questions[current].a){
-    el.classList.add("correct");
-    speakReaction(correctLines[Math.floor(Math.random()*correctLines.length)]);
-    wrongCount=0;
-  }else{
-    el.classList.add("wrong");
-    speakReaction(wrongLines[Math.min(wrongCount,2)]);
-    wrongCount++;
-  }
+/* ------------ Speech Recognition ------------ */
+function initRecog(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){alert("Speech recognition not supported.");return;}
+  recog=new R();
+  recog.lang="en-US";
+  recog.interimResults=true;
+  recog.onstart=()=>{micBtn.classList.add("active");listening=true;studentBox.textContent="";};
+  recog.onresult=(e)=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join("");
+    studentBox.textContent=transcript;
+  };
+  recog.onend=()=>{micBtn.classList.remove("active");listening=false;};
 }
 
+/* ------------ Flow ------------ */
 function loadQuestion(){
-  wrongCount=0;
   const q=questions[current];
   animateSageText(q.q);
-  const colors=stripeColors[current%stripeColors.length].split(",");
-  sageBox.style.background=makeStripeGradient(colors);
-  options.forEach((o,i)=>{
-    o.textContent=q.options[i];
-    o.onclick=()=>handleChoice(i,o);
-  });
+  options.forEach((o,i)=>o.textContent=q.options[i]);
+  studentBox.textContent="";
+  const audio=playSageAudio(q.q);
+  audio.onended=()=>{setTimeout(()=>{startMicAuto();},2000);}; // mic auto-start
 }
 
+function startMicAuto(){
+  if(!recog){initRecog();}
+  if(!listening){recog.start();}
+}
+
+playBtn.onclick=()=>{
+  const q=questions[current].q;
+  animateSageText(q);
+  const audio=playSageAudio(q);
+  audio.onended=()=>{setTimeout(()=>{startMicAuto();},2000);};
+};
+micBtn.onclick=()=>{
+  if(!recog){initRecog();}
+  if(listening){recog.stop();}
+  else{recog.start();}
+};
 btnNext.onclick=()=>{
   current=(current+1)%questions.length;
   loadQuestion();
 };
 
+/* init */
 loadQuestion();
 </script>
 </body>
