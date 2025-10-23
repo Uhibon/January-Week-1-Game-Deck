@@ -1,162 +1,92 @@
-RATE_LIMIT: Cinzel
-RATE_LIMIT: I bring my pet turtle to school.
-RATE_LIMIT: I bring my robot army to school.
-TIMEOUT: Cinzel
-RATE_LIMIT: I brush my teeth before bed every night.
-TIMEOUT: I bring my pet turtle to school.
-TIMEOUT: I bring my robot army to school.
-RATE_LIMIT: I clean my room and do laundry on Saturday.
-RATE_LIMIT: I cook dinner for my family on Sundays.
-TIMEOUT: I brush my teeth before bed every night.
-RATE_LIMIT: I dance with ghosts before bed.
-TIMEOUT: I clean my room and do laundry on Saturday.
-TIMEOUT: I cook dinner for my family on Sundays.
-RATE_LIMIT: I do my homework after dinner.
-RATE_LIMIT: I do my homework after school.
-TIMEOUT: I dance with ghosts before bed.
-TIMEOUT: I do my homework after dinner.
-TIMEOUT: I do my homework after school.
-RATE_LIMIT: I eat breakfast at midnight because I’m a ninja.
-RATE_LIMIT: I drink coffee and run around for breakfast.
-RATE_LIMIT: I eat breakfast after brushing my teeth.
-TIMEOUT: I eat breakfast at midnight because I’m a ninja.
-TIMEOUT: I drink coffee and run around for breakfast.
-TIMEOUT: I eat breakfast after brushing my teeth.
-RATE_LIMIT: I eat breakfast at seven o’clock every morning.
-RATE_LIMIT: I eat breakfast at six thirty before school.
-RATE_LIMIT: I eat cake with my family on my birthday.
-TIMEOUT: I eat breakfast at seven o’clock every morning.
-TIMEOUT: I eat breakfast at six thirty before school.
-TIMEOUT: I eat cake with my family on my birthday.
-RATE_LIMIT: I eat ice cream for lunch when no one sees me.
-RATE_LIMIT: I eat curry rice for lunch at school.
-RATE_LIMIT: I eat pizza with chopsticks for lunch.
-TIMEOUT: I eat ice cream for lunch when no one sees me.
-TIMEOUT: I eat curry rice for lunch at school.
-TIMEOUT: I eat pizza with chopsticks for lunch.
-RATE_LIMIT: I eat rice and miso soup for breakfast.
-RATE_LIMIT: I eat sandwiches and salad for lunch.
-RATE_LIMIT: I eat toast and eggs for breakfast.
-TIMEOUT: I eat rice and miso soup for breakfast.
-TIMEOUT: I eat sandwiches and salad for lunch.
-TIMEOUT: I eat toast and eggs for breakfast.
-RATE_LIMIT: I fight dragons after school.
-RATE_LIMIT: I fly to Mars on Sunday to see aliens.
-RATE_LIMIT: I go shopping with my mother on Sundays.
-TIMEOUT: I fight dragons after school.
-TIMEOUT: I fly to Mars on Sunday to see aliens.
-TIMEOUT: I go shopping with my mother on Sundays.
-RATE_LIMIT: I go swimming in winter on my birthday.
-RATE_LIMIT: I go to bed at nine after watching TV.
-RATE_LIMIT: I go to bed after finishing my homework.
-TIMEOUT: I go swimming in winter on my birthday.
-TIMEOUT: I go to bed at nine after watching TV.
-TIMEOUT: I go to bed after finishing my homework.
-RATE_LIMIT: I go to bed at sunrise because I’m a vampire.
-RATE_LIMIT: I go to bed at ten o’clock every night.
-RATE_LIMIT: I go to school at eight after breakfast.
-TIMEOUT: I go to bed at sunrise because I’m a vampire.
-TIMEOUT: I go to bed at ten o’clock every night.
-TIMEOUT: I go to school at eight after breakfast.
-RATE_LIMIT: I go to school at ten because my bed loves me.
-RATE_LIMIT: I go to school at seven thirty every morning.
-RATE_LIMIT: I help my parents clean the table after dinner.
-TIMEOUT: I go to school at ten because my bed loves me.
-TIMEOUT: I go to school at seven thirty every morning.
-RATE_LIMIT: I invite my dog to a party on my birthday.
-TIMEOUT: I help my parents clean the table after dinner.
-RATE_LIMIT: I open presents and say thank you on my birthday.
-RATE_LIMIT: I play games with my friends after school.
-TIMEOUT: I invite my dog to a party on my birthday.
-TIMEOUT: I open presents and say thank you on my birthday.
-RATE_LIMIT: I play games with my friends on Sunday afternoon.
-RATE_LIMIT: I play soccer for breakfast.
-TIMEOUT: I play games with my friends after school.
-RATE_LIMIT: I play soccer with my friends on Saturday.
-TIMEOUT: I play games with my friends on Sunday afternoon.
-TIMEOUT: I play soccer for breakfast.
-TIMEOUT: I play soccer with my friends on Saturday.
-RATE_LIMIT: I play the drums after dinner.
-RATE_LIMIT: I play video games every morning before breakfast.
-RATE_LIMIT: I read books and drink hot chocolate on rainy days.
-TIMEOUT: I play the drums after dinner.
-TIMEOUT: I play video games every morning before breakfast.
-RATE_LIMIT: I run barefoot in puddles on rainy days.
-TIMEOUT: I read books and drink hot chocolate on rainy days.
-RATE_LIMIT: I sing songs outside on rainy days.
-RATE_LIMIT: I sleep all day on Saturday.
-TIMEOUT: I run barefoot in puddles on rainy days.
-RATE_LIMIT: I stretch and feed my cat every morning before breakfast.
-TIMEOUT: I sing songs outside on rainy days.
-RATE_LIMIT: I study English and math at school.
-TIMEOUT: I sleep all day on Saturday.
-RATE_LIMIT: I study science and music at school.
-TIMEOUT: I stretch and feed my cat every morning before breakfast.
-RATE_LIMIT: I study sleeping at school.
-TIMEOUT: I study English and math at school.
-RATE_LIMIT: I take my dog for a walk after dinner.
-TIMEOUT: I study science and music at school.
-RATE_LIMIT: I watch scary movies before bed.
-TIMEOUT: I study sleeping at school.
-RATE_LIMIT: No, that
-TIMEOUT: I take my dog for a walk after dinner.
-RATE_LIMIT: Noto Sans JP
-TIMEOUT: I watch scary movies before bed.
-RATE_LIMIT: What do you bring to school?
-TIMEOUT: No, that
-TIMEOUT: Noto Sans JP
-RATE_LIMIT: What do you do after school?
-RATE_LIMIT: What do you do before bed?
-TIMEOUT: What do you bring to school?
-RATE_LIMIT: What do you do on Saturday?
-TIMEOUT: What do you do after school?
-TIMEOUT: What do you do before bed?
-RATE_LIMIT: What do you do on rainy days?
-RATE_LIMIT: What do you do on your birthday?
-TIMEOUT: What do you do on Saturday?
-RATE_LIMIT: What do you eat for breakfast?
-TIMEOUT: What do you do on rainy days?
-TIMEOUT: What do you do on your birthday?
-RATE_LIMIT: What do you eat for lunch?
-RATE_LIMIT: What do you like to do on Sunday?
-TIMEOUT: What do you eat for breakfast?
-RATE_LIMIT: What do you study at school?
-TIMEOUT: What do you eat for lunch?
-TIMEOUT: What do you like to do on Sunday?
-RATE_LIMIT: What time do you eat breakfast?
-RATE_LIMIT: What time do you go to bed?
-TIMEOUT: What do you study at school?
-RATE_LIMIT: What time do you go to school?
-TIMEOUT: What time do you eat breakfast?
-TIMEOUT: What time do you go to bed?
-RATE_LIMIT: Wow, nice work!
-RATE_LIMIT: Yes, good job!
-TIMEOUT: What time do you go to school?
-RATE_LIMIT: You
-TIMEOUT: Wow, nice work!
-TIMEOUT: Yes, good job!
-RATE_LIMIT: btnNext
-RATE_LIMIT: correct
-TIMEOUT: You
-RATE_LIMIT: option
-TIMEOUT: btnNext
-TIMEOUT: correct
-RATE_LIMIT: options
-RATE_LIMIT: s wrong.
-TIMEOUT: option
-RATE_LIMIT: sageBox
-TIMEOUT: options
-TIMEOUT: s wrong.
-RATE_LIMIT: sageText
-RATE_LIMIT: span
-TIMEOUT: sageBox
-RATE_LIMIT: studentBox
-TIMEOUT: sageText
-TIMEOUT: span
-TIMEOUT: studentBox
-RATE_LIMIT: theme-color
-RATE_LIMIT: stylesheet
-RATE_LIMIT: word
-TIMEOUT: theme-color
-TIMEOUT: stylesheet
-TIMEOUT: word
+RATE_LIMIT: I bring my goldfish to school.
+RATE_LIMIT: I build a snowman on Saturday.
+RATE_LIMIT: I build a spaceship after school.
+TIMEOUT: I bring my goldfish to school.
+RATE_LIMIT: I call my refrigerator every morning before breakfast.
+TIMEOUT: I build a snowman on Saturday.
+TIMEOUT: I build a spaceship after school.
+RATE_LIMIT: I eat breakfast after brushing my shoes.
+RATE_LIMIT: I eat breakfast at midnight because I’m a vampire.
+TIMEOUT: I call my refrigerator every morning before breakfast.
+RATE_LIMIT: I eat breakfast inside the refrigerator.
+TIMEOUT: I eat breakfast after brushing my shoes.
+RATE_LIMIT: I eat curry for breakfast.
+TIMEOUT: I eat breakfast at midnight because I’m a vampire.
+RATE_LIMIT: I eat ice cream for lunch at school.
+TIMEOUT: I eat breakfast inside the refrigerator.
+RATE_LIMIT: I eat my homework on Sunday afternoon.
+TIMEOUT: I eat curry for breakfast.
+RATE_LIMIT: I eat paper for lunch at school.
+TIMEOUT: I eat ice cream for lunch at school.
+TIMEOUT: I eat my homework on Sunday afternoon.
+RATE_LIMIT: I eat sand for lunch at school.
+RATE_LIMIT: I eat toothpaste for breakfast.
+TIMEOUT: I eat paper for lunch at school.
+RATE_LIMIT: I fight dragons every morning before breakfast.
+TIMEOUT: I eat sand for lunch at school.
+TIMEOUT: I eat toothpaste for breakfast.
+RATE_LIMIT: I fly to Mars on Sunday afternoon.
+RATE_LIMIT: I go jogging before bed every night.
+TIMEOUT: I fight dragons every morning before breakfast.
+RATE_LIMIT: I go to bed at noon every night.
+TIMEOUT: I fly to Mars on Sunday afternoon.
+TIMEOUT: I go jogging before bed every night.
+RATE_LIMIT: I go to bed at sunrise because I’m a bat.
+RATE_LIMIT: I go to bed at school every night.
+TIMEOUT: I go to bed at noon every night.
+RATE_LIMIT: I go to school at midnight with a flashlight.
+TIMEOUT: I go to bed at sunrise because I’m a bat.
+TIMEOUT: I go to bed at school every night.
+RATE_LIMIT: I go to school riding a giant cat.
+RATE_LIMIT: I juggle spaghetti after dinner.
+TIMEOUT: I go to school at midnight with a flashlight.
+RATE_LIMIT: I open presents underwater on my birthday.
+TIMEOUT: I go to school riding a giant cat.
+RATE_LIMIT: I paint my ceiling on rainy days.
+TIMEOUT: I juggle spaghetti after dinner.
+RATE_LIMIT: I play soccer in the kitchen after dinner.
+TIMEOUT: I open presents underwater on my birthday.
+RATE_LIMIT: I play the drums before bed every night.
+TIMEOUT: I paint my ceiling on rainy days.
+RATE_LIMIT: I ride my bike on rainy days.
+TIMEOUT: I play soccer in the kitchen after dinner.
+RATE_LIMIT: I sing to my goldfish on my birthday.
+TIMEOUT: I play the drums before bed every night.
+RATE_LIMIT: I sleep under the table after dinner.
+TIMEOUT: I ride my bike on rainy days.
+RATE_LIMIT: I study dinosaurs at school.
+TIMEOUT: I sing to my goldfish on my birthday.
+RATE_LIMIT: I study pizza at school.
+TIMEOUT: I sleep under the table after dinner.
+RATE_LIMIT: I take a nap in the refrigerator on Saturday.
+TIMEOUT: I study dinosaurs at school.
+RATE_LIMIT: I wash my cat on rainy days.
+TIMEOUT: I study pizza at school.
+RATE_LIMIT: I wash the clouds on Sunday afternoon.
+TIMEOUT: I take a nap in the refrigerator on Saturday.
+RATE_LIMIT: I wrestle with ghosts after school.
+TIMEOUT: I wash my cat on rainy days.
+RATE_LIMIT: Speech Recognition not supported
+TIMEOUT: I wash the clouds on Sunday afternoon.
+RATE_LIMIT: ]/gi,
+TIMEOUT: I wrestle with ghosts after school.
+RATE_LIMIT: active
+TIMEOUT: Speech Recognition not supported
+RATE_LIMIT: audio/
+TIMEOUT: ]/gi,
+RATE_LIMIT: counter
+TIMEOUT: active
+RATE_LIMIT: en-US
+TIMEOUT: audio/
+ERROR: glow
+RATE_LIMIT: micBtn
+TIMEOUT: en-US
+TIMEOUT: micBtn
+RATE_LIMIT: pointsCircle
+RATE_LIMIT: playBtn
+TIMEOUT: pointsCircle
+TIMEOUT: playBtn
+RATE_LIMIT: scale(1.3)
+RATE_LIMIT: studentWrapper
+TIMEOUT: scale(1.3)
+TIMEOUT: studentWrapper
