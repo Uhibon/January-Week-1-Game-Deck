@@ -19,9 +19,9 @@
 <link rel="preload" as="audio" href="assets/audio/result_15.mp3" />
 
 <style>
-:root{--bg:#0b1530;--ink:#fff;--outline:#ffffff26;--radius:26px;}
+:root{--bg:#0b1530;--ink:#fff;--outline:#ffffff26;--radius:26px}
 *{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif;}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif}
 header{text-align:center;padding:24px 10px}
 .h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6vw,54px)}
 .h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px)}
@@ -30,46 +30,41 @@ header{text-align:center;padding:24px 10px}
 footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:700;padding:30px 10px}
 .wrap{max-width:1100px;margin:auto;padding:0 16px 80px}
 .panel{position:relative;z-index:1;padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
-background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));overflow:visible;}
+background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));overflow:visible}
 .card{position:relative;z-index:1;border:1px solid var(--outline);border-radius:var(--radius);
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
 
-/* Sweeping yellow meter sits INSIDE sentence container */
-.sweep{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(0deg,rgba(255,246,128,.9),rgba(255,246,128,.7));mix-blend-mode:screen;opacity:.75;border-radius:6px;transform:translateX(-100%);z-index:0;}
-@keyframes sweepAcross{from{transform:translateX(-100%)}to{transform:translateX(0%)}}
-.sweep.run{animation:sweepAcross var(--dur,6s) linear forwards;}
+/* Sweeping yellow meter */
+.sweep{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(0deg,rgba(255,246,128,.9),rgba(255,246,128,.7));mix-blend-mode:screen;opacity:.75;border-radius:6px;transform:translateX(-100%);z-index:0}
+@keyframes sweepAcross{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+.sweep.run{animation:sweepAcross var(--dur,6s) linear forwards}
 
-.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:2;}
+.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:2}
 .en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s,transform .2s;text-shadow:0 0 6px rgba(255,255,255,.4)}
-.en .word.blue{color:#3aa0ff;text-shadow:0 0 2px #000,0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08);}
+.en .word.blue{color:#3aa0ff;text-shadow:0 0 2px #000,0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08)}
 .en .word.red{color:#ff2a2a;text-shadow:0 0 2px #000,0 0 10px #ff2a2a,0 0 18px #ff2a2a}
 
-/* Hearts float OVER everything */
-.heart{position:fixed;left:0;top:0;transform:translate(-50%,0);font-size:24px;color:#ff7eb9;opacity:0;z-index:9999;animation:heartUp .9s ease-out forwards;pointer-events:none;}
+.heart{position:fixed;left:0;top:0;transform:translate(-50%,0);font-size:24px;color:#ff7eb9;opacity:0;z-index:9999;animation:heartUp .9s ease-out forwards;pointer-events:none}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-90px) scale(1.5);opacity:0}}
 
-/* Gold play */
-.playBtn{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;font-weight:900;font-size:20px;color:#351b00;z-index:3;background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);animation:goldPulse 1.8s ease-in-out infinite;}
+.playBtn{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;font-weight:900;font-size:20px;color:#351b00;z-index:3;background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);animation:goldPulse 1.8s ease-in-out infinite}
 @keyframes goldPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,213,120,.25),0 0 10px rgba(255,214,120,.35),inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55)}50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75)}}
 
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
 
-/* rainbow circle */
 .meterWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:22px 0}
 .meter{position:relative;width:min(64vw,280px);height:min(64vw,280px);display:grid;place-items:center}
-.ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);-webkit-mask:radial-gradient(circle,transparent 60%,black 62%);mask:radial-gradient(circle,transparent 60%,black 62%);animation:rainbowCycle 3s linear infinite;}
+.ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);-webkit-mask:radial-gradient(circle,transparent 60%,black 62%);mask:radial-gradient(circle,transparent 60%,black 62%);animation:rainbowCycle 3s linear infinite}
 @keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
-.meterCore{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));display:grid;place-items:center;text-align:center;transition:transform .3s ease;}
-.meterText{font-weight:900;font-size:clamp(28px,8vw,42px);line-height:1.25;}
-.counter{margin-top:8px;font-weight:700;font-size:clamp(16px,4vw,22px);color:#fff;opacity:.9;}
+.meterCore{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));display:grid;place-items:center;text-align:center;transition:transform .3s ease}
+.meterText{font-weight:900;font-size:clamp(28px,8vw,42px);line-height:1.25}
+.counter{margin-top:8px;font-weight:700;font-size:clamp(16px,4vw,22px);color:#fff;opacity:.9}
 
-/* shimmer kept for Ready only */
-.shimmer{background:linear-gradient(90deg,#fff,#ffd1f3,#d1ffe3,#d1e6ff,#fff680,#ffd1f3,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:300% 100%;animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25);} 
-@keyframes shimmerMove{0%{background-position:0% 0}100%{background-position:100% 0}}
+.shimmer{background:linear-gradient(90deg,#fff,#ffd1f3,#d1ffe3,#d1e6ff,#fff680,#ffd1f3,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:300% 100%;animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25)}
+@keyframes shimmerMove{0%{background-position:0 0}100%{background-position:100% 0}}
 
-/* countdown bigger */
-.popNum{animation:pop .5s ease;transform-origin:center;font-size:clamp(80px,18vw,120px);} 
+.popNum{animation:pop .5s ease;transform-origin:center;font-size:clamp(80px,18vw,120px)}
 @keyframes pop{0%{transform:scale(.2);opacity:0}50%{transform:scale(1.35);opacity:1}100%{transform:scale(1)}}
 
 .btnRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
@@ -79,19 +74,20 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
 
-/* RESULTS PAGE */
-#page-results{display:none;position:fixed;inset:0;z-index:9990;align-items:center;justify-content:center;padding:24px;}
-.result-card{max-width:760px;width:100%;border-radius:24px;padding:28px 20px;text-align:center;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid #ffffff30;}
+/* RESULT PAGES */
+.result-page{display:none;position:fixed;inset:0;z-index:9990;overflow:auto}
+.result-bg{min-height:100vh;display:flex;flex-direction:column}
+.result-center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+.result-card{max-width:760px;width:100%;border-radius:24px;padding:28px 20px;text-align:center;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid #ffffff30}
 #resultMsg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(26px,6vw,48px);margin-bottom:10px;color:#fff}
 #resultScore{font-weight:900;font-size:clamp(20px,5vw,34px);color:#cfe1ff;margin-bottom:18px}
-.btn.menu{display:inline-block;margin-top:6px;background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
-.btn.restart{display:inline-block;margin-top:6px;background:linear-gradient(180deg,#8ec5ff,#1e6eff);color:#00163a}
-/* Glow backgrounds */
-body.redGlow{background:#3b0d0d;}
-body.orangeGlow{background:#3b2a0d;}
-body.blueGlow{background:#0b1530;}
-body.goldGlow{background:#2b2509;}
-/* Confetti */
+.btn.menu,.btn.restart{background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
+/* Page colors */
+.redBG{background:#3b0d0d}
+.orangeBG{background:#3b2a0d}
+.blueBG{background:#0b1530}
+.goldBG{background:#2b2509}
+
 .confetti{position:fixed;top:-12px;width:10px;height:14px;opacity:.9;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:1}}
 </style>
@@ -133,55 +129,128 @@ body.goldGlow{background:#2b2509;}
 
 <footer>Bryan’s English School</footer>
 
-<!-- RESULTS OVERLAY -->
-<div id="page-results">
-  <div class="result-card">
-    <div id="resultMsg">いいね！あと少しでパーフェクト！</div>
-    <div id="resultScore">0/15（0%）</div>
-    <div class="btnRow" style="justify-content:center">
-      <button id="restartBtn" class="btn restart">もう一度<br><small>Restart</small></button>
-      <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+<!-- RESULT PAGES (4 colors) -->
+<div id="result-red" class="result-page">
+  <div class="result-bg redBG">
+    <header>
+      <div class="h1">THE BOO-RICULUM</div>
+      <div class="h2">GAMES & QUIZZES</div>
+      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+    </header>
+    <div class="result-center">
+      <div class="result-card">
+        <div id="resultMsg-red">ブーリキュラム見てないでしょ！</div>
+        <div id="resultScore-red">0/15（0%）</div>
+        <div class="btnRow">
+          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
+          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+        </div>
+      </div>
     </div>
+    <footer>Bryan’s English School</footer>
   </div>
-  <!-- Final result sounds -->
-  <audio id="res_05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
-  <audio id="res_610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-  <audio id="res_1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-  <audio id="res_15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 </div>
 
-<script>
-const DUR_MS=6000; // mic & meter duration (must match CSS --dur)
-let idx=0,listening=false,SR=null,streamAllowed=false;
+<div id="result-orange" class="result-page">
+  <div class="result-bg orangeBG">
+    <header>
+      <div class="h1">THE BOO-RICULUM</div>
+      <div class="h2">GAMES & QUIZZES</div>
+      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+    </header>
+    <div class="result-center">
+      <div class="result-card">
+        <div id="resultMsg-orange">YouTube見すぎ！ブーリキュラムもやろう！</div>
+        <div id="resultScore-orange">0/15（0%）</div>
+        <div class="btnRow">
+          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
+          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+        </div>
+      </div>
+    </div>
+    <footer>Bryan’s English School</footer>
+  </div>
+</div>
 
-// -------- NEW: first-attempt tracking for averaging --------
-const firstScores = new Array(15).fill(null);   // store 0–100 for first attempt only
-let firstPerfectCount = 0;                       // for X/15 display like screenshot
+<div id="result-blue" class="result-page">
+  <div class="result-bg blueBG">
+    <header>
+      <div class="h1">THE BOO-RICULUM</div>
+      <div class="h2">GAMES & QUIZZES</div>
+      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+    </header>
+    <div class="result-center">
+      <div class="result-card">
+        <div id="resultMsg-blue">いいね！あと少しでパーフェクト！</div>
+        <div id="resultScore-blue">0/15（0%）</div>
+        <div class="btnRow">
+          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
+          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+        </div>
+      </div>
+    </div>
+    <footer>Bryan’s English School</footer>
+  </div>
+</div>
+
+<div id="result-gold" class="result-page">
+  <div class="result-bg goldBG">
+    <header>
+      <div class="h1">THE BOO-RICULUM</div>
+      <div class="h2">GAMES & QUIZZES</div>
+      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+    </header>
+    <div class="result-center">
+      <div class="result-card">
+        <div id="resultMsg-gold">すごい！あなたは地球で一番頭がいい！</div>
+        <div id="resultScore-gold">15/15（100%）</div>
+        <div class="btnRow">
+          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
+          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+        </div>
+      </div>
+    </div>
+    <footer>Bryan’s English School</footer>
+  </div>
+</div>
+
+<!-- Final result sounds -->
+<audio id="res_05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
+<audio id="res_610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="res_1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="res_15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+
+<script>
+const DUR_MS=6000; // meter duration (match CSS)
+let idx=0,listening=false,SR=null,streamAllowed=false;
+// First-attempt averages
+const firstScores=new Array(15).fill(null); // 0–100 or null
+let firstPerfectCount=0; // for X/15 display
 
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
 const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
-const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep'),meterCore=document.getElementById('meterCore');
+const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep');
 const counter=document.getElementById('counter');
 
-/* preload Sage sentence audio (local /audio) */
+// Preload Sage sentence audio (local /audio)
 const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
-sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3');a.preload='auto';a.load();});
+sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3');a.preload='auto';a.load()});
 
-/* per-question score sounds */
+// Per-question score sounds
 const scoreAudio={
   low:new Audio('assets/audio/0-43.mp3'),
   mid:new Audio('assets/audio/44-74.mp3'),
   high:new Audio('assets/audio/75-99.mp3'),
   max:new Audio('assets/audio/100.mp3')
 };
-Object.values(scoreAudio).forEach(a=>{a.preload='auto';a.load();});
+Object.values(scoreAudio).forEach(a=>{a.preload='auto';a.load()});
 
-/* final result sounds */
-const res05 = document.getElementById('res_05');
-const res610 = document.getElementById('res_610');
-const res1114 = document.getElementById('res_1114');
-const res15 = document.getElementById('res_15');
+// Final result sounds
+const res05=document.getElementById('res_05');
+const res610=document.getElementById('res_610');
+const res1114=document.getElementById('res_1114');
+const res15=document.getElementById('res_15');
 
 const ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
@@ -201,193 +270,120 @@ const ITEMS=[
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ].sort(()=>Math.random()-0.5);
 
-/* helpers */
-const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
-function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
-function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
-function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');} 
-function clearHearts(){document.querySelectorAll('.heart').forEach(h=>h.remove());}
-function popHeartAt(el){
-  const h=document.createElement('span');h.className='heart';h.textContent='❤';
-  const r=el.getBoundingClientRect();
-  h.style.left=(r.left + r.width/2)+ 'px';
-  h.style.top=(r.top) + 'px';
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),900);
-}
-function markSpoken(sp){
-  const set=toSet(sp);
-  enEl.querySelectorAll('.word').forEach(w=>{
-    const v=normalize(w.textContent);
-    if(set.has(v) && !w.classList.contains('blue')){ w.classList.add('blue'); popHeartAt(w); }
-  });
-}
-function finalizeColors(){ enEl.querySelectorAll('.word').forEach(w=>{ if(!w.classList.contains('blue')) w.classList.add('red'); }); }
-function keywordScore(t,sp){ const k=toSet(t),said=toSet(sp); let hit=0,total=0; k.forEach(x=>{ if(x.length>2){ total++; if(said.has(x)) hit++; } }); return total?Math.round((hit/total)*100):0; }
+// Helpers
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim()}
+function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean))}
+function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ')}
+function clearHearts(){document.querySelectorAll('.heart').forEach(h=>h.remove())}
+function popHeartAt(el){const h=document.createElement('span');h.className='heart';h.textContent='❤';const r=el.getBoundingClientRect();h.style.left=(r.left+r.width/2)+'px';h.style.top=r.top+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),900)}
+function markSpoken(sp){const set=toSet(sp);enEl.querySelectorAll('.word').forEach(w=>{const v=normalize(w.textContent);if(set.has(v)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w)}})}
+function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red')})}
+function keywordScore(t,sp){const k=toSet(t),said=toSet(sp);let hit=0,total=0;k.forEach(x=>{if(x.length>2){total++;if(said.has(x))hit++}});return total?Math.round((hit/total)*100):0}
 
-function setReady(){ meterText.classList.remove('shimmer'); meterText.innerHTML='Ready<br><small>スタンバイ</small>'; } 
-function setListening(){ meterText.textContent='Listening'; }
-function setFinished(){ meterText.innerHTML='Finished<br><small>おわり！</small>'; } 
+function setReady(){meterText.innerHTML='Ready<br><small>スタンバイ</small>'}
+function setListening(){meterText.textContent='Listening'}
+function setFinished(){meterText.innerHTML='Finished<br><small>おわり！</small>'}
 
-/* Audio */
-function stripForFile(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,''); }
-function playSage(en){ if(listening) return; const a=new Audio('./audio/'+stripForFile(en)+'.mp3'); a.preload='auto'; a.volume=1; a.playbackRate=0.95; a.play().catch(()=>{}); } 
+function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'')}
+function playSage(en){if(listening)return;const a=new Audio('./audio/'+stripForFile(en)+'.mp3');a.preload='auto';a.playbackRate=0.95;a.play().catch(()=>{})}
 
-/* Mic permission */
-async function requestMic(){
-  try{ const s=await navigator.mediaDevices.getUserMedia({audio:true}); s.getTracks().forEach(t=>t.stop()); streamAllowed=true; }
-  catch(e){ alert("マイクが使えません。Chrome を使用してください。"); }
-}
+async function requestMic(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true}catch(e){alert('マイクが使えません。Chrome を使用してください。')}}
+function makeRecognizer(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return null;const r=new R();r.lang='en-US';r.continuous=true;r.interimResults=true;try{r.maxAlternatives=5}catch(_){}return r}
 
-/* Recognizer */
-function makeRecognizer(){
-  const R=window.SpeechRecognition||window.webkitSpeechRecognition; if(!R) return null; const r=new R();
-  r.lang='en-US'; r.continuous=true; r.interimResults=true; try{r.maxAlternatives=5;}catch(_){} return r;
-}
+function startSweep(){sweep.style.setProperty('--dur',DUR_MS+'ms');sweep.classList.remove('run');void sweep.offsetWidth;sweep.classList.add('run')}
+function stopSweep(){sweep.classList.remove('run')}
+function updateCounter(){counter.textContent=`${idx+1} / 15`}
 
-/* Sweep control */
-function startSweep(){ sweep.style.setProperty('--dur', DUR_MS+'ms'); sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run'); }
-function stopSweep(){ sweep.classList.remove('run'); }
+function playScoreSound(score){let a=scoreAudio.low;if(score===100)a=scoreAudio.max;else if(score>=75)a=scoreAudio.high;else if(score>=44)a=scoreAudio.mid;try{a.currentTime=0;a.play().catch(()=>{setTimeout(()=>{a.play().catch(()=>{})},120)})}catch(e){}}
 
-function updateCounter(){ counter.textContent = `${idx+1} / 15`; }
-
-/* Score SFX — only for FIRST attempt on each question */
-function playScoreSound(score){
-  let a=scoreAudio.low;
-  if(score===100) a=scoreAudio.max;
-  else if(score>=75) a=scoreAudio.high;
-  else if(score>=44) a=scoreAudio.mid;
-  try{a.currentTime=0; a.play().catch(()=>{ setTimeout(()=>{ a.play().catch(()=>{}); }, 120); });}catch(e){}
-}
-
-/* Round flow */
+// --- ROUND FLOW (mic starts BEFORE countdown to catch first word like "What's") ---
 async function beginRound(){
-  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!R){alert("このブラウザでは音声認識が使えません。Chrome を使用してください。");return;}
-  if(!streamAllowed){await requestMic(); if(!streamAllowed) return;}
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition; if(!R){alert('このブラウザでは音声認識が使えません。Chrome を使用してください。');return}
+  if(!streamAllowed){await requestMic(); if(!streamAllowed) return}
 
   resetVisuals();
   playBtn.disabled=true; retryBtn.style.display='none'; nextBtn.style.display='none';
 
-  // Countdown
-  const colors=['#ff7eb9','#7dd3fc','#a6f7b2','#fff680'];
-  const showNum = async (n, i)=>{ meterText.innerHTML = `<span class="popNum" style="color:${colors[i]}">${n}</span>`; await sleep(700); };
-  await showNum(3,0); await showNum(2,1); await showNum(1,2);
-  meterText.innerHTML = `<span class="popNum" style="color:${colors[3]}">GO!</span>`; await sleep(350);
-
-  // Start mic THEN meter
-  listening=true; SR = makeRecognizer(); let heard="";
+  // Start mic EARLY, then show countdown, then sweep
+  listening=true; SR=makeRecognizer(); let heard="";
   if(SR){
-    SR.onresult=(e)=>{ let txt=""; for(let i=e.resultIndex;i<e.results.length;i++){ txt += e.results[i][0].transcript + " "; } heard=(heard+" "+txt).trim(); markSpoken(heard); };
-    SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){} } };
-    try{ SR.start(); }catch(_){ }
+    SR.onresult=(e)=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";} heard=(heard+" "+txt).trim(); markSpoken(heard)}
+    SR.onend=()=>{if(listening){try{SR.start()}catch(_){}}}
+    try{SR.start()}catch(_){}
   }
 
-  await sleep(700); // warm-up
+  // Short warm-up BEFORE countdown
+  await sleep(600);
+
+  const colors=['#ff7eb9','#7dd3fc','#a6f7b2','#fff680'];
+  const showNum=async(n,i)=>{meterText.innerHTML=`<span class="popNum" style="color:${colors[i]}">${n}</span>`;await sleep(700)}
+  await showNum(3,0); await showNum(2,1); await showNum(1,2);
+  meterText.innerHTML=`<span class="popNum" style="color:${colors[3]}">GO!</span>`; await sleep(350);
 
   setListening();
   startSweep();
-
   await sleep(DUR_MS);
 
-  listening=false; try{ SR&&SR.stop(); }catch(_){}
+  listening=false; try{SR&&SR.stop()}catch(_){}
   setFinished(); stopSweep(); finalizeColors();
 
-  // Score
   const s=keywordScore(ITEMS[idx].en,heard);
-  scoreBox.textContent="スコア："+s+"％"; scoreBox.style.display='block';
+  scoreBox.textContent='スコア：'+s+'％';
+  scoreBox.style.display='block';
 
-  // First-attempt recording + sound
-  if(firstScores[idx] === null){
-    firstScores[idx] = s;
-    if(s===100) firstPerfectCount++;
-    playScoreSound(s);
+  if(firstScores[idx]===null){
+    firstScores[idx]=s; if(s===100) firstPerfectCount++; playScoreSound(s);
   }
 
-  // Buttons (keep your existing rule: Next only on 100)
   if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; }
-  else { retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
+  else{ retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
   playBtn.disabled=false;
 }
 
-/* Display next */
-function resetVisuals(){
-  stopSweep(); void sweep.offsetWidth; clearHearts();
-  enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
-  scoreBox.style.display='none'; setReady();
-}
-function showItem(){
-  const it=ITEMS[idx]; mountWords(it.en); jpEl.textContent=it.jp; hiraEl.textContent=it.hira; resetVisuals(); updateCounter();
-}
+function resetVisuals(){stopSweep();void sweep.offsetWidth;clearHearts();enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));scoreBox.style.display='none';setReady()}
+function showItem(){const it=ITEMS[idx];mountWords(it.en);jpEl.textContent=it.jp;hiraEl.textContent=it.hira;resetVisuals();updateCounter()}
 
-/* RESULTS */
-function avgPercent(){
-  const sum = firstScores.reduce((a,b)=>a+(b??0),0);
-  return Math.round(sum/15);
-}
+function avgPercent(){const sum=firstScores.reduce((a,b)=>a+(b??0),0);return Math.round(sum/15)}
+
+function hideAllResults(){document.querySelectorAll('.result-page').forEach(p=>p.style.display='none')}
+
 function showResults(){
-  const page=document.getElementById("page-results");
-  page.style.display="flex";
+  const pct=avgPercent();
+  let pageId='result-blue', msgSel='#resultMsg-blue', scoreSel='#resultScore-blue', snd=res1114;
+  if(pct<=43){pageId='result-red'; msgSel='#resultMsg-red'; scoreSel='#resultScore-red'; snd=res05}
+  else if(pct<=74){pageId='result-orange'; msgSel='#resultMsg-orange'; scoreSel='#resultScore-orange'; snd=res610}
+  else if(pct===100){pageId='result-gold'; msgSel='#resultMsg-gold'; scoreSel='#resultScore-gold'; snd=res15}
 
-  const pct = avgPercent();
-  const msgEl=document.getElementById("resultMsg");
-  const scoreEl=document.getElementById("resultScore");
+  hideAllResults();
+  // X/15 (avg%) format
+  const scoreText=`${firstPerfectCount}/15（${pct}%）`;
+  const scoreEl=document.querySelector(scoreSel); if(scoreEl) scoreEl.textContent=scoreText;
+  document.getElementById(pageId).style.display='block';
 
-  // Color band + message + sound
-  let bg="blueGlow", msg="いいね！あと少しでパーフェクト！", snd=res1114;
-  if(pct<=43){ bg="redGlow"; msg="ブーリキュラム見てないでしょ！"; snd=res05; }
-  else if(pct<=74){ bg="orangeGlow"; msg="YouTube見すぎ！ブーリキュラムもやろう！"; snd=res610; }
-  else if(pct===100){ bg="goldGlow"; msg="すごい！あなたは地球で一番頭がいい！"; snd=res15; }
+  try{snd.currentTime=0; snd.play()}catch(e){}
 
-  document.body.className = bg;
-  // Keep the screenshot format: X/15 (Y%)
-  scoreEl.textContent = `${firstPerfectCount}/15（${pct}%）`;
-  msgEl.textContent = msg;
-
-  try{ snd.currentTime=0; snd.play(); }catch(e){}
-
-  // Confetti only for perfect (gold)
   if(pct===100){
     for(let i=0;i<160;i++){
-      setTimeout(()=>{
-        const c=document.createElement("div");
-        c.className="confetti";
-        c.style.left=(Math.random()*100)+"vw";
-        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
-        c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
-        document.body.appendChild(c);
-        setTimeout(()=>c.remove(),1900);
-      },i*10);
+      setTimeout(()=>{const c=document.createElement('div');c.className='confetti';c.style.left=(Math.random()*100)+'vw';c.style.background=`hsl(${Math.random()*360},100%,60%)`;c.style.animationDuration=(0.9+Math.random()*0.9)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),1900)},i*10)
     }
   }
 }
 
-/* Buttons */
-beginBtn.onclick=async()=>{ if(!streamAllowed) await requestMic(); if(!streamAllowed) return; showItem(); beginRound(); };
-retryBtn.onclick=()=>{ showItem(); beginRound(); };
-nextBtn.onclick=()=>{
-  idx++;
-  if(idx>=ITEMS.length){ // done
-    showResults();
-    nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none';
-    return;
-  }
-  showItem();
-  nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block';
-};
-playBtn.onclick=()=>{ const a=new Audio('./audio/'+stripForFile(ITEMS[idx].en)+'.mp3'); a.preload='auto'; a.play().catch(()=>{}); };
-document.getElementById('restartBtn').onclick=()=>{ // reset everything
-  document.getElementById('page-results').style.display='none';
-  document.body.className = '';
-  for(let i=0;i<firstScores.length;i++) firstScores[i]=null;
-  firstPerfectCount=0;
-  idx=0;
-  showItem();
-  beginBtn.style.display='inline-block'; retryBtn.style.display='none'; nextBtn.style.display='none';
-};
+// Buttons
+beginBtn.onclick=async()=>{if(!streamAllowed) await requestMic(); if(!streamAllowed) return; showItem(); beginRound()}
+retryBtn.onclick=()=>{showItem(); beginRound()}
+nextBtn.onclick=()=>{idx++; if(idx>=ITEMS.length){showResults(); nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none'; return} showItem(); nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block'}
+playBtn.onclick=()=>{const a=new Audio('./audio/'+stripForFile(ITEMS[idx].en)+'.mp3');a.preload='auto';a.play().catch(()=>{})}
 
-/* Init */
-showItem();
+// Restart buttons on all result pages
+Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click',()=>{
+  hideAllResults();
+  for(let i=0;i<firstScores.length;i++) firstScores[i]=null; firstPerfectCount=0; idx=0; showItem(); beginBtn.style.display='inline-block'; retryBtn.style.display='none'; nextBtn.style.display='none';
+}))
+
+// Init
+showItem()
 </script>
 </body>
 </html>
