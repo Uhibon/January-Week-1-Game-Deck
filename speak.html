@@ -80,7 +80,7 @@ display:grid;place-items:center;text-align:center;transition:transform .3s ease;
 /* shimmer kept for Ready only */
 .shimmer{background:linear-gradient(90deg,#fff,#ffd1f3,#d1ffe3,#d1e6ff,#fff680,#ffd1f3,#fff);
 -webkit-background-clip:text;background-clip:text;color:transparent;background-size:300% 100%;
-animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25);}
+animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25);} 
 @keyframes shimmerMove{0%{background-position:0% 0}100%{background-position:100% 0}}
 /* countdown pop */
 .popNum{animation:pop .5s ease;transform-origin:center;}
@@ -221,6 +221,9 @@ async function beginRound(){
     SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){} } };
     try{ SR.start(); }catch(_){}
   }
+
+  // ✅ Warm-up delay so first word is captured
+  await sleep(700);
 
   setListening(); // no shimmer/pulse while listening
   startSweep();
