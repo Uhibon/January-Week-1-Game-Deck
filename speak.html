@@ -24,10 +24,10 @@ header{text-align:center;padding:24px 10px}
 .h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff}
 footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:700;padding:30px 10px}
 .wrap{max-width:1100px;margin:auto;padding:0 16px 80px}
-.panel{padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
-background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
-.card{position:relative;border:1px solid var(--outline);border-radius:var(--radius);
-padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
+.panel{position:relative;z-index:1;padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
+background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));overflow:visible;}
+.card{position:relative;z-index:1;border:1px solid var(--outline);border-radius:var(--radius);
+padding:22px 16px 22px 80px;margin-bottom:10px;overflow:visible;background:rgba(255,255,255,.04)}
 
 /* Sweeping yellow meter */
 .sweep{position:absolute;inset:0;width:100%;height:100%;
@@ -37,16 +37,16 @@ mix-blend-mode:screen;opacity:.75;border-radius:6px;transform:translateX(-100%);
 .sweep.run{animation:sweepAcross var(--dur,6s) linear forwards;}
 
 .en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;
-position:relative;z-index:3;}
-.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s,transform .2s}
-.en .word.blue{color:#3aa0ff;text-shadow:0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08);}
-.en .word.red{color:#ff2a2a;text-shadow:0 0 10px #ff2a2a,0 0 18px #ff2a2a}
+position:relative;z-index:3;overflow:visible;}
+.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s,transform .2s;text-shadow:0 0 6px rgba(255,255,255,.4)}
+.en .word.blue{color:#3aa0ff;text-shadow:0 0 2px #000,0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08);}
+.en .word.red{color:#ff2a2a;text-shadow:0 0 2px #000,0 0 10px #ff2a2a,0 0 18px #ff2a2a}
 
-/* Hearts */
-.heart{position:absolute;left:0;top:0;transform:translate(-50%,0);
-font-size:22px;color:#ff7eb9;opacity:0;z-index:4;animation:heartUp .9s ease-out forwards;}
+/* Hearts float OVER everything */
+.heart{position:fixed;left:0;top:0;transform:translate(-50%,0);
+font-size:24px;color:#ff7eb9;opacity:0;z-index:9999;animation:heartUp .9s ease-out forwards;pointer-events:none;}
 @keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}
-100%{transform:translate(-50%,-60px) scale(1.4);opacity:0}}
+100%{transform:translate(-50%,-90px) scale(1.5);opacity:0}}
 
 /* Gold play */
 .playBtn{position:absolute;left:16px;top:50%;transform:translateY(-50%);
@@ -57,15 +57,14 @@ box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),
 inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);
 animation:goldPulse 1.8s ease-in-out infinite;}
 @keyframes goldPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,213,120,.25),0 0 10px rgba(255,214,120,.35),
-inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55)}
-50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),
+inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55)}50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),
 inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75)}}
 
 .jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
 .hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
 
 /* rainbow circle */
-.meterWrap{display:flex;justify-content:center;margin:22px 0}
+.meterWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:22px 0}
 .meter{position:relative;width:min(64vw,280px);height:min(64vw,280px);display:grid;place-items:center}
 .ring{position:absolute;inset:0;border-radius:50%;
 background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);
@@ -76,14 +75,17 @@ animation:rainbowCycle 3s linear infinite;}
 .meterCore{position:absolute;inset:12%;border-radius:50%;
 background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));
 display:grid;place-items:center;text-align:center;transition:transform .3s ease;}
-.meterText{font-weight:900;font-size:clamp(18px,6vw,28px);line-height:1.25;}
+.meterText{font-weight:900;font-size:clamp(28px,8vw,42px);line-height:1.25;}
+.counter{margin-top:8px;font-weight:700;font-size:clamp(16px,4vw,22px);color:#fff;opacity:.9;}
+
 /* shimmer kept for Ready only */
 .shimmer{background:linear-gradient(90deg,#fff,#ffd1f3,#d1ffe3,#d1e6ff,#fff680,#ffd1f3,#fff);
 -webkit-background-clip:text;background-clip:text;color:transparent;background-size:300% 100%;
 animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25);} 
 @keyframes shimmerMove{0%{background-position:0% 0}100%{background-position:100% 0}}
-/* countdown pop */
-.popNum{animation:pop .5s ease;transform-origin:center;}
+
+/* countdown bigger */
+.popNum{animation:pop .5s ease;transform-origin:center;font-size:clamp(80px,18vw,120px);} 
 @keyframes pop{0%{transform:scale(.2);opacity:0}50%{transform:scale(1.35);opacity:1}100%{transform:scale(1)}}
 
 .btnRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
@@ -118,6 +120,7 @@ background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px
         <div class="ring"></div>
         <div id="meterCore" class="meterCore"><div id="meterText" class="meterText">Ready<br><small>スタンバイ</small></div></div>
       </div>
+      <div id="counter" class="counter">1 / 15</div>
     </div>
 
     <div class="btnRow">
@@ -138,6 +141,7 @@ const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hira
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
 const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
 const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep'),meterCore=document.getElementById('meterCore');
+const counter=document.getElementById('counter');
 
 /* preload Sage + score audio */
 const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
@@ -167,21 +171,32 @@ const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
 function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');} 
-function clearHearts(){enEl.querySelectorAll('.heart').forEach(h=>h.remove());}
-function popHeartAt(el){const h=document.createElement('span');h.className='heart';h.textContent='❤';
-const r=el.getBoundingClientRect(),pr=enEl.getBoundingClientRect();h.style.left=(r.left-pr.left+r.width/2)+'px';h.style.top=(r.top-pr.top)+'px';
-enEl.appendChild(h);setTimeout(()=>h.remove(),900);} 
-function markSpoken(sp){const set=toSet(sp);enEl.querySelectorAll('.word').forEach(w=>{const v=normalize(w.textContent);if(set.has(v)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w);}});} 
-function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red');});}
-function keywordScore(t,sp){const k=toSet(t),said=toSet(sp);let hit=0,total=0;k.forEach(x=>{if(x.length>2){total++;if(said.has(x))hit++;}});return total?Math.round((hit/total)*100):0;}
+function clearHearts(){document.querySelectorAll('.heart').forEach(h=>h.remove());}
+function popHeartAt(el){
+  const h=document.createElement('span');h.className='heart';h.textContent='❤';
+  const r=el.getBoundingClientRect();
+  h.style.left=(r.left + r.width/2)+ 'px';
+  h.style.top=(r.top) + 'px';
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),900);
+}
+function markSpoken(sp){
+  const set=toSet(sp);
+  enEl.querySelectorAll('.word').forEach(w=>{
+    const v=normalize(w.textContent);
+    if(set.has(v) && !w.classList.contains('blue')){ w.classList.add('blue'); popHeartAt(w); }
+  });
+}
+function finalizeColors(){ enEl.querySelectorAll('.word').forEach(w=>{ if(!w.classList.contains('blue')) w.classList.add('red'); }); }
+function keywordScore(t,sp){ const k=toSet(t),said=toSet(sp); let hit=0,total=0; k.forEach(x=>{ if(x.length>2){ total++; if(said.has(x)) hit++; } }); return total?Math.round((hit/total)*100):0; }
 
-function setReady(){meterText.classList.remove('shimmer');meterCore.classList.remove('bigPulse');meterText.innerHTML='Ready<br><small>スタンバイ</small>';} 
-function setListening(){ /* no shimmer/pulse while listening */ meterText.classList.remove('shimmer');meterCore.classList.remove('bigPulse'); meterText.textContent='Listening'; }
-function setFinished(){meterText.classList.remove('shimmer');meterCore.classList.remove('bigPulse');meterText.innerHTML='Finished<br><small>おわり！</small>';} 
+function setReady(){ meterText.classList.remove('shimmer'); meterCore.classList.remove('bigPulse'); meterText.innerHTML='Ready<br><small>スタンバイ</small>'; } 
+function setListening(){ meterText.classList.remove('shimmer'); meterCore.classList.remove('bigPulse'); meterText.textContent='Listening'; }
+function setFinished(){ meterText.classList.remove('shimmer'); meterCore.classList.remove('bigPulse'); meterText.innerHTML='Finished<br><small>おわり！</small>'; } 
 
 /* Audio */
-function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'');}
-function playSage(en){if(listening)return;const a=new Audio('./audio/'+stripForFile(en)+'.mp3');a.preload='auto';a.volume=1;a.playbackRate=0.95;a.play().catch(()=>{});} 
+function stripForFile(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,''); }
+function playSage(en){ if(listening) return; const a=new Audio('./audio/'+stripForFile(en)+'.mp3'); a.preload='auto'; a.volume=1; a.playbackRate=0.95; a.play().catch(()=>{}); } 
 
 /* Mic permission */
 async function requestMic(){
@@ -199,6 +214,8 @@ function makeRecognizer(){
 function startSweep(){ sweep.style.setProperty('--dur', DUR_MS+'ms'); sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run'); }
 function stopSweep(){ sweep.classList.remove('run'); }
 
+function updateCounter(){ counter.textContent = `${idx+1} / 15`; }
+
 /* Round flow */
 async function beginRound(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -214,12 +231,12 @@ async function beginRound(){
   await showNum(3,0); await showNum(2,1); await showNum(1,2);
   meterText.innerHTML = `<span class="popNum" style="color:${colors[3]}">GO!</span>`; await sleep(350);
 
-  // Start mic FIRST, then update UI, then start meter — removes listening lag
+  // Start mic FIRST, then warm-up, then UI/meter
   listening=true; SR = makeRecognizer(); let heard="";
   if(SR){
     SR.onresult=(e)=>{ let txt=""; for(let i=e.resultIndex;i<e.results.length;i++){ txt += e.results[i][0].transcript + " "; } heard=(heard+" "+txt).trim(); markSpoken(heard); };
     SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){} } };
-    try{ SR.start(); }catch(_){}
+    try{ SR.start(); }catch(_){ }
   }
 
   // ✅ Warm-up delay so first word is captured
@@ -257,7 +274,7 @@ function resetVisuals(){
   scoreBox.style.display='none'; setReady();
 }
 function showItem(){
-  const it=ITEMS[idx]; mountWords(it.en); jpEl.textContent=it.jp; hiraEl.textContent=it.hira; resetVisuals();
+  const it=ITEMS[idx]; mountWords(it.en); jpEl.textContent=it.jp; hiraEl.textContent=it.hira; resetVisuals(); updateCounter();
 }
 
 /* Buttons */
