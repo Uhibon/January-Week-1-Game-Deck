@@ -73,6 +73,21 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 .btn.retry{background:linear-gradient(180deg,#8ec5ff,#1e6eff);color:#00163a}
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
+
+/* RESULTS PAGE */
+#page-results{display:none;position:fixed;inset:0;z-index:9990;align-items:center;justify-content:center;padding:24px;}
+.result-card{max-width:760px;width:100%;border-radius:24px;padding:28px 20px;text-align:center;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid #ffffff30;}
+#resultMsg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(26px,6vw,48px);margin-bottom:10px;color:#fff}
+#resultScore{font-weight:900;font-size:clamp(20px,5vw,34px);color:#cfe1ff;margin-bottom:18px}
+.btn.menu{display:inline-block;margin-top:6px;background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
+/* Glow backgrounds */
+body.redGlow{background:#3b0d0d;}
+body.orangeGlow{background:#3b2a0d;}
+body.blueGlow{background:#0b1530;}
+body.goldGlow{background:#2b2509;}
+/* Confetti */
+.confetti{position:fixed;top:-12px;width:10px;height:14px;opacity:.9;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:1}}
 </style>
 </head>
 <body>
@@ -112,9 +127,23 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 
 <footer>Bryan’s English School</footer>
 
+<!-- RESULTS OVERLAY -->
+<div id="page-results">
+  <div class="result-card">
+    <div id="resultMsg">いいね！あと少しでパーフェクト！</div>
+    <div id="resultScore">0/15（0%）</div>
+    <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+  </div>
+  <!-- Result sounds -->
+  <audio id="s_r05" src="assets/audio/r05.mp3" preload="auto"></audio>
+  <audio id="s_r610" src="assets/audio/r610.mp3" preload="auto"></audio>
+  <audio id="s_r1114" src="assets/audio/r1114.mp3" preload="auto"></audio>
+  <audio id="s_r15" src="assets/audio/r15.mp3" preload="auto"></audio>
+</div>
+
 <script>
 const DUR_MS=6000; // mic & meter duration (must match CSS --dur)
-let idx=0,listening=false,SR=null,streamAllowed=false;
+let idx=0,listening=false,SR=null,streamAllowed=false,totalScore=0; // totalScore counts 100% clears
 const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
 const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
 const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
@@ -124,7 +153,8 @@ const counter=document.getElementById('counter');
 /* preload Sage + score audio */
 const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
 sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3');a.preload='auto';a.load();});
-["assets/audio/0-43.mp3","assets/audio/44-74.mp3","assets/audio/75-99.mp3","assets/audio/100.mp3"].forEach(u=>{const a=new Audio(u);a.preload='auto';a.load();});
+const scoreAudio={low:new Audio('assets/audio/0-43.mp3'),mid:new Audio('assets/audio/44-74.mp3'),high:new Audio('assets/audio/75-99.mp3'),max:new Audio('assets/audio/100.mp3')};
+Object.values(scoreAudio).forEach(a=>{a.preload='auto';a.load();});
 
 const ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
@@ -194,6 +224,12 @@ function stopSweep(){ sweep.classList.remove('run'); }
 
 function updateCounter(){ counter.textContent = `${idx+1} / 15`; }
 
+/* Score SFX with retry */
+function playScoreSound(score){
+  let a=scoreAudio.low; if(score===100) a=scoreAudio.max; else if(score>=75) a=scoreAudio.high; else if(score>=44) a=scoreAudio.mid;
+  try{a.currentTime=0; a.play().catch(()=>{ setTimeout(()=>{ a.play().catch(()=>{}); }, 150); });}catch(e){}
+}
+
 /* Round flow */
 async function beginRound(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -228,21 +264,13 @@ async function beginRound(){
   listening=false; try{ SR&&SR.stop(); }catch(_){}
   setFinished(); stopSweep(); finalizeColors();
 
-  // Score & buttons (no skipping): 100% -> Next; 75-99% -> Retry; <=74% -> Retry
+  // Score & buttons (no skipping): 100% -> Next; otherwise Retry
   const s=keywordScore(ITEMS[idx].en,heard);
   scoreBox.textContent="スコア："+s+"％"; scoreBox.style.display='block';
   playScoreSound(s);
-  if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; }
+  if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; totalScore++; }
   else { retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
   playBtn.disabled=false;
-}
-
-/* Score SFX */
-const scoreFiles={low:"assets/audio/0-43.mp3",mid:"assets/audio/44-74.mp3",high:"assets/audio/75-99.mp3",max:"assets/audio/100.mp3"};
-let sfx=new Audio(); sfx.preload='auto';
-function playScoreSound(score){
-  let src=scoreFiles.low; if(score===100) src=scoreFiles.max; else if(score>=75) src=scoreFiles.high; else if(score>=44) src=scoreFiles.mid;
-  sfx.pause(); sfx.src=src; sfx.currentTime=0; sfx.play().catch(()=>{});
 }
 
 /* Display next */
@@ -255,13 +283,45 @@ function showItem(){
   const it=ITEMS[idx]; mountWords(it.en); jpEl.textContent=it.jp; hiraEl.textContent=it.hira; resetVisuals(); updateCounter();
 }
 
+/* RESULTS */
+function $(sel){return document.querySelector(sel);} 
+function showResults(){
+  $("#page-results").style.display="flex";
+  const pct=Math.round((totalScore/15)*100);
+  const msgEl=$("#resultMsg"),scoreEl=$("#resultScore");
+  let bg="blueGlow",msg="いいね！あと少しでパーフェクト！",snd=$("#s_r1114");
+  if(totalScore<=5){bg="redGlow";msg="ブーリキュラム見てないでしょ！";snd=$("#s_r05");}
+  else if(totalScore<=10){bg="orangeGlow";msg="YouTube見すぎ！ブーリキュラムもやろう！";snd=$("#s_r610");}
+  else if(totalScore===15){bg="goldGlow";msg="すごい！あなたは地球で一番頭がいい！";snd=$("#s_r15");}
+  document.body.className=bg;
+  msgEl.textContent=msg;
+  scoreEl.textContent=`${totalScore}/15（${pct}%）`;
+  try{snd.currentTime=0;snd.play();}catch(e){}
+  if(totalScore===15){
+    for(let i=0;i<160;i++){
+      setTimeout(()=>{
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=(Math.random()*100)+"vw";
+        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+        c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1900);
+      },i*10);
+    }
+  }
+}
+
 /* Buttons */
 beginBtn.onclick=async()=>{ if(!streamAllowed) await requestMic(); if(!streamAllowed) return; showItem(); beginRound(); };
 retryBtn.onclick=()=>{ showItem(); beginRound(); };
 nextBtn.onclick=()=>{
   idx++;
-  if(idx>=ITEMS.length){ enEl.textContent="Great work today!"; jpEl.textContent="よくできました！"; hiraEl.textContent="";
-    nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none'; setReady(); stopSweep(); return; }
+  if(idx>=ITEMS.length){ // after pressing Next on last question
+    showResults();
+    nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none';
+    return;
+  }
   showItem();
   nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block'; // New question requires Start
 };
