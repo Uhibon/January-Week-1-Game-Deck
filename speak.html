@@ -7,12 +7,11 @@
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 
-<!-- Preload per-question score sounds -->
+<!-- Preload all audio (per-question + results) -->
 <link rel="preload" as="audio" href="assets/audio/0-43.mp3" />
 <link rel="preload" as="audio" href="assets/audio/44-74.mp3" />
 <link rel="preload" as="audio" href="assets/audio/75-99.mp3" />
 <link rel="preload" as="audio" href="assets/audio/100.mp3" />
-<!-- Preload final result sounds -->
 <link rel="preload" as="audio" href="assets/audio/result_0-5.mp3" />
 <link rel="preload" as="audio" href="assets/audio/result_6-10.mp3" />
 <link rel="preload" as="audio" href="assets/audio/result_11-14.mp3" />
@@ -35,7 +34,7 @@ background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));o
 padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
 
 /* Sweeping yellow meter */
-.sweep{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(0deg,rgba(255,246,128,.9),rgba(255,246,128,.7));mix-blend-mode:screen;opacity:.75;border-radius:6px;transform:translateX(-100%);z-index:0}
+.sweep{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(0deg,rgba(255,246,128,.9),rgba(255,246,128,.7));mix-blend-mode:screen;opacity:.8;border-radius:6px;transform:translateX(-100%);z-index:0}
 @keyframes sweepAcross{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 .sweep.run{animation:sweepAcross var(--dur,6s) linear forwards}
 
@@ -61,8 +60,9 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 .meterText{font-weight:900;font-size:clamp(28px,8vw,42px);line-height:1.25}
 .counter{margin-top:8px;font-weight:700;font-size:clamp(16px,4vw,22px);color:#fff;opacity:.9}
 
-.shimmer{background:linear-gradient(90deg,#fff,#ffd1f3,#d1ffe3,#d1e6ff,#fff680,#ffd1f3,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:300% 100%;animation:shimmerMove 1.2s linear infinite;text-shadow:0 0 18px rgba(255,255,255,.25)}
-@keyframes shimmerMove{0%{background-position:0 0}100%{background-position:100% 0}}
+/* GO! pulse/glow in center of circle */
+.flashGo{animation:flashGlow .85s ease-in-out 2}
+@keyframes flashGlow{0%{text-shadow:0 0 0 #fff680;transform:scale(.9)}50%{text-shadow:0 0 30px #fff680;transform:scale(1.06)}100%{text-shadow:0 0 0 #fff680;transform:scale(1)}}
 
 .popNum{animation:pop .5s ease;transform-origin:center;font-size:clamp(80px,18vw,120px)}
 @keyframes pop{0%{transform:scale(.2);opacity:0}50%{transform:scale(1.35);opacity:1}100%{transform:scale(1)}}
@@ -74,20 +74,25 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
 
-/* RESULT PAGES */
-.result-page{display:none;position:fixed;inset:0;z-index:9990;overflow:auto}
-.result-bg{min-height:100vh;display:flex;flex-direction:column}
-.result-center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
-.result-card{max-width:760px;width:100%;border-radius:24px;padding:28px 20px;text-align:center;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid #ffffff30}
-#resultMsg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(26px,6vw,48px);margin-bottom:10px;color:#fff}
-#resultScore{font-weight:900;font-size:clamp(20px,5vw,34px);color:#cfe1ff;margin-bottom:18px}
-.btn.menu,.btn.restart{background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
-/* Page colors */
-.redBG{background:#3b0d0d}
-.orangeBG{background:#3b2a0d}
-.blueBG{background:#0b1530}
-.goldBG{background:#2b2509}
+/* FULL-SCREEN RESULT PAGES (glow + header + footer) */
+.resultPage{display:none;position:fixed;inset:0;z-index:9999;color:#fff}
+.resultInner{min-height:100vh;display:flex;flex-direction:column}
+.resultCenter{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.resultMsg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(44px,10vw,96px);margin-bottom:16px;text-shadow:0 0 28px rgba(255,255,255,.9)}
+.resultScore{font-weight:900;font-size:clamp(40px,9vw,78px);margin-bottom:28px;text-shadow:0 0 26px rgba(255,255,255,.9)}
+.btnSmall{font-size:clamp(14px,3vw,20px);padding:10px 18px;margin:6px;border-radius:999px;font-weight:900;border:none;cursor:pointer}
+.btnRestart{background:#00e676;color:#002a11}
+.btnMenu{background:#1ee99a;color:#002a11}
+.glowRed{background:radial-gradient(circle at center,#ff1a1a,#3b0d0d 60%);animation:glowRed 3s ease-in-out infinite}
+.glowOrange{background:radial-gradient(circle at center,#ffae00,#3b2a0d 60%);animation:glowOrange 3s ease-in-out infinite}
+.glowBlue{background:radial-gradient(circle at center,#00c0ff,#0b1530 60%);animation:glowBlue 3s ease-in-out infinite}
+.glowGold{background:radial-gradient(circle at center,#ffd700,#2b2509 60%);animation:glowGold 3s ease-in-out infinite}
+@keyframes glowRed{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes glowOrange{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes glowBlue{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes glowGold{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
 
+/* Confetti */
 .confetti{position:fixed;top:-12px;width:10px;height:14px;opacity:.9;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:1}}
 </style>
@@ -129,84 +134,81 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 
 <footer>Bryan’s English School</footer>
 
-<!-- RESULT PAGES (4 colors) -->
-<div id="result-red" class="result-page">
-  <div class="result-bg redBG">
+<!-- RESULT PAGES (4 colors) with header/footer, full glow -->
+<div id="resRed" class="resultPage">
+  <div class="resultInner glowRed">
     <header>
       <div class="h1">THE BOO-RICULUM</div>
-      <div class="h2">GAMES & QUIZZES</div>
-      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+      <div class="h2">SPEAK & REPEAT</div>
+      <div class="h3">January Week 1 – Speaking Practice</div>
     </header>
-    <div class="result-center">
-      <div class="result-card">
-        <div id="resultMsg-red">ブーリキュラム見てないでしょ！</div>
-        <div id="resultScore-red">0/15（0%）</div>
-        <div class="btnRow">
-          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
-          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+    <div class="resultCenter">
+      <div>
+        <div id="msgRed" class="resultMsg">ブーリキュラム見てないでしょ！</div>
+        <div id="scoreRed" class="resultScore">0/15（0%）</div>
+        <div>
+          <button class="btnSmall btnRestart" data-restart>もう一度</button>
+          <a class="btnSmall btnMenu" href="index.html">メニューへ</a>
         </div>
       </div>
     </div>
     <footer>Bryan’s English School</footer>
   </div>
 </div>
-
-<div id="result-orange" class="result-page">
-  <div class="result-bg orangeBG">
+<div id="resOrange" class="resultPage">
+  <div class="resultInner glowOrange">
     <header>
       <div class="h1">THE BOO-RICULUM</div>
-      <div class="h2">GAMES & QUIZZES</div>
-      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+      <div class="h2">SPEAK & REPEAT</div>
+      <div class="h3">January Week 1 – Speaking Practice</div>
     </header>
-    <div class="result-center">
-      <div class="result-card">
-        <div id="resultMsg-orange">YouTube見すぎ！ブーリキュラムもやろう！</div>
-        <div id="resultScore-orange">0/15（0%）</div>
-        <div class="btnRow">
-          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
-          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+    <div class="resultCenter">
+      <div>
+        <div id="msgOrange" class="resultMsg">YouTube見すぎ！ブーリキュラムもやろう！</div>
+        <div id="scoreOrange" class="resultScore">0/15（0%）</div>
+        <div>
+          <button class="btnSmall btnRestart" data-restart>もう一度</button>
+          <a class="btnSmall btnMenu" href="index.html">メニューへ</a>
         </div>
       </div>
     </div>
     <footer>Bryan’s English School</footer>
   </div>
 </div>
-
-<div id="result-blue" class="result-page">
-  <div class="result-bg blueBG">
+<div id="resBlue" class="resultPage">
+  <div class="resultInner glowBlue">
     <header>
       <div class="h1">THE BOO-RICULUM</div>
-      <div class="h2">GAMES & QUIZZES</div>
-      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+      <div class="h2">SPEAK & REPEAT</div>
+      <div class="h3">January Week 1 – Speaking Practice</div>
     </header>
-    <div class="result-center">
-      <div class="result-card">
-        <div id="resultMsg-blue">いいね！あと少しでパーフェクト！</div>
-        <div id="resultScore-blue">0/15（0%）</div>
-        <div class="btnRow">
-          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
-          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+    <div class="resultCenter">
+      <div>
+        <div id="msgBlue" class="resultMsg">いいね！あと少しでパーフェクト！</div>
+        <div id="scoreBlue" class="resultScore">0/15（0%）</div>
+        <div>
+          <button class="btnSmall btnRestart" data-restart>もう一度</button>
+          <a class="btnSmall btnMenu" href="index.html">メニューへ</a>
         </div>
       </div>
     </div>
     <footer>Bryan’s English School</footer>
   </div>
 </div>
-
-<div id="result-gold" class="result-page">
-  <div class="result-bg goldBG">
+<div id="resGold" class="resultPage">
+  <div class="resultInner glowGold">
     <header>
       <div class="h1">THE BOO-RICULUM</div>
-      <div class="h2">GAMES & QUIZZES</div>
-      <div class="h3">January Week 1 · Vocabulary / １月第１週・語彙</div>
+      <div class="h2">SPEAK & REPEAT</div>
+      <div class="h3">January Week 1 – Speaking Practice</div>
     </header>
-    <div class="result-center">
-      <div class="result-card">
-        <div id="resultMsg-gold">すごい！あなたは地球で一番頭がいい！</div>
-        <div id="resultScore-gold">15/15（100%）</div>
-        <div class="btnRow">
-          <button class="btn restart" data-restart>もう一度<br><small>Restart</small></button>
-          <a class="btn menu" href="index.html">メインメニューへ<br><small>Back to Menu</small></a>
+    <div class="resultCenter">
+      <div>
+        <div id="msgGold" class="resultMsg">すごい！あなたは地球で一番頭がいい！</div>
+        <div id="scoreGold" class="resultScore">15/15（100%）</div>
+        <div>
+          <button class="btnSmall btnRestart" data-restart>もう一度</button>
+          <a class="btnSmall btnMenu" href="index.html">メニューへ</a>
         </div>
       </div>
     </div>
@@ -215,42 +217,32 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 </div>
 
 <!-- Final result sounds -->
-<audio id="res_05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
-<audio id="res_610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="res_1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="res_15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+<audio id="a_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
+<audio id="a_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="a_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="a_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
 <script>
-const DUR_MS=6000; // meter duration (match CSS)
-let idx=0,listening=false,SR=null,streamAllowed=false;
-// First-attempt averages
-const firstScores=new Array(15).fill(null); // 0–100 or null
-let firstPerfectCount=0; // for X/15 display
+const DUR_MS=6000; // sweep/mic window
+let idx=0, SR=null, listening=false, streamAllowed=false, isBusy=false;
+const firstScores=new Array(15).fill(null); let firstPerfectCount=0;
 
-const enEl=document.getElementById('en'),jpEl=document.getElementById('jp'),hiraEl=document.getElementById('hira');
-const beginBtn=document.getElementById('beginBtn'),retryBtn=document.getElementById('retryBtn'),nextBtn=document.getElementById('nextBtn');
-const scoreBox=document.getElementById('scoreBox'),meterText=document.getElementById('meterText');
-const playBtn=document.getElementById('playBtn'),sweep=document.getElementById('sweep');
-const counter=document.getElementById('counter');
+const enEl=$('#en'), jpEl=$('#jp'), hiraEl=$('#hira');
+const beginBtn=$('#beginBtn'), retryBtn=$('#retryBtn'), nextBtn=$('#nextBtn');
+const scoreBox=$('#scoreBox'), meterText=$('#meterText'), sweep=$('#sweep'), counter=$('#counter');
+const playBtn=$('#playBtn');
 
-// Preload Sage sentence audio (local /audio)
+// Sage filenames
 const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
-sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3');a.preload='auto';a.load()});
+// Preload Sage
+const sageBank={}; sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3'); a.preload='auto'; a.load(); sageBank[f]=a;});
 
 // Per-question score sounds
-const scoreAudio={
-  low:new Audio('assets/audio/0-43.mp3'),
-  mid:new Audio('assets/audio/44-74.mp3'),
-  high:new Audio('assets/audio/75-99.mp3'),
-  max:new Audio('assets/audio/100.mp3')
-};
-Object.values(scoreAudio).forEach(a=>{a.preload='auto';a.load()});
+const SFX={low:new Audio('assets/audio/0-43.mp3'), mid:new Audio('assets/audio/44-74.mp3'), high:new Audio('assets/audio/75-99.mp3'), max:new Audio('assets/audio/100.mp3')};
+Object.values(SFX).forEach(a=>{a.preload='auto'; a.load();});
 
-// Final result sounds
-const res05=document.getElementById('res_05');
-const res610=document.getElementById('res_610');
-const res1114=document.getElementById('res_1114');
-const res15=document.getElementById('res_15');
+// Results audio
+const RES={red:$('#a_r05'), orange:$('#a_r610'), blue:$('#a_r1114'), gold:$('#a_r15')};
 
 const ITEMS=[
 {en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
@@ -270,7 +262,8 @@ const ITEMS=[
 {en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
 ].sort(()=>Math.random()-0.5);
 
-// Helpers
+/* ---------- UTIL ---------- */
+function $(sel){return document.querySelector(sel)}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim()}
 function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean))}
@@ -280,110 +273,126 @@ function popHeartAt(el){const h=document.createElement('span');h.className='hear
 function markSpoken(sp){const set=toSet(sp);enEl.querySelectorAll('.word').forEach(w=>{const v=normalize(w.textContent);if(set.has(v)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w)}})}
 function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red')})}
 function keywordScore(t,sp){const k=toSet(t),said=toSet(sp);let hit=0,total=0;k.forEach(x=>{if(x.length>2){total++;if(said.has(x))hit++}});return total?Math.round((hit/total)*100):0}
+function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'')}
 
 function setReady(){meterText.innerHTML='Ready<br><small>スタンバイ</small>'}
 function setListening(){meterText.textContent='Listening'}
 function setFinished(){meterText.innerHTML='Finished<br><small>おわり！</small>'}
 
-function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'')}
-function playSage(en){if(listening)return;const a=new Audio('./audio/'+stripForFile(en)+'.mp3');a.preload='auto';a.playbackRate=0.95;a.play().catch(()=>{})}
-
-async function requestMic(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true}catch(e){alert('マイクが使えません。Chrome を使用してください。')}}
-function makeRecognizer(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return null;const r=new R();r.lang='en-US';r.continuous=true;r.interimResults=true;try{r.maxAlternatives=5}catch(_){}return r}
-
 function startSweep(){sweep.style.setProperty('--dur',DUR_MS+'ms');sweep.classList.remove('run');void sweep.offsetWidth;sweep.classList.add('run')}
 function stopSweep(){sweep.classList.remove('run')}
 function updateCounter(){counter.textContent=`${idx+1} / 15`}
 
-function playScoreSound(score){let a=scoreAudio.low;if(score===100)a=scoreAudio.max;else if(score>=75)a=scoreAudio.high;else if(score>=44)a=scoreAudio.mid;try{a.currentTime=0;a.play().catch(()=>{setTimeout(()=>{a.play().catch(()=>{})},120)})}catch(e){}}
+async function ensureMicPermission(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true;}catch(e){alert('マイクが使えません。Chrome を使用してください。')}}
+function makeRecognizer(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return null;const r=new R();r.lang='en-US';r.continuous=true;r.interimResults=true;try{r.maxAlternatives=5;}catch(_){}return r}
 
-// --- ROUND FLOW (mic starts BEFORE countdown to catch first word like "What's") ---
+function playAudioWithWait(a){return new Promise(resolve=>{try{a.pause();a.currentTime=0;}catch(_){}
+  const done=()=>{a.onended=null;resolve()};
+  a.onended=done;
+  const tryPlay=()=>{const p=a.play(); if(p&&p.then){p.then(()=>{}).catch(()=>{setTimeout(tryPlay,120)});} else { /* immediate */ }
+  };
+  // If duration unknown, give small buffer before timeout backup
+  const safety=setTimeout(()=>{a.onended=null;resolve()}, Math.max(3000, (a.duration||3)*1000 + 200));
+  a.addEventListener('ended', ()=>clearTimeout(safety), {once:true});
+  tryPlay();
+});}
+
+function chooseScoreSfx(score){if(score===100) return SFX.max; if(score>=75) return SFX.high; if(score>=44) return SFX.mid; return SFX.low}
+
+/* ---------- ROUND FLOW ---------- */
 async function beginRound(){
-  const R=window.SpeechRecognition||window.webkitSpeechRecognition; if(!R){alert('このブラウザでは音声認識が使えません。Chrome を使用してください。');return}
-  if(!streamAllowed){await requestMic(); if(!streamAllowed) return}
+  if(isBusy) return; isBusy=true;
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition; if(!R){alert('このブラウザでは音声認識が使えません。Chrome を使用してください。'); isBusy=false; return}
+  if(!streamAllowed){await ensureMicPermission(); if(!streamAllowed){isBusy=false; return}}
 
   resetVisuals();
-  playBtn.disabled=true; retryBtn.style.display='none'; nextBtn.style.display='none';
+  disableControls(true);
 
-  // Start mic EARLY, then show countdown, then sweep
-  listening=true; SR=makeRecognizer(); let heard="";
-  if(SR){
-    SR.onresult=(e)=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";} heard=(heard+" "+txt).trim(); markSpoken(heard)}
-    SR.onend=()=>{if(listening){try{SR.start()}catch(_){}}}
-    try{SR.start()}catch(_){}
-  }
-
-  // Short warm-up BEFORE countdown
-  await sleep(600);
-
-  const colors=['#ff7eb9','#7dd3fc','#a6f7b2','#fff680'];
+  // Countdown 3,2,1
+  const colors=['#ff7eb9','#7dd3fc','#a6f7b2'];
   const showNum=async(n,i)=>{meterText.innerHTML=`<span class="popNum" style="color:${colors[i]}">${n}</span>`;await sleep(700)}
   await showNum(3,0); await showNum(2,1); await showNum(1,2);
-  meterText.innerHTML=`<span class="popNum" style="color:${colors[3]}">GO!</span>`; await sleep(350);
 
-  setListening();
-  startSweep();
-  await sleep(DUR_MS);
+  // GO! — pulse + start mic exactly now
+  meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
 
-  listening=false; try{SR&&SR.stop()}catch(_){}
-  setFinished(); stopSweep(); finalizeColors();
-
-  const s=keywordScore(ITEMS[idx].en,heard);
-  scoreBox.textContent='スコア：'+s+'％';
-  scoreBox.style.display='block';
-
-  if(firstScores[idx]===null){
-    firstScores[idx]=s; if(s===100) firstPerfectCount++; playScoreSound(s);
+  // Start recognizer immediately at GO
+  let heard=""; listening=true; SR=makeRecognizer();
+  if(SR){
+    SR.onresult=(e)=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";} heard=(heard+" "+txt).trim(); markSpoken(heard)}
+    SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){} } };
+    try{ SR.start(); }catch(_){ }
   }
 
+  // Small tick to render GO before sweep
+  await sleep(120);
+  setListening();
+  startSweep();
+
+  await sleep(DUR_MS);
+
+  // Finish capture
+  listening=false; try{SR&&SR.stop()}catch(_){ }
+  setFinished(); stopSweep(); finalizeColors();
+
+  // Score and reveal controls
+  const s=keywordScore(ITEMS[idx].en,heard);
+  scoreBox.textContent='スコア：'+s+'％'; scoreBox.style.display='block';
+
+  // First attempt only: record & sfx
+  if(firstScores[idx]===null){ firstScores[idx]=s; if(s===100) firstPerfectCount++; await playAudioWithWait(chooseScoreSfx(s)); }
+  // After the score sfx finishes, enable proper button
   if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; }
-  else{ retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
-  playBtn.disabled=false;
+  else { retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
+
+  disableControls(false);
+  isBusy=false;
 }
 
+function disableControls(disabled){ [beginBtn,retryBtn,nextBtn,playBtn].forEach(b=>{ if(b){ b.disabled=disabled; } }); }
+
 function resetVisuals(){stopSweep();void sweep.offsetWidth;clearHearts();enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));scoreBox.style.display='none';setReady()}
-function showItem(){const it=ITEMS[idx];mountWords(it.en);jpEl.textContent=it.jp;hiraEl.textContent=it.hira;resetVisuals();updateCounter()}
+function showItem(){const it=ITEMS[idx]; mountWords(it.en); jpEl.textContent=it.jp; hiraEl.textContent=it.hira; resetVisuals(); updateCounter()}
 
+/* ---------- RESULTS ---------- */
 function avgPercent(){const sum=firstScores.reduce((a,b)=>a+(b??0),0);return Math.round(sum/15)}
+function hideAllResults(){ ['resRed','resOrange','resBlue','resGold'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display='none'; }); }
+async function showResults(){
+  const pct=avgPercent(); const xOf15=firstPerfectCount; let page='resBlue', snd=RES.blue, scoreSel='#scoreBlue';
+  if(pct<=43){page='resRed'; snd=RES.red; scoreSel='#scoreRed';}
+  else if(pct<=74){page='resOrange'; snd=RES.orange; scoreSel='#scoreOrange';}
+  else if(pct===100){page='resGold'; snd=RES.gold; scoreSel='#scoreGold';}
 
-function hideAllResults(){document.querySelectorAll('.result-page').forEach(p=>p.style.display='none')}
-
-function showResults(){
-  const pct=avgPercent();
-  let pageId='result-blue', msgSel='#resultMsg-blue', scoreSel='#resultScore-blue', snd=res1114;
-  if(pct<=43){pageId='result-red'; msgSel='#resultMsg-red'; scoreSel='#resultScore-red'; snd=res05}
-  else if(pct<=74){pageId='result-orange'; msgSel='#resultMsg-orange'; scoreSel='#resultScore-orange'; snd=res610}
-  else if(pct===100){pageId='result-gold'; msgSel='#resultMsg-gold'; scoreSel='#resultScore-gold'; snd=res15}
-
-  hideAllResults();
-  // X/15 (avg%) format
-  const scoreText=`${firstPerfectCount}/15（${pct}%）`;
-  const scoreEl=document.querySelector(scoreSel); if(scoreEl) scoreEl.textContent=scoreText;
-  document.getElementById(pageId).style.display='block';
-
-  try{snd.currentTime=0; snd.play()}catch(e){}
-
-  if(pct===100){
+  // Update score text X/15 (avg%)
+  const se=$(scoreSel); if(se) se.textContent=`${xOf15}/15（${pct}%）`;
+  hideAllResults(); $('#'+page).style.display='block';
+  await playAudioWithWait(snd);
+  if(page==='resGold'){ // confetti
     for(let i=0;i<160;i++){
-      setTimeout(()=>{const c=document.createElement('div');c.className='confetti';c.style.left=(Math.random()*100)+'vw';c.style.background=`hsl(${Math.random()*360},100%,60%)`;c.style.animationDuration=(0.9+Math.random()*0.9)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),1900)},i*10)
+      setTimeout(()=>{const c=document.createElement('div'); c.className='confetti'; c.style.left=(Math.random()*100)+'vw'; c.style.background=`hsl(${Math.random()*360},100%,60%)`; c.style.animationDuration=(0.9+Math.random()*0.9)+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),1900);}, i*10);
     }
   }
 }
 
-// Buttons
-beginBtn.onclick=async()=>{if(!streamAllowed) await requestMic(); if(!streamAllowed) return; showItem(); beginRound()}
-retryBtn.onclick=()=>{showItem(); beginRound()}
-nextBtn.onclick=()=>{idx++; if(idx>=ITEMS.length){showResults(); nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none'; return} showItem(); nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block'}
-playBtn.onclick=()=>{const a=new Audio('./audio/'+stripForFile(ITEMS[idx].en)+'.mp3');a.preload='auto';a.play().catch(()=>{})}
+/* ---------- BUTTONS ---------- */
+beginBtn.addEventListener('click', async()=>{ if(!streamAllowed) await ensureMicPermission(); if(!streamAllowed) return; showItem(); beginRound(); });
+retryBtn.addEventListener('click', ()=>{ showItem(); beginRound(); });
+nextBtn.addEventListener('click', ()=>{
+  if(isBusy) return; // guard
+  idx++;
+  if(idx>=ITEMS.length){ nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none'; showResults(); return; }
+  showItem(); nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block';
+});
 
-// Restart buttons on all result pages
-Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click',()=>{
-  hideAllResults();
-  for(let i=0;i<firstScores.length;i++) firstScores[i]=null; firstPerfectCount=0; idx=0; showItem(); beginBtn.style.display='inline-block'; retryBtn.style.display='none'; nextBtn.style.display='none';
-}))
+playBtn.addEventListener('click', ()=>{ const it=ITEMS[idx]; const key=stripForFile(it.en); const a=sageBank[key]||new Audio('./audio/'+key+'.mp3'); a.preload='auto'; a.play().catch(()=>{}); });
 
-// Init
-showItem()
+// Restart on all result pages
+Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click', ()=>{
+  hideAllResults(); for(let i=0;i<firstScores.length;i++) firstScores[i]=null; firstPerfectCount=0; idx=0; showItem(); beginBtn.style.display='inline-block'; retryBtn.style.display='none'; nextBtn.style.display='none';
+}));
+
+/* ---------- INIT ---------- */
+showItem();
 </script>
 </body>
 </html>
