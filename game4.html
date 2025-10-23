@@ -5,13 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Eigo Adventures – January Week 1 (Normal)</title>
 <meta name="theme-color" content="#0b1530">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0b1530; --ink:#fff; --gold1:#fdd86d; --gold2:#ffb347; 
-  --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
-  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
+  --bg:#0b1530;
+  --ink:#fff;
+  --gold1:#fdd86d;
+  --gold2:#ffb347;
+  --outline:#ffffff26;
   --radius:26px;
+  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
+  --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
@@ -22,194 +26,190 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
   overflow:hidden;
 }
+
+/* ----- HEADER & FOOTER (from perfect sentencequiz code) ----- */
 header{
-  font-family:'Cinzel',serif;
-  font-size:1.8rem;
-  color:var(--gold1);
+  width:100%;
   text-align:center;
-  margin-top:1rem;
+  padding:1rem 0;
+  background:linear-gradient(to right,#1e293b,#0b1530 30%,#0b1530 70%,#1e293b);
+  color:var(--gold1);
+  font-family:'Cinzel',serif;
+  font-size:1.6rem;
   text-shadow:var(--goldGlow);
+  box-shadow:0 0 10px rgba(255,255,255,.1);
+  position:relative;
+  z-index:5;
 }
 footer{
+  width:100%;
+  text-align:center;
+  padding:0.8rem 0;
+  background:#0b1530;
   font-size:0.8rem;
   opacity:0.8;
-  margin-top:auto;
-  padding:1rem;
+  color:rgba(255,255,255,.8);
+  position:fixed;
+  bottom:0;
+  left:0;
+  z-index:5;
 }
+
+/* ----- MAIN AREA ----- */
 main{
   flex:1;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  text-align:center;
   width:100%;
-  max-width:600px;
-  padding:1rem;
+  max-width:700px;
+  margin-top:2rem;
+  text-align:center;
 }
-#sageLine{
-  border:2px solid rgba(255,255,255,.15);
+
+/* Sage speak box */
+#sageBox{
+  width:100%;
+  min-height:200px;
+  background:rgba(255,255,255,.05);
+  border:2px solid var(--outline);
   border-radius:var(--radius);
   padding:1.5rem;
-  margin-bottom:1.5rem;
-  font-size:1.4rem;
-  min-height:120px;
   display:flex;
   align-items:center;
   justify-content:center;
-  text-shadow:0 0 6px rgba(255,255,255,.5);
+  font-size:1.4rem;
+  text-shadow:0 0 6px rgba(255,255,255,.6);
+  box-shadow:0 0 20px rgba(255,255,255,.05) inset;
+  margin-bottom:1.2rem;
   position:relative;
 }
 .word{
   opacity:0;
+  margin:0 0.25rem;
   transition:opacity .3s ease;
 }
-.choice{
-  border:2px solid rgba(255,255,255,.15);
-  border-radius:var(--radius);
-  margin:0.5rem 0;
-  padding:1rem;
+
+/* Student speech box */
+#studentBox{
   width:100%;
-  font-size:1.2rem;
-  cursor:pointer;
-  transition:all .3s;
+  min-height:100px;
+  background:#fff;
+  border-radius:var(--radius);
+  color:#000;
+  font-size:1.3rem;
+  padding:1rem;
+  margin-bottom:1.8rem;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
 }
-.choice:hover{
+
+/* Option lines */
+.option{
+  border:2px solid var(--outline);
+  border-radius:var(--radius);
+  padding:1rem;
+  margin:0.4rem 0;
+  width:100%;
+  transition:all .3s ease;
+  font-size:1.1rem;
+}
+.option.glow{
   box-shadow:var(--blueGlow);
-  transform:scale(1.02);
+  border-color:#60a5fa;
 }
-.choice.selected{
-  box-shadow:var(--goldGlow);
-  border-color:var(--gold1);
-}
-button{
+
+/* Next button (temporary for testing) */
+#btnNext{
   margin-top:1.5rem;
-  padding:0.8rem 2rem;
+  padding:0.8rem 2.2rem;
   border:none;
   border-radius:50px;
   background:linear-gradient(45deg,var(--gold1),var(--gold2));
   color:#000;
   font-family:'Cinzel',serif;
-  font-size:1.2rem;
+  font-size:1.1rem;
   cursor:pointer;
   box-shadow:var(--goldGlow);
   transition:transform .2s;
 }
-button:hover{transform:scale(1.05);}
-#page-start,#page-results{display:none;}
-.page.active{display:flex;flex-direction:column;align-items:center;}
-#page-results h2{font-family:'Cinzel',serif;font-size:2rem;margin-bottom:1rem;}
-.redGlow{background:#8b0000;}
-.orangeGlow{background:#a85b00;}
-.blueGlow{background:#002366;}
-.goldGlow{background:#fff8dc;color:#222;}
+#btnNext:hover{transform:scale(1.05);}
 </style>
 </head>
 <body>
 <header>Eigo Adventures – January Week 1</header>
+
 <main>
-  <div id="page-start" class="page active">
-    <h2 style="font-family:'Cinzel',serif;">Are you ready, Adventurer?</h2>
-    <p>Talk with Sage and answer his questions.</p>
-    <button id="btnStart">Start Game</button>
+  <div id="sageBox"></div>
+  <div id="studentBox">...</div>
+  <div id="options">
+    <div class="option">I brush my teeth.</div>
+    <div class="option">I eat breakfast.</div>
+    <div class="option">I play soccer.</div>
+    <div class="option">I go to school.</div>
   </div>
-
-  <div id="page-game" class="page">
-    <div id="sageLine"></div>
-    <div id="choices"></div>
-    <button id="btnNext">Next</button>
-  </div>
-
-  <div id="page-results" class="page">
-    <h2 id="resultMsg">Adventure Complete!</h2>
-    <p id="resultScore">Your Score: 0 / 15</p>
-    <button onclick="location.reload()">Play Again</button>
-  </div>
+  <button id="btnNext">Next ➜</button>
 </main>
+
 <footer>👻 Bryan’s English School © 2025</footer>
 
 <script>
 const questions=[
-  {q:"What do you do every morning?", a:["I brush my teeth.","I fly a plane.","I dance at night."],correct:0},
-  {q:"What do you eat for breakfast?", a:["I eat rice.","I sleep.","I drive a car."],correct:0},
-  {q:"What time do you go to school?", a:["At seven.","I like dogs.","On Monday."],correct:0},
-  // ... fill up to 15 total later
+  {q:"What do you do every morning?", options:["I brush my teeth.","I eat breakfast.","I play soccer.","I go to school."]},
+  {q:"What do you eat for breakfast?", options:["I eat rice.","I drink water.","I read books.","I run fast."]},
+  {q:"What time do you go to bed?", options:["At nine.","At noon.","At seven.","At midnight."]},
+  {q:"What do you like to do on Sunday?", options:["I play games.","I cook dinner.","I wash my car.","I do homework."]}
 ];
+let current=0;
 
-let current=0,score=0;
-
-const pageStart=document.getElementById("page-start");
-const pageGame=document.getElementById("page-game");
-const pageResults=document.getElementById("page-results");
-const sageLine=document.getElementById("sageLine");
-const choicesEl=document.getElementById("choices");
+const sageBox=document.getElementById("sageBox");
+const studentBox=document.getElementById("studentBox");
+const options=document.querySelectorAll(".option");
 const btnNext=document.getElementById("btnNext");
 
-document.getElementById("btnStart").onclick=()=>{
-  pageStart.style.display="none";
-  pageGame.classList.add("active");
-  loadQuestion();
-};
-
-function animateText(text){
-  sageLine.innerHTML="";
+// fake animation loop for layout testing
+function animateSageText(text){
+  sageBox.innerHTML="";
   const words=text.split(" ");
   words.forEach((w,i)=>{
     const span=document.createElement("span");
     span.className="word";
-    span.textContent=w+" ";
-    sageLine.appendChild(span);
-    setTimeout(()=>span.style.opacity=1,300*i);
+    span.textContent=w;
+    sageBox.appendChild(span);
+    setTimeout(()=>span.style.opacity=1,250*i);
   });
 }
+
+// random glowing options
+function randomGlow(){
+  options.forEach(o=>o.classList.remove("glow"));
+  const i=Math.floor(Math.random()*options.length);
+  options[i].classList.add("glow");
+}
+setInterval(randomGlow,1000);
 
 function loadQuestion(){
   const q=questions[current];
-  animateText(q.q);
-  choicesEl.innerHTML="";
-  q.a.forEach((t,i)=>{
-    const div=document.createElement("div");
-    div.className="choice";
-    div.textContent=t;
-    div.onclick=()=>selectChoice(i,div);
-    choicesEl.appendChild(div);
-  });
-}
-
-function selectChoice(i,el){
-  document.querySelectorAll(".choice").forEach(c=>c.classList.remove("selected"));
-  el.classList.add("selected");
-  // fake scoring for now
-  if(i===questions[current].correct)score++;
+  animateSageText(q.q);
+  studentBox.textContent="(student's answer will appear here)";
+  const optionDivs=document.querySelectorAll(".option");
+  q.options.forEach((t,i)=>optionDivs[i].textContent=t);
 }
 
 btnNext.onclick=()=>{
   current++;
-  if(current<questions.length){
-    loadQuestion();
-  }else{
-    showResults();
-  }
+  if(current>=questions.length) current=0;
+  loadQuestion();
 };
 
-function showResults(){
-  pageGame.classList.remove("active");
-  pageResults.style.display="flex";
-  const pct=Math.round((score/questions.length)*100);
-  const msg=document.getElementById("resultMsg");
-  const scoreEl=document.getElementById("resultScore");
-  let glow="blueGlow",message="Nice job!";
-  if(pct<45){glow="redGlow";message="ブーリキュラム見てないでしょ！";}
-  else if(pct<75){glow="orangeGlow";message="YouTube見すぎ！";}
-  else if(pct<100){glow="blueGlow";message="いいね！あと少し！";}
-  else{glow="goldGlow";message="Perfect Adventurer!";}
-  document.body.className=glow;
-  msg.textContent=message;
-  scoreEl.textContent=`Your Score: ${score} / ${questions.length}`;
-}
+loadQuestion();
 </script>
 </body>
 </html>
