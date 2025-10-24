@@ -12,35 +12,75 @@
   --radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--bg);color:var(--ink);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+}
 header{text-align:center;padding:1rem 0;font-family:'Cinzel',serif;}
 header h1{font-size:1.8rem;letter-spacing:2px;}
 header h2{font-size:1.1rem;color:var(--gold1);text-shadow:var(--goldGlow);}
 main{flex:1;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
-.playBtn{margin:1rem auto;width:80px;height:80px;border-radius:50%;
+
+/* SAGE BOX */
+.sageWrapper{position:relative;width:100%;display:flex;align-items:center;justify-content:center;margin-top:1rem;}
+#sageBox{
+  width:100%;min-height:140px;border-radius:var(--radius);overflow:hidden;position:relative;
+  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+}
+#sageBox::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  animation:stripeMove 8s linear infinite;background-size:100% 300%;
+  background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);
+}
+@keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
+#sageText{
+  position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;
+  text-shadow:0 0 8px #000,0 0 16px #000;
+}
+
+/* PLAY BUTTON */
+.playBtn{
+  position:absolute;left:-18px;top:50%;transform:translateY(-50%);
+  width:60px;height:60px;border-radius:50%;
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  display:flex;align-items:center;justify-content:center;font-size:2rem;
-  color:#000;font-weight:900;cursor:pointer;animation:shimmer 2s infinite;}
-@keyframes shimmer{0%,100%{box-shadow:0 0 8px #fff;}50%{box-shadow:0 0 16px #ffd700;}}
-#sageBox{min-height:100px;font-size:1.5rem;font-weight:900;text-shadow:0 0 8px #000;}
-#studentBox{margin-top:1rem;min-height:70px;background:#fff;color:#000;
-  border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.2rem;padding:0.5rem;}
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  animation:shimmer 2s infinite;z-index:5;
+}
+.playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
+@keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
+
+/* STUDENT + MIC */
+#studentBox{
+  margin-top:1rem;width:100%;min-height:80px;background:#fff;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;color:#000;font-size:1.2rem;
+}
 .micBtn{margin:1rem auto;width:60px;height:60px;border-radius:50%;
   background:linear-gradient(135deg,#b388ff,#9d4edd);
   display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.5rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
 @keyframes micGlow{from{box-shadow:0 0 10px #c084fc;}to{box-shadow:0 0 20px #e879f9;}}
-.option{border:2px solid #ffffff33;border-radius:var(--radius);
-  padding:0.8rem;margin:0.4rem 0;background:#00000020;cursor:pointer;}
+
+/* OPTIONS */
+.option{
+  border:2px solid #ffffff33;border-radius:var(--radius);
+  padding:0.8rem;margin:0.4rem 0;background:#00000020;cursor:pointer;
+}
 .option.played{opacity:0.5;}
-#nextBtn{margin-top:1rem;padding:0.7rem 2rem;border:none;border-radius:var(--radius);
+
+/* BUTTONS + POINTS */
+#nextBtn{
+  margin-top:1rem;padding:0.7rem 2rem;border:none;border-radius:var(--radius);
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;display:none;cursor:pointer;}
-#pointsCircle{margin-top:1rem;width:70px;height:70px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;
-  font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;display:flex;align-items:center;justify-content:center;
-  box-shadow:var(--goldGlow);transition:transform .3s;}
+  color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;display:none;cursor:pointer;
+}
+#pointsCircle{
+  margin-top:1rem;width:70px;height:70px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  color:#000;font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--goldGlow);transition:transform .3s;
+}
 footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;font-size:0.9rem;}
 </style>
 </head>
@@ -51,8 +91,10 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;fo
 </header>
 
 <main>
-  <div class="playBtn" id="playBtn">▶</div>
-  <div id="sageBox"></div>
+  <div class="sageWrapper">
+    <div class="playBtn" id="playBtn"></div>
+    <div id="sageBox"><div id="sageText"></div></div>
+  </div>
 
   <div id="studentBox"></div>
   <div class="micBtn" id="micBtn">🎤</div>
@@ -85,13 +127,13 @@ const questions = [
 ];
 
 /* ---------- STATE ---------- */
-let current = 0, points = 0;
-let recog, listening = false, playing = false, gotCorrect = false;
+let current=0, points=0;
+let recog, listening=false, playing=false, gotCorrect=false;
 
 /* ---------- ELEMENTS ---------- */
-const $ = s=>document.querySelector(s);
-const playBtn=$("#playBtn"), sageBox=$("#sageBox"), studentBox=$("#studentBox"),
-      micBtn=$("#micBtn"), options=$("#options"), nextBtn=$("#nextBtn"), pointsCircle=$("#pointsCircle");
+const $=s=>document.querySelector(s);
+const playBtn=$("#playBtn"),sageText=$("#sageText"),studentBox=$("#studentBox"),
+      micBtn=$("#micBtn"),options=$("#options"),nextBtn=$("#nextBtn"),pointsCircle=$("#pointsCircle");
 
 /* ---------- HELPERS ---------- */
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
@@ -100,11 +142,11 @@ function updatePoints(){pointsCircle.textContent=points;}
 function audioPlay(path){return new Promise(res=>{const a=new Audio(path);a.onended=res;a.onerror=res;a.play().catch(res);});}
 function playLocalAudio(file,folder="audio"){return audioPlay(`${folder}/${file}`);}
 
-/* ---------- SPEECH RECOG ---------- */
+/* ---------- SPEECH ---------- */
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){alert("Speech Recognition not supported.");return;}
-  recog=new R(); recog.lang='en-US'; recog.interimResults=true;
+  recog=new R();recog.lang='en-US';recog.interimResults=true;
   recog.onstart=()=>{listening=true;micBtn.classList.add('active');studentBox.textContent='Listening...';};
   recog.onend=()=>{listening=false;micBtn.classList.remove('active');};
   recog.onresult=(e)=>{
@@ -120,8 +162,9 @@ async function playQuestion(){
   if(playing)return;
   playing=true;
   const q=questions[current];
-  sageBox.textContent=q.q;
+  sageText.textContent=q.q;
   gotCorrect=false;
+  // SAGE reads from /audio/
   await playLocalAudio(q.audio);
   playing=false;
   startMic();
@@ -143,7 +186,7 @@ async function checkSpeech(spoken){
       if(i===q.a && !gotCorrect){
         gotCorrect=true;
         await playLocalAudio(PRAISE[Math.floor(Math.random()*PRAISE.length)],"assets/audio");
-        points+=5; pulsePoints(); updatePoints();
+        points+=5;pulsePoints();updatePoints();
         nextBtn.style.display='inline-block';
       }else if(i!==q.a){
         await playLocalAudio(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)],"assets/audio");
@@ -156,14 +199,14 @@ async function checkSpeech(spoken){
 function renderAnswers(){
   options.innerHTML='';
   const q=questions[current];
-  q.answers.forEach((a)=>{
+  q.answers.forEach(a=>{
     const div=document.createElement('div');
     div.className='option';
     div.textContent=a;
     div.onclick=async()=>{
       await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'_')+'.mp3');
       if(!div.classList.contains('played')){
-        div.classList.add('played'); points++; pulsePoints(); updatePoints();
+        div.classList.add('played');points++;pulsePoints();updatePoints();
       }
     };
     options.appendChild(div);
@@ -172,17 +215,20 @@ function renderAnswers(){
 
 function loadQuestion(){
   nextBtn.style.display='none';
-  sageBox.textContent='';studentBox.textContent='';
-  renderAnswers(); updatePoints();
+  sageText.textContent='';studentBox.textContent='';
+  renderAnswers();updatePoints();
 }
 
+/* ---------- EVENTS ---------- */
+playBtn.onclick=playQuestion;
+micBtn.onclick=()=>{if(!recog) initRecog();if(listening){try{recog.stop();}catch(_){}}else{startMic();}};
 nextBtn.onclick=()=>{
   try{if(listening)recog.stop();}catch(_){}
-  current++; if(current>=questions.length) current=0;
+  current++;if(current>=questions.length)current=0;
   loadQuestion();
 };
-playBtn.onclick=playQuestion;
-micBtn.onclick=()=>{if(!recog) initRecog(); if(listening){try{recog.stop();}catch(_){}} else {startMic();}};
+
+/* ---------- INIT ---------- */
 loadQuestion();
 </script>
 </body>
