@@ -75,37 +75,176 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
     <button class="nextBtn" id="nextBtn">Next ▶</button>
   </div>
 </main>
-<div id="counter">1 / 15</div>
+<div id="counter">1 / 2</div>
 <footer>Bryan’s English School</footer>
+
 <script>
+// ------------------ AUDIO FILES ------------------
 const DING="assets/audio/ding.mp3";
-const EIGO="assets/audio/eigo.mp3";
 const PRAISE=['yesgoodjob.mp3','perfectenglish.mp3','wownicework.mp3'];
 const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookieinyourmouth.mp3'];
 const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];
 
+// ------------------ QUESTIONS ------------------
 const questions=[
-{q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:["I eat rice and miso soup for breakfast.","I eat curry for breakfast.","I eat toothpaste for breakfast.","I eat pencils and notebooks for breakfast."]},
-{q:"What do you do after school?",a:0,audio:"whatdoyoudoafterschool.mp3",answers:["I do my homework after school.","I climb trees after school.","I build a spaceship after school.","I wrestle with ghosts after school."]}
+{q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
+"I eat rice and miso soup for breakfast.",
+"I eat curry for breakfast.",
+"I eat toothpaste for breakfast.",
+"I eat pencils and notebooks for breakfast."
+]},
+{q:"What do you do after school?",a:0,audio:"whatdoyoudoafterschool.mp3",answers:[
+"I do my homework after school.",
+"I climb trees after school.",
+"I build a spaceship after school.",
+"I wrestle with ghosts after school."
+]}
 ];
 
-let current=0,points=0,listening=false,recog,gotCorrect=false,answeredCount=0;
+let current=0,points=0,listening=false,recog,gotCorrect=false,pointsMode=false;
 const $=s=>document.querySelector(s);
-const sageText=$('#sageText'),studentBox=$('#studentBox'),playBtn=$('#playBtn'),micBtn=$('#micBtn'),optionsBox=$('#options'),hintBox=$('#hintBox'),nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),pointsCircle=$('#pointsCircle'),counter=$('#counter');
+const sageText=$('#sageText'),studentBox=$('#studentBox'),playBtn=$('#playBtn'),
+micBtn=$('#micBtn'),optionsBox=$('#options'),hintBox=$('#hintBox'),
+nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),pointsCircle=$('#pointsCircle'),counter=$('#counter');
 
 function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f:'audio/'+f);a.onended=r;a.onerror=r;a.play().catch(r);});}
-function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
 function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,180*i);});}
-function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert('Speech Recognition not supported');return;}recog=new R();recog.lang='en-US';recog.interimResults=true;recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};recog.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join(' ');studentBox.textContent=t;checkSpeech(t);};}
+function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
+
+// ------------------ CONFETTI ------------------
+function confetti(){
+  for(let i=0;i<40;i++){
+    const c=document.createElement('div');
+    c.style.position='fixed';c.style.width='10px';c.style.height='10px';
+    c.style.background=`hsl(${Math.random()*360},100%,70%)`;
+    c.style.left=Math.random()*100+'%';
+    c.style.top='-10px';
+    c.style.opacity=0.9;
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    const dur=1000+Math.random()*1000;
+    c.animate([{transform:`translateY(0) rotate(0)`},{transform:`translateY(100vh) rotate(720deg)`}],{duration:dur,easing:'ease-out'});
+    setTimeout(()=>c.remove(),dur);
+  }
+}
+
+// ------------------ SPEECH ------------------
+function initRecog(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){alert('Speech Recognition not supported');return;}
+  recog=new R();
+  recog.lang='en-US';
+  recog.interimResults=true;
+
+  recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};
+  recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};
+
+  recog.onresult=e=>{
+    let transcript='';
+    for(const res of e.results){
+      transcript+=res[0].transcript+' ';
+      if(res.isFinal) checkSpeech(transcript.trim());
+    }
+    studentBox.textContent=transcript.trim();
+  };
+}
+
 function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
-async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);startMic();}
-function strictMatch(spoken,answer){const s=normalize(spoken),a=normalize(answer);if(!s||!a)return false;if(s.includes(a))return true;const sTok=new Set(s.split(' ')),aTok=a.split(' ');const overlap=aTok.filter(w=>sTok.has(w)).length;return overlap>=Math.ceil(aTok.length*0.8);}
-async function checkSpeech(spoken){const q=questions[current];let match=-1;for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){match=i;break;}}if(match===-1)return;const optionEls=[...document.querySelectorAll('.option')];const chosen=optionEls[match];if(match===q.a&&!gotCorrect){gotCorrect=true;await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);await playAudio(DING);points+=5;pulsePoints();updateUI();chosen.classList.add('correct');setTimeout(()=>{chosen.remove();},1500);pointsBtn.style.display='inline-block';}else if(match!==q.a){studentBox.classList.add('shake');studentBox.style.background='#ef4444';await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';},800);}studentBox.textContent='';}
-function renderAnswers(){optionsBox.innerHTML='';const q=questions[current];q.answers.forEach(a=>{const div=document.createElement('div');div.className='option';div.textContent=a;optionsBox.appendChild(div);});}
-function loadQuestion(){gotCorrect=false;answeredCount=0;pointsBtn.style.display='none';nextBtn.style.display='none';hintBox.textContent='';sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();}
-playBtn.onclick=()=>playQuestion();micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};loadQuestion();
+
+async function playQuestion(){
+  const q=questions[current];
+  animateWords(q.q);
+  await playAudio('audio/'+q.audio);
+  startMic();
+}
+
+function strictMatch(spoken,answer){
+  const s=normalize(spoken),a=normalize(answer);
+  if(!s||!a)return false;
+  if(s.includes(a))return true;
+  const sTok=new Set(s.split(' ')),aTok=a.split(' ');
+  const overlap=aTok.filter(w=>sTok.has(w)).length;
+  return overlap>=Math.ceil(aTok.length*0.8);
+}
+
+// ------------------ CHECK SPEECH ------------------
+async function checkSpeech(spoken){
+  const q=questions[current];
+  let match=-1;
+  for(let i=0;i<q.answers.length;i++){
+    if(strictMatch(spoken,q.answers[i])){match=i;break;}
+  }
+
+  // nonsense speech
+  if(match===-1){
+    studentBox.classList.add('shake');
+    studentBox.style.background='#ef4444';
+    await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
+    setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';},700);
+    return;
+  }
+
+  const optionEls=[...document.querySelectorAll('.option')];
+  const chosen=optionEls[match];
+
+  // first correct
+  if(match===q.a && !gotCorrect){
+    gotCorrect=true;
+    await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+    confetti();
+    await playAudio(DING);
+    points+=5; pulsePoints(); updateUI();
+    chosen.classList.add('correct');
+    setTimeout(()=>chosen.remove(),1200);
+    pointsMode=true;
+    pointsBtn.style.display='inline-block';
+    return;
+  }
+
+  // points mode: any remaining answer earns +1
+  if(pointsMode && match!==q.a){
+    points+=1;
+    pulsePoints();
+    updateUI();
+    await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
+    chosen.classList.add('correct');
+    setTimeout(()=>chosen.remove(),1000);
+  }
+
+  studentBox.textContent='';
+}
+
+// ------------------ UI ------------------
+function renderAnswers(){
+  optionsBox.innerHTML='';
+  const q=questions[current];
+  q.answers.forEach(a=>{
+    const div=document.createElement('div');
+    div.className='option';
+    div.textContent=a;
+    optionsBox.appendChild(div);
+  });
+}
+
+function loadQuestion(){
+  gotCorrect=false;
+  pointsMode=false;
+  pointsBtn.style.display='none';
+  nextBtn.style.display='none';
+  hintBox.textContent='';
+  sageText.textContent='';
+  studentBox.textContent='';
+  renderAnswers();
+  updateUI();
+}
+
+// ------------------ EVENTS ------------------
+playBtn.onclick=()=>playQuestion();
+micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
+nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
+loadQuestion();
 </script>
 </body>
 </html>
