@@ -80,32 +80,36 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 
 <script>
 // ------------------ AUDIO FILES ------------------
-const DING="assets/audio/ding.mp3";
-const PRAISE=['yesgoodjob.mp3','perfectenglish.mp3','wownicework.mp3'];
-const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookieinyourmouth.mp3'];
-const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];
+const DING="assets/audio/ding.mp3";                // first-correct feedback sfx
+const EIGO="assets/audio/eigo.mp3";                // points-mode reward sfx
+const PRAISE=['yesgoodjob.mp3','perfectenglish.mp3','wownicework.mp3'];  // /audio/
+const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookieinyourmouth.mp3']; // /audio/
+const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];       // /audio/
 
 // ------------------ QUESTIONS ------------------
 const questions=[
 {q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
-"I eat rice and miso soup for breakfast.",
-"I eat curry for breakfast.",
-"I eat toothpaste for breakfast.",
-"I eat pencils and notebooks for breakfast."
+  "I eat rice and miso soup for breakfast.",
+  "I eat curry for breakfast.",
+  "I eat toothpaste for breakfast.",
+  "I eat pencils and notebooks for breakfast."
 ]},
 {q:"What do you do after school?",a:0,audio:"whatdoyoudoafterschool.mp3",answers:[
-"I do my homework after school.",
-"I climb trees after school.",
-"I build a spaceship after school.",
-"I wrestle with ghosts after school."
+  "I do my homework after school.",
+  "I climb trees after school.",
+  "I build a spaceship after school.",
+  "I wrestle with ghosts after school."
 ]}
 ];
 
-let current=0,points=0,listening=false,recog,gotCorrect=false,pointsMode=false;
+let current=0,points=0;
+let recog,listening=false,gotCorrect=false,pointsMode=false;
+let remainingIncorrect=new Set(); // indices of still-available wrong answers for points mode
+
 const $=s=>document.querySelector(s);
 const sageText=$('#sageText'),studentBox=$('#studentBox'),playBtn=$('#playBtn'),
-micBtn=$('#micBtn'),optionsBox=$('#options'),hintBox=$('#hintBox'),
-nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),pointsCircle=$('#pointsCircle'),counter=$('#counter');
+      micBtn=$('#micBtn'),optionsBox=$('#options'),hintBox=$('#hintBox'),
+      nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),pointsCircle=$('#pointsCircle'),counter=$('#counter');
 
 function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f:'audio/'+f);a.onended=r;a.onerror=r;a.play().catch(r);});}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
@@ -114,8 +118,8 @@ function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{cons
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 
 // ------------------ CONFETTI ------------------
-function confetti(){
-  for(let i=0;i<40;i++){
+function confetti(count=80){
+  for(let i=0;i<count;i++){
     const c=document.createElement('div');
     c.style.position='fixed';c.style.width='10px';c.style.height='10px';
     c.style.background=`hsl(${Math.random()*360},100%,70%)`;
@@ -123,23 +127,38 @@ function confetti(){
     c.style.top='-10px';
     c.style.opacity=0.9;
     c.style.transform=`rotate(${Math.random()*360}deg)`;
+    c.style.pointerEvents='none';
     document.body.appendChild(c);
-    const dur=1000+Math.random()*1000;
+    const dur=900+Math.random()*1200;
     c.animate([{transform:`translateY(0) rotate(0)`},{transform:`translateY(100vh) rotate(720deg)`}],{duration:dur,easing:'ease-out'});
     setTimeout(()=>c.remove(),dur);
   }
 }
 
 // ------------------ SPEECH ------------------
+let micStartWatch = null; // watchdog to retry start if onstart doesn't fire
+
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){alert('Speech Recognition not supported');return;}
   recog=new R();
   recog.lang='en-US';
   recog.interimResults=true;
+  recog.continuous=false;
 
-  recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};
-  recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};
+  recog.onstart=()=>{
+    // mic ACTUALLY live
+    studentBox.classList.add('glow');
+    listening=true;
+    if(micStartWatch){clearTimeout(micStartWatch);micStartWatch=null;}
+    hintBox.textContent='Listening...';
+  };
+
+  recog.onend=()=>{
+    studentBox.classList.remove('glow');
+    listening=false;
+    hintBox.textContent='';
+  };
 
   recog.onresult=e=>{
     let transcript='';
@@ -151,69 +170,119 @@ function initRecog(){
   };
 }
 
-function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
+// Try to start mic; if onstart doesn't arrive within 600ms, retry up to 2 times
+function startMicWithRetry(retries=2){
+  if(!recog) initRecog();
+  if(listening) return;
+  try{recog.start();}catch{}
+  // Only show glow once onstart fires; set a watchdog here
+  if(micStartWatch) clearTimeout(micStartWatch);
+  micStartWatch = setTimeout(()=>{
+    if(!listening && retries>0){
+      try{recog.stop();}catch{}
+      try{recog.start();}catch{}
+      startMicWithRetry(retries-1);
+    }
+  }, 600);
+}
 
 async function playQuestion(){
   const q=questions[current];
   animateWords(q.q);
-  await playAudio('audio/'+q.audio);
-  startMic();
+  await playAudio('audio/'+q.audio); // Sage question from /audio/
+  startMicWithRetry();
 }
 
 function strictMatch(spoken,answer){
   const s=normalize(spoken),a=normalize(answer);
-  if(!s||!a)return false;
-  if(s.includes(a))return true;
+  if(!s||!a) return false;
+  if(s.includes(a)) return true; // allow full-inclusion match
   const sTok=new Set(s.split(' ')),aTok=a.split(' ');
   const overlap=aTok.filter(w=>sTok.has(w)).length;
-  return overlap>=Math.ceil(aTok.length*0.8);
+  return overlap>=Math.ceil(aTok.length*0.85); // 85% token overlap
 }
 
 // ------------------ CHECK SPEECH ------------------
+async function shakeRedErase(){
+  studentBox.classList.add('shake');
+  studentBox.style.background='#ef4444';
+  await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
+  setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';studentBox.textContent='';},650);
+}
+
 async function checkSpeech(spoken){
   const q=questions[current];
-  let match=-1;
+
+  // Determine which answer (if any) was spoken
+  let matchIndex=-1;
   for(let i=0;i<q.answers.length;i++){
-    if(strictMatch(spoken,q.answers[i])){match=i;break;}
+    if(strictMatch(spoken,q.answers[i])){matchIndex=i;break;}
   }
 
-  // nonsense speech
-  if(match===-1){
-    studentBox.classList.add('shake');
-    studentBox.style.background='#ef4444';
-    await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
-    setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';},700);
+  // No valid sentence detected
+  if(matchIndex===-1){
+    await shakeRedErase();
     return;
   }
 
   const optionEls=[...document.querySelectorAll('.option')];
-  const chosen=optionEls[match];
 
-  // first correct
-  if(match===q.a && !gotCorrect){
-    gotCorrect=true;
-    await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
-    confetti();
-    await playAudio(DING);
-    points+=5; pulsePoints(); updateUI();
-    chosen.classList.add('correct');
-    setTimeout(()=>chosen.remove(),1200);
-    pointsMode=true;
-    pointsBtn.style.display='inline-block';
+  // If NOT in points mode: only accept the single correct answer
+  if(!pointsMode){
+    if(matchIndex===q.a && !gotCorrect){
+      // First correct for this question
+      gotCorrect=true;
+      await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]); // Sage positive from /audio/
+      confetti(60);
+      await playAudio(DING); // sfx from /assets/audio/
+      points+=5; pulsePoints(); updateUI();
+
+      // remove the correct option
+      optionEls[matchIndex]?.classList.add('correct');
+      setTimeout(()=>optionEls[matchIndex]?.remove(),1100);
+
+      // Activate Points Mode with remaining 3 incorrect options
+      remainingIncorrect=new Set([0,1,2,3].filter(i=>i!==q.a));
+      pointsMode=true;
+      $('#pointsBtn').style.display='inline-block';
+      hintBox.textContent='Points mode: say the other 3 sentences to earn extra points!';
+    }else{
+      // Said a wrong option during normal mode -> nonsense feedback
+      await shakeRedErase();
+    }
+    studentBox.textContent='';
     return;
   }
 
-  // points mode: any remaining answer earns +1
-  if(pointsMode && match!==q.a){
-    points+=1;
-    pulsePoints();
-    updateUI();
-    await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
-    chosen.classList.add('correct');
-    setTimeout(()=>chosen.remove(),1000);
-  }
+  // In POINTS MODE: only accept one of the remaining incorrect sentences
+  if(pointsMode){
+    if(remainingIncorrect.has(matchIndex)){
+      // Award +1 and consume this sentence
+      remainingIncorrect.delete(matchIndex);
+      points+=1; pulsePoints(); updateUI();
 
-  studentBox.textContent='';
+      // Sage quick positive + eigo.mp3 + confetti explosion
+      await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
+      confetti(90);
+      await playAudio(EIGO);
+
+      // Remove the spoken option
+      const el=optionEls[matchIndex];
+      if(el){ el.classList.add('correct'); setTimeout(()=>el.remove(),900); }
+
+      // If all three collected, reveal Next
+      if(remainingIncorrect.size===0){
+        $('#pointsBtn').style.display='none';
+        nextBtn.style.display='inline-block';
+        hintBox.textContent='Great! Tap Next.';
+      }
+    }else{
+      // Spoke the correct sentence again OR unrelated words -> reject
+      await shakeRedErase();
+    }
+    studentBox.textContent='';
+    return;
+  }
 }
 
 // ------------------ UI ------------------
@@ -231,7 +300,8 @@ function renderAnswers(){
 function loadQuestion(){
   gotCorrect=false;
   pointsMode=false;
-  pointsBtn.style.display='none';
+  remainingIncorrect.clear?.();
+  $('#pointsBtn').style.display='none';
   nextBtn.style.display='none';
   hintBox.textContent='';
   sageText.textContent='';
@@ -242,8 +312,18 @@ function loadQuestion(){
 
 // ------------------ EVENTS ------------------
 playBtn.onclick=()=>playQuestion();
-micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
-nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
+micBtn.onclick=()=>{
+  if(!recog) initRecog();
+  if(listening){ try{recog.stop();}catch{} }
+  else{ startMicWithRetry(); }
+};
+nextBtn.onclick=()=>{
+  current++;
+  if(current>=questions.length) current=0;
+  loadQuestion();
+};
+
+// Init
 loadQuestion();
 </script>
 </body>
