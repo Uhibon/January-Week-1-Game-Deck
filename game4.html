@@ -21,6 +21,7 @@ header{text-align:center;padding:1.3rem 0 1rem;font-family:'Cinzel',serif;}
 header h1{font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:2px;text-shadow:0 0 10px rgba(255,255,255,.5);}
 header h2{font-size:clamp(1rem,3vw,1.3rem);color:var(--gold1);text-shadow:var(--goldGlow);}
 main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
+
 .sageWrapper{position:relative;width:100%;display:flex;align-items:center;justify-content:center;margin-top:1rem;}
 .playBtn{position:absolute;left:-18px;top:50%;transform:translateY(-50%);
   width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));
@@ -28,16 +29,17 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
   display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;z-index:5;}
 .playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
 @keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}
-  50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
+50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
+
 #sageBox{width:100%;min-height:140px;border-radius:var(--radius);overflow:hidden;position:relative;
   font-size:clamp(1.4rem,5vw,2rem);font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;}
 #sageBox::before{content:'';position:absolute;inset:0;z-index:0;
   animation:stripeMove 8s linear infinite;background-size:100% 300%;
   background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);}
 @keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
-#sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;
-  text-shadow:0 0 8px #000,0 0 16px #000;}
+#sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
 .word{opacity:0;margin:0 .45rem;transition:opacity .25s ease;}
+
 .studentWrapper{position:relative;width:100%;margin-top:1rem;}
 #studentBox{width:100%;min-height:90px;background:#fff;border-radius:var(--radius);margin-bottom:1.4rem;
   box-shadow:inset 0 0 20px rgba(0,0,0,.15);color:#000;font-size:1.3rem;
@@ -48,26 +50,24 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
 @keyframes micGlow{from{box-shadow:0 0 10px #c084fc;}to{box-shadow:0 0 20px #e879f9;}}
-#micStatus{position:absolute;right:-25px;top:50%;transform:translateY(-50%);
-  font-weight:700;font-size:0.9rem;}
+#micStatus{position:absolute;right:-25px;top:50%;transform:translateY(-50%);font-weight:700;font-size:0.9rem;}
 #micStatus.on{color:#22c55e;text-shadow:var(--greenGlow);}
 #micStatus.off{color:#f87171;text-shadow:var(--redGlow);}
-.option{border:2px solid var(--outline);border-radius:var(--radius);
-  padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);
-  font-weight:700;background:#00000020;cursor:pointer;transition:opacity .2s;}
+
+.option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;
+  font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;cursor:pointer;transition:opacity .2s;}
 .option.played{opacity:.6;}
 #hintBox{margin-top:.8rem;font-size:1rem;color:var(--gold1);text-shadow:var(--goldGlow);}
 .btnRow{display:flex;gap:1rem;justify-content:center;margin-top:1rem;}
 .nextBtn,.pointsBtn{padding:.7rem 1.8rem;border-radius:var(--radius);
-  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;
-  font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;border:none;
-  box-shadow:var(--goldGlow);cursor:pointer;display:none;}
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;font-weight:900;font-family:'Cinzel',serif;
+  font-size:1.1rem;border:none;box-shadow:var(--goldGlow);cursor:pointer;display:none;}
 .pointsBtn{background:linear-gradient(135deg,#caffbf,#9bf6ff);}
 #pointsContainer{position:fixed;bottom:1rem;right:1rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
 #pointsLabel{color:var(--gold1);font-family:'Cinzel',serif;font-size:1rem;text-shadow:var(--goldGlow);}
 #pointsCircle{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;
-  font-size:1.4rem;font-weight:900;box-shadow:var(--goldGlow);transition:transform .3s;}
+  display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;
+  box-shadow:var(--goldGlow);transition:transform .3s;}
 #counter{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
   font-family:'Cinzel',serif;color:#fff;font-size:1rem;}
 footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;
@@ -114,40 +114,17 @@ const EIGO="assets/audio/eigo.mp3";
 const PRAISE=['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3'];
 const TRY_AGAIN=['hmm_try_again.mp3','what_language_was_that.mp3','do_you_have_a_cookie_in_your_mouth.mp3'];
 
-const questions=[ /* --- all 15 questions --- (same as earlier full list) */ 
-{q:"What do you eat for breakfast?",a:0,audio:"what_do_you_eat_for_breakfast.mp3",answers:[
-"I eat rice and miso soup for breakfast.","I eat curry for breakfast.","I eat toothpaste for breakfast.","I eat pencils and notebooks for breakfast."]},
-{q:"What do you do every morning?",a:0,audio:"what_do_you_do_every_morning.mp3",answers:[
-"I brush my teeth every morning before breakfast.","I fight dragons every morning before breakfast.","I dance with my mirror every morning before breakfast.","I call my refrigerator every morning before breakfast."]},
-{q:"What time do you eat breakfast?",a:0,audio:"what_time_do_you_eat_breakfast.mp3",answers:[
-"I eat breakfast at seven o’clock every morning.","I eat breakfast at midnight because I’m a vampire.","I eat breakfast after brushing my shoes.","I eat breakfast inside the refrigerator."]},
-{q:"What time do you go to school?",a:0,audio:"what_time_do_you_go_to_school.mp3",answers:[
-"I go to school at seven thirty every morning.","I go to school at ten because my bed loves me.","I go to school riding a giant cat.","I go to school at midnight with a flashlight."]},
-{q:"What do you bring to school?",a:0,audio:"what_do_you_bring_to_school.mp3",answers:[
-"I bring my textbooks and my lunch to school.","I bring my pet turtle to school.","I bring my robot army to school.","I bring my goldfish to school."]},
-{q:"What do you do after school?",a:0,audio:"what_do_you_do_after_school.mp3",answers:[
-"I do my homework after school.","I climb trees after school.","I build a spaceship after school.","I wrestle with ghosts after school."]},
-{q:"What do you do before bed?",a:0,audio:"what_do_you_do_before_bed.mp3",answers:[
-"I brush my teeth before bed every night.","I play the drums before bed every night.","I cook spaghetti before bed every night.","I go jogging before bed every night."]},
-{q:"What time do you go to bed?",a:0,audio:"what_time_do_you_go_to_bed.mp3",answers:[
-"I go to bed at ten o’clock every night.","I go to bed at sunrise because I’m a bat.","I go to bed at school every night.","I go to bed at noon every night."]},
-{q:"What do you like to do on Sunday?",a:0,audio:"what_do_you_like_to_do_on_sunday.mp3",answers:[
-"I play games with my friends on Sunday afternoon.","I eat my homework on Sunday afternoon.","I fly to Mars on Sunday afternoon.","I wash the clouds on Sunday afternoon."]},
-{q:"What do you do on rainy days?",a:0,audio:"what_do_you_do_on_rainy_days.mp3",answers:[
-"I read books and drink hot chocolate on rainy days.","I ride my bike on rainy days.","I paint my ceiling on rainy days.","I wash my cat on rainy days."]},
-{q:"What do you do on your birthday?",a:0,audio:"what_do_you_do_on_your_birthday.mp3",answers:[
-"I eat cake with my family on my birthday.","I invite my dog to a party on my birthday.","I open presents underwater on my birthday.","I sing to my goldfish on my birthday."]},
-{q:"What do you eat for lunch?",a:0,audio:"what_do_you_eat_for_lunch.mp3",answers:[
-"I eat curry rice for lunch at school.","I eat ice cream for lunch at school.","I eat paper for lunch at school.","I eat sand for lunch at school."]},
-{q:"What do you do after dinner?",a:0,audio:"what_do_you_do_after_dinner.mp3",answers:[
-"I help my parents clean the table after dinner.","I juggle spaghetti after dinner.","I play soccer in the kitchen after dinner.","I sleep under the table after dinner."]},
-{q:"What do you do on Saturday?",a:0,audio:"what_do_you_do_on_saturday.mp3",answers:[
-"I clean my room and do laundry on Saturday.","I build a snowman on Saturday.","I chase pigeons on Saturday.","I take a nap in the refrigerator on Saturday."]},
-{q:"What do you study at school?",a:0,audio:"what_do_you_study_at_school.mp3",answers:[
-"I study English and math at school.","I study sleeping at school.","I study dinosaurs at school.","I study pizza at school."]}
+const questions=[
+  {q:"What do you eat for breakfast?",a:0,audio:"what_do_you_eat_for_breakfast.mp3",answers:[
+  "I eat rice and miso soup for breakfast.","I eat curry for breakfast.","I eat toothpaste for breakfast.","I eat pencils and notebooks for breakfast."]},
+  {q:"What do you do every morning?",a:0,audio:"what_do_you_do_every_morning.mp3",answers:[
+  "I brush my teeth every morning before breakfast.","I fight dragons every morning before breakfast.","I dance with my mirror every morning before breakfast.","I call my refrigerator every morning before breakfast."]},
+  {q:"What time do you eat breakfast?",a:0,audio:"what_time_do_you_eat_breakfast.mp3",answers:[
+  "I eat breakfast at seven o’clock every morning.","I eat breakfast at midnight because I’m a vampire.","I eat breakfast after brushing my shoes.","I eat breakfast inside the refrigerator."]}
+  // add remaining questions here
 ];
 
-let current=0,points=0,listening=false,recog,pointsMode=false;
+let current=0,points=0,listening=false,recog,pointsMode=false,gotCorrect=false;
 const $=s=>document.querySelector(s);
 const sageText=$("#sageText"),studentBox=$("#studentBox"),playBtn=$("#playBtn"),
 micBtn=$("#micBtn"),micStatus=$("#micStatus"),optionsBox=$("#options"),
@@ -159,8 +136,7 @@ function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,\"'\").replace(/[^a-z0-9'\\s]/g,' ').replace(/\\s+/g,' ').trim();}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
-function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');
-  s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,180*i);});}
+function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,180*i);});}
 
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -174,9 +150,10 @@ function initRecog(){
 function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
 
 async function playQuestion(){
-  const q=questions[current];animateWords(q.q);
+  const q=questions[current];
+  animateWords(q.q);
   await playAudio('audio/'+q.audio);
-  await new Promise(r=>setTimeout(r,600));
+  await new Promise(r=>setTimeout(r,500));
   startMic();
 }
 
@@ -189,7 +166,6 @@ function strictMatch(spoken,answer){
   return overlap>=Math.ceil(aTok.length*0.8);
 }
 
-let gotCorrect=false;
 async function checkSpeech(spoken){
   const q=questions[current];
   if(pointsMode){await playAudio(EIGO);points++;pulsePoints();updateUI();return;}
@@ -197,12 +173,9 @@ async function checkSpeech(spoken){
   for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){match=i;break;}}
   if(match===-1)return;
   if(match===q.a&&!gotCorrect){
-    gotCorrect=true;
-    await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
-    await playAudio(DING);
-    points+=5;pulsePoints();updateUI();
-    nextBtn.style.display='inline-block';
-    pointsBtn.style.display='inline-block';
+    gotCorrect=true;await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+    await playAudio(DING);points+=5;pulsePoints();updateUI();
+    nextBtn.style.display='inline-block';pointsBtn.style.display='inline-block';
     hintBox.innerHTML='Read all answers for points or click Next.<br>すべてのこたえをよんでポイントをゲット！つぎへすすむなら Next をクリック';
   }else if(match!==q.a){
     studentBox.style.background='#fca5a5';
@@ -216,12 +189,11 @@ function renderAnswers(){
   const q=questions[current];
   q.answers.forEach(a=>{
     const div=document.createElement('div');
-    div.className='option';
-    div.textContent=a;
+    div.className='option';div.textContent=a;
     div.onclick=async()=>{
       if(div.classList.contains('played'))return;
-      const f=a.toLowerCase().replace(/[’‘´`]/g,\"'\")
-        .replace(/[^a-z0-9'\\s]/g,' ').replace(/\\s+/g,'_')+'.mp3';
+      const f=a.toLowerCase().replace(/[’‘´`]/g,\"'\").replace(/[^a-z0-9'\\s]/g,' ')
+        .replace(/\\s+/g,'_')+'.mp3';
       await playAudio('audio/'+f);
       div.classList.add('played');
       points++;pulsePoints();updateUI();
