@@ -104,10 +104,14 @@ function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecogn
 function startMic(){if(!recog)initRecog();if(recog&&!listening){try{recog.start();}catch{}}}
 
 async function playQuestion(){
-  await ensureMicPermissionOnce();
-  const q=questions[current];
-  sageText.textContent=q.q;
-  await audioPlay(q.audio);
+  // Ask for mic first
+  try { await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){}
+  const q = questions[current];
+  sageText.textContent = q.q;
+
+  // Play ONLY after a click gesture so autoplay allows it
+  const a = new Audio(q.audio);
+  a.play().catch(err => console.warn('Audio blocked:', err));
   startMic();
 }
 
@@ -158,6 +162,7 @@ async function checkSpeech(spoken){
 }
 
 function loadQuestion(){
+  <button id="playBtn">▶ Play</button>
   sageText.textContent=questions[current].q;
   studentBox.textContent='';
   renderAnswers();
