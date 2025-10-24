@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Booha Speak & Listen – Test Build</title>
+<title>Booha Speak & Listen – Final Fix</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 <style>
@@ -12,80 +12,58 @@
   --radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{
-  font-family:'Noto Sans JP',sans-serif;
-  background:var(--bg);color:var(--ink);
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;
-}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;}
 header{text-align:center;padding:1rem 0;font-family:'Cinzel',serif;}
 header h1{font-size:1.8rem;letter-spacing:2px;}
 header h2{font-size:1.1rem;color:var(--gold1);text-shadow:var(--goldGlow);}
 main{flex:1;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
 
-/* SAGE BOX */
+/* Sage box */
 .sageWrapper{position:relative;width:100%;display:flex;align-items:center;justify-content:center;margin-top:1rem;}
 #sageBox{
   width:100%;min-height:140px;border-radius:var(--radius);overflow:hidden;position:relative;
-  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;
-  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:clamp(1.4rem,5vw,2rem);font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;
 }
-#sageBox::before{
-  content:'';position:absolute;inset:0;z-index:0;
+#sageBox::before{content:'';position:absolute;inset:0;z-index:0;
   animation:stripeMove 8s linear infinite;background-size:100% 300%;
-  background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);
-}
+  background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);}
 @keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
-#sageText{
-  position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;
-  text-shadow:0 0 8px #000,0 0 16px #000;
-}
+#sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
+.word{opacity:0;transition:opacity .15s linear;}
 
-/* PLAY BUTTON */
-.playBtn{
-  position:absolute;left:-18px;top:50%;transform:translateY(-50%);
+/* Play button */
+.playBtn{position:absolute;left:-18px;top:50%;transform:translateY(-50%);
   width:60px;height:60px;border-radius:50%;
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  animation:shimmer 2s infinite;z-index:5;
-}
+  display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;z-index:5;}
 .playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
 @keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
 
-/* STUDENT + MIC */
+/* Student + mic */
 .studentWrapper{position:relative;width:100%;margin-top:1.2rem;}
 #studentBox{
   width:100%;min-height:80px;background:#fff;border-radius:var(--radius);
   display:flex;align-items:center;justify-content:center;color:#000;font-size:1.2rem;
   padding:0.5rem 3.5rem;
 }
-.micBtn{
-  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+.micBtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);
   width:56px;height:56px;border-radius:50%;
   background:linear-gradient(135deg,#b388ff,#9d4edd);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.5rem;
-}
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.5rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
 @keyframes micGlow{from{box-shadow:0 0 10px #c084fc;}to{box-shadow:0 0 20px #e879f9;}}
 
-/* OPTIONS */
-.option{
-  border:2px solid #ffffff33;border-radius:var(--radius);
-  padding:0.8rem;margin:0.4rem 0;background:#00000020;cursor:pointer;
-}
+/* Answers + points */
+.option{border:2px solid #ffffff33;border-radius:var(--radius);padding:0.8rem;margin:0.4rem 0;background:#00000020;cursor:pointer;}
 .option.played{opacity:0.5;}
-
-/* BUTTONS + POINTS */
-#nextBtn{
-  margin-top:1rem;padding:0.7rem 2rem;border:none;border-radius:var(--radius);
-  background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;display:none;cursor:pointer;
-}
-#pointsCircle{
-  margin-top:1rem;width:70px;height:70px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  color:#000;font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;
-  display:flex;align-items:center;justify-content:center;box-shadow:var(--goldGlow);transition:transform .3s;
-}
+#nextBtn{margin-top:1rem;padding:0.7rem 2rem;border:none;border-radius:var(--radius);
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;font-weight:900;
+  font-family:'Cinzel',serif;font-size:1.1rem;display:none;cursor:pointer;}
+#pointsCircle{margin-top:1rem;width:70px;height:70px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;
+  font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;display:flex;
+  align-items:center;justify-content:center;box-shadow:var(--goldGlow);transition:transform .3s;}
 footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;font-size:0.9rem;}
 </style>
 </head>
@@ -114,8 +92,10 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;fo
 <footer>Bryan’s English School</footer>
 
 <script>
-/* ---------- CONFIG ---------- */
-const EIGO = "assets/audio/eigo.mp3"; // correct answer sound
+const EIGO = "assets/audio/eigo.mp3"; // ding for correct
+const PRAISE = ["yes_good_job.mp3","perfect_english.mp3","wow_nice_work.mp3"];
+const TRY_AGAIN = ["hmm_try_again.mp3","what_language_was_that.mp3","do_you_have_a_cookie_in_your_mouth.mp3"];
+
 const questions = [
   {
     q:"What do you eat for breakfast?",
@@ -141,23 +121,17 @@ const questions = [
   }
 ];
 
-/* ---------- STATE ---------- */
-let current=0, points=0;
-let recog, listening=false, playing=false, gotCorrect=false;
-
-/* ---------- ELEMENTS ---------- */
+let current=0,points=0,recog,listening=false,playing=false,gotCorrect=false;
 const $=s=>document.querySelector(s);
 const playBtn=$("#playBtn"),sageText=$("#sageText"),studentBox=$("#studentBox"),
       micBtn=$("#micBtn"),options=$("#options"),nextBtn=$("#nextBtn"),pointsCircle=$("#pointsCircle");
 
-/* ---------- HELPERS ---------- */
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 function updatePoints(){pointsCircle.textContent=points;}
 function audioPlay(path){return new Promise(res=>{const a=new Audio(path);a.onended=res;a.onerror=res;a.play().catch(res);});}
-function playSage(file){return audioPlay(`audio/${file}`);} // Sage lives in /audio/
+function playSage(file){return audioPlay(`audio/${file}`);} // all Sage audio in /audio/
 
-/* ---------- SPEECH ---------- */
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){alert("Speech Recognition not supported.");return;}
@@ -172,18 +146,33 @@ function initRecog(){
 }
 function startMic(){if(!recog) initRecog();if(recog&&!listening){try{recog.start();}catch(_){}}}
 
-/* ---------- LOGIC ---------- */
+/* animate text while Sage speaks */
+async function typeSentence(sentence){
+  sageText.innerHTML='';
+  const words=sentence.split(' ');
+  for(let i=0;i<words.length;i++){
+    const span=document.createElement('span');
+    span.className='word';
+    span.textContent=words[i]+' ';
+    sageText.appendChild(span);
+    await new Promise(r=>setTimeout(r,150));
+    span.style.opacity=1;
+  }
+}
+
+/* play question */
 async function playQuestion(){
   if(playing)return;
   playing=true;
   const q=questions[current];
-  sageText.textContent=q.q;
   gotCorrect=false;
+  await typeSentence(q.q);
   await playSage(q.audio);
   playing=false;
   startMic();
 }
 
+/* compare */
 function matchesAnswer(spoken,answer){
   const s=normalize(spoken),a=normalize(answer);
   if(s.includes(a))return true;
@@ -193,23 +182,27 @@ function matchesAnswer(spoken,answer){
   return overlap>=Math.max(2,Math.ceil(aTok.length*0.6));
 }
 
+/* check speech */
 async function checkSpeech(spoken){
   const q=questions[current];
   for(let i=0;i<q.answers.length;i++){
     if(matchesAnswer(spoken,q.answers[i])){
       if(i===q.a && !gotCorrect){
         gotCorrect=true;
-        await audioPlay(EIGO); // plays eigo.mp3 for correct
+        await playSage(PRAISE[Math.floor(Math.random()*PRAISE.length)]); // Sage reaction
+        await audioPlay(EIGO); // ding after reaction
         points+=5;pulsePoints();updatePoints();
         nextBtn.style.display='inline-block';
-      }else if(i!==q.a){
-        // incorrect = 0 points, no sound
+      }else if(i!==q.a && !gotCorrect){
+        gotCorrect=true; // prevent spamming
+        await playSage(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
       }
       break;
     }
   }
 }
 
+/* render answer list */
 function renderAnswers(){
   options.innerHTML='';
   const q=questions[current];
@@ -233,7 +226,7 @@ function loadQuestion(){
   renderAnswers();updatePoints();
 }
 
-/* ---------- EVENTS ---------- */
+/* events */
 playBtn.onclick=playQuestion;
 micBtn.onclick=()=>{if(!recog) initRecog();if(listening){try{recog.stop();}catch(_){}}else{startMic();}};
 nextBtn.onclick=()=>{
@@ -242,7 +235,6 @@ nextBtn.onclick=()=>{
   loadQuestion();
 };
 
-/* ---------- INIT ---------- */
 loadQuestion();
 </script>
 </body>
