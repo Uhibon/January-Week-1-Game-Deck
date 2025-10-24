@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;--silver:#cfd8dc;--purple:#c084fc;
-  --outline:#ffffff26;--radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
-  --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
+  --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;--outline:#ffffff26;
+  --radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;--blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
+  --greenGlow:0 0 10px #4ade80,0 0 20px #22c55e;--redGlow:0 0 10px #f87171,0 0 20px #ef4444;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
@@ -21,9 +21,9 @@ header{text-align:center;padding:1.3rem 0 1rem;font-family:'Cinzel',serif;}
 header h1{font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:2px;text-shadow:0 0 10px rgba(255,255,255,.5);}
 header h2{font-size:clamp(1rem,3vw,1.3rem);color:var(--gold1);text-shadow:var(--goldGlow);}
 main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
-.sageWrapper{position:relative;width:100%;margin-top:1.5rem;}
+.sageWrapper{position:relative;width:100%;display:flex;align-items:center;justify-content:center;margin-top:1.5rem;}
 #sageBox{
-  width:100%;min-height:150px;border-radius:var(--radius);overflow:hidden;position:relative;margin-top:3.5rem;
+  width:100%;min-height:150px;border-radius:var(--radius);overflow:hidden;position:relative;
   font-size:clamp(1.4rem,5vw,2rem);font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;
 }
 #sageBox::before{
@@ -35,30 +35,27 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .word{opacity:0;margin:0 0.45rem;transition:opacity .25s ease;}
 
 .playBtn{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:64px;height:64px;border-radius:50%;
+  margin-right:0.8rem;
+  width:60px;height:60px;border-radius:50%;
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
   box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;animation:shimmer 2s infinite;z-index:5;
+  cursor:pointer;animation:shimmer 2s infinite;
 }
-.playBtn::after{content:"▶";color:#000;font-size:1.6rem;font-weight:900;}
+.playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
 @keyframes shimmer{
   0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}
   50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}
 }
 
-.studentWrapper{position:relative;width:100%;}
+.studentWrapper{position:relative;width:100%;margin-top:1.5rem;}
 #studentBox{
   width:100%;min-height:90px;background:#fff;border-radius:var(--radius);margin-bottom:1.4rem;
   box-shadow:inset 0 0 20px rgba(0,0,0,.15);color:#000;font-size:1.3rem;
-  display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;
+  display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;transition:background .4s;
 }
 .micBtn{
-  position:absolute;right:-18px;top:50%;transform:translateY(-50%);
+  position:absolute;right:50px;top:50%;transform:translateY(-50%);
   width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);
   box-shadow:0 0 12px rgba(255,255,255,.4),0 0 24px rgba(192,132,252,.4);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
@@ -66,6 +63,13 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
 @keyframes micGlow{from{box-shadow:0 0 10px #c084fc,0 0 20px #a855f7;}to{box-shadow:0 0 20px #e879f9,0 0 40px #f0abfc;}}
+
+#micStatus{
+  position:absolute;right:-25px;top:50%;transform:translateY(-50%);
+  font-weight:700;font-size:0.9rem;
+}
+#micStatus.on{color:#22c55e;text-shadow:var(--greenGlow);}
+#micStatus.off{color:#f87171;text-shadow:var(--redGlow);}
 
 .option{
   border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;
@@ -88,7 +92,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 }
 
 #counter{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;color:#fff;font-size:1rem;}
-footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
+footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:1px;text-shadow:0 0 6px rgba(255,255,255,.4);}
 </style>
 </head>
 <body>
@@ -107,10 +111,13 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
     <div class="playBtn" id="playBtn"></div>
     <div id="sageBox"><div id="sageText"></div></div>
   </div>
+
   <div class="studentWrapper">
     <div id="studentBox"></div>
     <div class="micBtn" id="micBtn"></div>
+    <div id="micStatus" class="off">OFF</div>
   </div>
+
   <div id="options">
     <div class="option"></div>
     <div class="option"></div>
@@ -211,12 +218,13 @@ const sageText=document.getElementById('sageText');
 const studentBox=document.getElementById('studentBox');
 const playBtn=document.getElementById('playBtn');
 const micBtn=document.getElementById('micBtn');
+const micStatus=document.getElementById('micStatus');
 const options=document.querySelectorAll('.option');
 const pointsCircle=document.getElementById('pointsCircle');
 const counter=document.getElementById('counter');
 
 function sanitizeFile(text){return text.toLowerCase().replace(/[^a-z0-9\s']/gi,'').replace(/\s+/g,'_')+'.mp3';}
-function playAudio(file){const a=new Audio('audio/'+file);a.play().catch(()=>{});}
+function playAudio(file){return new Promise(res=>{const a=new Audio('audio/'+file);a.onended=res;a.play().catch(res);});}
 function animateSageText(t){
   sageText.innerHTML='';
   t.split(' ').forEach((w,i)=>{
@@ -238,13 +246,13 @@ function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R)return alert('Speech Recognition not supported');
   recog=new R();recog.lang='en-US';recog.interimResults=true;
-  recog.onstart=()=>{micBtn.classList.add('active');listening=true;studentBox.textContent='';};
+  recog.onstart=()=>{micBtn.classList.add('active');micStatus.textContent='ON';micStatus.className='on';listening=true;studentBox.textContent='';};
   recog.onresult=(e)=>{
     const transcript=Array.from(e.results).map(r=>r[0].transcript).join('').toLowerCase();
     studentBox.textContent=transcript;
     checkSpeech(transcript);
   };
-  recog.onend=()=>{micBtn.classList.remove('active');listening=false;};
+  recog.onend=()=>{micBtn.classList.remove('active');micStatus.textContent='OFF';micStatus.className='off';listening=false;};
 }
 
 function loadQuestion(){
@@ -260,32 +268,28 @@ function loadQuestion(){
 function startMic(){if(!recog)initRecog();if(!listening)recog.start();}
 function nextQuestion(){current++;if(current>=questions.length){current=0;points=0;}loadQuestion();}
 
-function checkSpeech(t){
+async function checkSpeech(t){
   const q=questions[current];
   const foundIndex=q.options.findIndex(o=>t.includes(o.toLowerCase()));
   if(foundIndex>=0){
     if(foundIndex===q.a){
-      if(!bonusActive){
-        points++;pulsePoints();
-        playAudio(randomItem(correctAudios));
-        bonusActive=true;
-        bonusTimer=setTimeout(nextQuestion,10000);
-      }else{
-        points++;pulsePoints();playAudio(randomItem(extraAudios));
-      }
+      points++;pulsePoints();
+      await playAudio(randomItem(correctAudios));
+      bonusActive=true;
+      bonusTimer=setTimeout(nextQuestion,7000);
     }else{
-      if(bonusActive){points++;pulsePoints();playAudio(randomItem(extraAudios));}
+      await playAudio(randomItem(wrongAudios));
+      studentBox.style.background='#fca5a5';
+      setTimeout(()=>studentBox.style.background='#fff',800);
     }
     updateUI();
-  }else{
-    playAudio(randomItem(wrongAudios));
   }
 }
 
 playBtn.onclick=()=>{
   const q=questions[current];
-  playAudio(sanitizeFile(q.q)); // Sage plays only when Play is clicked
-  setTimeout(()=>startMic(),5000);
+  playAudio(sanitizeFile(q.q)); // Sage voice local
+  setTimeout(()=>startMic(),4000);
 };
 micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
 
