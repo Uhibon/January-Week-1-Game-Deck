@@ -108,22 +108,40 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;fo
 
 <script>
 /* ---------- CONFIG ---------- */
-const PRAISE = ['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3'];
-const TRY_AGAIN = ['hmm_try_again.mp3','what_language_was_that.mp3','do_you_have_a_cookie_in_your_mouth.mp3'];
+const PRAISE = [
+  "yes_good_job.mp3",
+  "perfect_english.mp3",
+  "wow_nice_work.mp3"
+];
+const TRY_AGAIN = [
+  "hmm_try_again.mp3",
+  "what_language_was_that.mp3",
+  "do_you_have_a_cookie_in_your_mouth.mp3"
+];
 
 const questions = [
-  { q:"What do you eat for breakfast?", a:0, audio:"what_do_you_eat_for_breakfast.mp3", answers:[
-    "I eat rice and miso soup for breakfast.",
-    "I eat curry for breakfast.",
-    "I eat toothpaste for breakfast.",
-    "I eat pencils and notebooks for breakfast."
-  ]},
-  { q:"What do you do every morning?", a:0, audio:"what_do_you_do_every_morning.mp3", answers:[
-    "I brush my teeth every morning before breakfast.",
-    "I fight dragons every morning before breakfast.",
-    "I dance with my mirror every morning before breakfast.",
-    "I call my refrigerator every morning before breakfast."
-  ]}
+  {
+    q:"What do you eat for breakfast?",
+    a:0,
+    audio:"what_do_you_eat_for_breakfast.mp3",
+    answers:[
+      "I eat rice and miso soup for breakfast.",
+      "I eat curry for breakfast.",
+      "I eat toothpaste for breakfast.",
+      "I eat pencils and notebooks for breakfast."
+    ]
+  },
+  {
+    q:"What do you do every morning?",
+    a:0,
+    audio:"what_do_you_do_every_morning.mp3",
+    answers:[
+      "I brush my teeth every morning before breakfast.",
+      "I fight dragons every morning before breakfast.",
+      "I dance with my mirror every morning before breakfast.",
+      "I call my refrigerator every morning before breakfast."
+    ]
+  }
 ];
 
 /* ---------- STATE ---------- */
@@ -140,7 +158,7 @@ function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 function updatePoints(){pointsCircle.textContent=points;}
 function audioPlay(path){return new Promise(res=>{const a=new Audio(path);a.onended=res;a.onerror=res;a.play().catch(res);});}
-function playLocalAudio(file,folder="audio"){return audioPlay(`${folder}/${file}`);}
+function playSage(file){return audioPlay(`audio/${file}`);} // Sage ALWAYS lives in /audio/
 
 /* ---------- SPEECH ---------- */
 function initRecog(){
@@ -164,8 +182,8 @@ async function playQuestion(){
   const q=questions[current];
   sageText.textContent=q.q;
   gotCorrect=false;
-  // SAGE reads from /audio/
-  await playLocalAudio(q.audio);
+  // Sage reads from /audio/
+  await playSage(q.audio);
   playing=false;
   startMic();
 }
@@ -185,11 +203,11 @@ async function checkSpeech(spoken){
     if(matchesAnswer(spoken,q.answers[i])){
       if(i===q.a && !gotCorrect){
         gotCorrect=true;
-        await playLocalAudio(PRAISE[Math.floor(Math.random()*PRAISE.length)],"assets/audio");
+        await playSage(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
         points+=5;pulsePoints();updatePoints();
         nextBtn.style.display='inline-block';
       }else if(i!==q.a){
-        await playLocalAudio(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)],"assets/audio");
+        await playSage(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
       }
       break;
     }
@@ -204,7 +222,7 @@ function renderAnswers(){
     div.className='option';
     div.textContent=a;
     div.onclick=async()=>{
-      await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'_')+'.mp3');
+      await playSage(a.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'_')+'.mp3');
       if(!div.classList.contains('played')){
         div.classList.add('played');points++;pulsePoints();updatePoints();
       }
