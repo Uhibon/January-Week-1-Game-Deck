@@ -54,7 +54,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .micBtn{
   position:absolute;right:-18px;top:50%;transform:translateY(-50%);
   width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#7e22ce);
-  box-shadow:var(--purpleGlow);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;
+  box-shadow:var(--purpleGlow);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;
 }
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 
@@ -65,9 +65,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 #hintBox{margin-top:.8rem;font-size:1rem;color:var(--gold1);text-shadow:var(--goldGlow);}
 .buttonsRow{display:flex;gap:.6rem;justify-content:center;margin-top:1rem;}
 button{padding:.7rem 2rem;border-radius:var(--radius);
-  background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;border:none;
-  box-shadow:var(--goldGlow);cursor:pointer;}
+  color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;border:none;cursor:pointer;}
 #pointsBtn{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:var(--blueGlow);}
 #nextBtn{background:linear-gradient(135deg,#f472b6,#ec4899);box-shadow:var(--pinkGlow);}
 
@@ -119,7 +117,7 @@ const questions=[
   {q:"What do you do after dinner?",a:0,audio:"what_do_you_do_after_dinner.mp3",answers:["I help my parents clean the table after dinner.","I juggle spaghetti after dinner.","I play soccer in the kitchen after dinner.","I sleep under the table after dinner."]}
 ];
 
-let current=0,points=0,recog,listening=false,playing=false,pointsMode=false;
+let current=0,points=0,recog,listening=false,playing=false,pointsMode=false,spokenSet=new Set();
 const $=s=>document.querySelector(s);
 const sageText=$("#sageText"),playBtn=$("#playBtn"),micBtn=$("#micBtn"),studentBox=$("#studentBox"),nextBtn=$("#nextBtn"),pointsBtn=$("#pointsBtn"),pointsCircle=$("#pointsCircle"),counter=$("#counter"),optionsBox=$("#options"),hintBox=$("#hintBox");
 
@@ -138,14 +136,28 @@ function startMic(){if(!recog)initRecog();if(recog&&!listening){try{recog.start(
 
 async function playQuestion(){if(playing)return;playing=true;await navigator.mediaDevices.getUserMedia({audio:true}).catch(()=>{});const q=questions[current];animateWords(q.q);await playLocalAudio(q.audio);playing=false;startMic();}
 
-function renderAnswers(){optionsBox.innerHTML='';questions[current].answers.forEach((a,i)=>{const d=document.createElement('div');d.className='option';d.textContent=a;d.onclick=async()=>{await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,'_')+'.mp3');await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,'_')+'.mp3');};optionsBox.appendChild(d);});}
+function renderAnswers(){optionsBox.innerHTML='';spokenSet.clear();questions[current].answers.forEach((a,i)=>{const d=document.createElement('div');d.className='option';d.textContent=a;d.dataset.idx=i;optionsBox.appendChild(d);});}
 
-async function checkSpeech(sp){const q=questions[current];if(pointsMode){for(const ans of q.answers){if(normalize(sp).includes(normalize(ans))){await playLocalAudio(EIGO);points+=1;pulsePoints();updateUI();return;}}return;}
-  let m=-1;for(let i=0;i<q.answers.length;i++){if(normalize(sp).includes(normalize(q.answers[i]))){m=i;break;}}
-  if(m===q.a){await playLocalAudio(PRAISE[Math.floor(Math.random()*PRAISE.length)]);await playLocalAudio(EIGO);points+=5;pulsePoints();updateUI();nextBtn.style.display='inline-block';}
-  else if(m!==-1){await playLocalAudio(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);}}
+async function checkSpeech(sp){const q=questions[current];
+  if(pointsMode){
+    for(const d of [...optionsBox.children]){
+      const text=d.textContent;
+      if(spokenSet.has(text))continue;
+      if(normalize(sp)===normalize(text)){
+        await playLocalAudio(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+        await playLocalAudio(EIGO);
+        points+=1;spokenSet.add(text);pulsePoints();updateUI();d.remove();return;
+      }
+    }
+    await playLocalAudio(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
+    return;
+  }
+  let m=-1;for(let i=0;i<q.answers.length;i++){if(normalize(sp)===normalize(q.answers[i])){m=i;break;}}
+  if(m===q.a){await playLocalAudio(PRAISE[Math.floor(Math.random()*PRAISE.length)]);await playLocalAudio(EIGO);points+=5;pulsePoints();updateUI();nextBtn.style.display='inline-block';pointsBtn.style.display='inline-block';}
+  else if(m!==-1){await playLocalAudio(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);}  
+}
 
-function loadQ(){sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();nextBtn.style.display='none';}
+function loadQ(){sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();nextBtn.style.display='none';pointsBtn.style.display='inline-block';}
 
 playBtn.onclick=playQuestion;
 micBtn.onclick=()=>{if(!recog)initRecog();if(listening){try{recog.stop();}catch{}}else startMic();};
