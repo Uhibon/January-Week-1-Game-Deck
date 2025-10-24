@@ -3,57 +3,78 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover" />
-<title>Booha Diary (Test v2)</title>
+<title>ブーハダイアリー – Booha Diary</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 
 <style>
 body {
   margin: 0;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: #fff;
+  background: #2a1662;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   height: 100vh;
+}
+
+/* header & footer */
+header, footer {
+  background: #0b1530;
+  text-align: center;
+  padding: 10px 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.4em;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px #fff;
+}
+footer {
+  font-size: 0.9em;
+  color: #bbb;
+  text-shadow: none;
+}
+
+main {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Noto Sans JP', sans-serif;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+#questionBox {
+  font-size: 1.3em;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  min-height: 100px;
+  width: 90%;
+  max-width: 700px;
+  border: 3px solid #fff;
   color: #fff;
-  overflow: hidden;
+  text-align: center;
   background: repeating-linear-gradient(
-    to bottom,
-    #25164a 0%,
-    #3e2a77 10%,
+    to top,
+    #3e2a77 0%,
+    #25164a 10%,
     #2a1662 20%
   );
   background-size: 100% 300%;
-  animation: stripeDown 10s linear infinite;
+  animation: stripeUp 10s linear infinite;
+  box-shadow: 0 0 15px rgba(255,255,255,0.2);
 }
-@keyframes stripeDown {
-  0% { background-position-y: 0; }
-  100% { background-position-y: 300%; }
+@keyframes stripeUp {
+  0% { background-position-y: 300%; }
+  100% { background-position-y: 0; }
 }
-.container {
+
+#speechOutput {
   width: 90%;
   max-width: 700px;
-  text-align: center;
-}
-h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 2em;
-  margin-bottom: 1em;
-  text-shadow: 0 0 10px #fff;
-}
-#questionBox {
-  font-size: 1.4em;
-  padding: 20px;
-  border: 3px solid #fff;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.1);
-  box-shadow: 0 0 20px rgba(255,255,255,0.2);
-  margin-bottom: 20px;
-  min-height: 100px;
-}
-#speechOutput {
-  width: 100%;
   height: 160px;
   font-size: 1.1em;
   border-radius: 15px;
@@ -65,58 +86,104 @@ h1 {
   outline: none;
   resize: none;
 }
+
+.buttons {
+  margin-top: 15px;
+}
 button {
-  margin: 10px;
+  margin: 5px;
   font-weight: bold;
   font-size: 1.1em;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 10px 20px;
   cursor: pointer;
   transition: all 0.2s;
 }
-#startBtn { background: #2ecc71; color: #fff; }       /* green */
-#stopBtn { background: #e74c3c; color: #fff; }        /* red */
-#checkBtn { background: linear-gradient(90deg,#ff00cc,#3333ff,#00ccff); color: #fff; background-size: 200% 200%; animation: rainbow 3s linear infinite; display:none; }
-#retryBtn { background: #3498db; color: #fff; display:none; } /* blue */
-#nextBtn { background: gold; color: #000; display:none; }
-#menuBtn { background: #fff; color:#000; position:absolute; bottom:15px; left:50%; transform:translateX(-50%); }
+#startBtn { background: #27ae60; color: #fff; }   /* green */
+#stopBtn { background: #c0392b; color: #fff; display:none; } /* red */
+#checkBtn { 
+  background: linear-gradient(90deg,#ff00cc,#3333ff,#00ccff); 
+  color: #fff; 
+  background-size: 200% 200%; 
+  animation: rainbow 3s linear infinite; 
+  display:none;
+}
+#retryBtn { background: #2980b9; color:#fff; display:none; } /* blue */
+#nextBtn { background: gold; color:#000; display:none; }
+#hintBtn { background: #8e44ad; color:#fff; margin-left:10px; }
 @keyframes rainbow {
   0% { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
 }
+
 #feedbackBox {
   margin-top: 10px;
   font-size: 1.1em;
   min-height: 40px;
   text-shadow: 0 0 10px #fff;
 }
+
+#jpHelp {
+  margin-top: 12px;
+  font-size: 0.9em;
+  color: #ddd;
+  text-align: center;
+  line-height: 1.6;
+}
+
+#menuBtn {
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Booha Diary ✨</h1>
-  <div id="questionBox">Press “Start” to begin your diary practice.</div>
-  <textarea id="speechOutput" placeholder="Your answer will appear here..."></textarea>
-  <div>
-    <button id="startBtn">🎤 Start</button>
-    <button id="stopBtn" style="display:none;">⏹ Stop</button>
-    <button id="checkBtn">✅ Check</button>
-    <button id="retryBtn">🔁 Retry</button>
-    <button id="nextBtn">➡️ Next</button>
-  </div>
-  <div id="feedbackBox"></div>
-</div>
-<button id="menuBtn" onclick="location.href='index.html'">🏠 Back to Menu</button>
+<header>ブーハダイアリー ✨</header>
 
-<!-- Local Sage audio -->
+<main>
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+    <div id="questionBox">スタートをおしてはじめよう！</div>
+    <button id="hintBtn">ヒント</button>
+  </div>
+
+  <textarea id="speechOutput" placeholder="ここにあなたの英語が表示されます..."></textarea>
+
+  <div class="buttons">
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="checkBtn">Check</button>
+    <button id="retryBtn">Retry</button>
+    <button id="nextBtn">Next</button>
+  </div>
+
+  <div id="feedbackBox"></div>
+
+  <div id="jpHelp">
+    「<ruby>period<rt>ピリオド</rt></ruby>」で<ruby>文<rt>ぶん</rt></ruby>を<ruby>終<rt>お</rt></ruby>わります。<br>
+    「<ruby>comma<rt>カンマ</rt></ruby>」は<ruby>小<rt>ちい</rt></ruby>さな<ruby>区切<rt>くぎ</rt></ruby>りを<ruby>表<rt>あらわ</rt></ruby>します。<br>
+    <ruby>英語<rt>えいご</rt></ruby>で<ruby>話<rt>はな</rt></ruby>すとき、「period」と「comma」はそのまま<ruby>言<rt>い</rt></ruby>ってください。
+  </div>
+
+  <button id="menuBtn" onclick="location.href='index.html'">メニューへ</button>
+</main>
+
+<footer>Bryan’s English School © 2025</footer>
+
+<!-- local Sage audio -->
 <audio id="sageQ1" src="audio/what_do_you_do_after_school.mp3" preload="auto"></audio>
 <audio id="sageQ2" src="audio/what_do_you_do_before_bed.mp3" preload="auto"></audio>
 
 <script>
 const questions = [
-  { text: "What do you do after school?", audio: "sageQ1" },
-  { text: "What do you do before bed?", audio: "sageQ2" }
+  { text: "What do you do after school?", hint: "放課後（ほうかご）に何をしますか？", audio: "sageQ1" },
+  { text: "What do you do before bed?", hint: "寝（ね）る前（まえ）に何をしますか？", audio: "sageQ2" }
 ];
 
 let current = 0;
@@ -129,6 +196,7 @@ const stopBtn = document.getElementById("stopBtn");
 const checkBtn = document.getElementById("checkBtn");
 const retryBtn = document.getElementById("retryBtn");
 const nextBtn = document.getElementById("nextBtn");
+const hintBtn = document.getElementById("hintBtn");
 const feedbackBox = document.getElementById("feedbackBox");
 
 function speakQuestion(){
@@ -150,9 +218,9 @@ function initRecog(){
     for(let i=e.resultIndex;i<e.results.length;i++){
       transcript += e.results[i][0].transcript;
     }
-    transcript = cleanText(transcript);
-    outBox.value = transcript;
+    outBox.value = cleanText(transcript);
   };
+  recog.onerror = (e)=>{ console.log("Recog error:", e.error); };
   recog.onend = ()=>{
     recognizing=false;
     startBtn.style.display="none";
@@ -173,23 +241,17 @@ function cleanText(t){
 }
 
 function checkGrammar(sentence){
-  let feedback = "Nice! Looks good!";
+  let feedback = "とてもいいです！そのままでOK。";
   let lowers = sentence.toLowerCase();
-
-  // simple checks
   if(!/i\s+(am|go|do|eat|play|study|like|have|watch)/i.test(sentence)){
-    feedback = "Hmm... try using 'I' + a verb like 'I play', 'I study', 'I eat'.";
+    feedback = "「I」＋動詞（どうし）の形を使ってみよう。例：I play. I study.";
   }
   if(/yesterday|last|ago/i.test(lowers) && /\b(am|do|play|go|eat|watch)\b/.test(lowers)){
-    feedback = "Past tense time word! Try 'went', 'played', 'ate', etc.";
-  }
-  if(/i\b(?!\s)/.test(sentence)){
-    feedback = "Remember to put a space after 'I'.";
+    feedback = "過去形（かこけい）を使おう。例：played, went, ate など。";
   }
   if(!/[.?!]$/.test(sentence)){
-    feedback = "Don't forget punctuation at the end!";
+    feedback = "文（ぶん）のさいごにピリオドをつけましょう。";
   }
-
   feedbackBox.textContent = feedback;
 }
 
@@ -205,14 +267,12 @@ startBtn.onclick = ()=>{
 };
 
 stopBtn.onclick = ()=>{
-  if(recognizing){
-    recog.stop();
-  }
+  if(recognizing){ recog.stop(); }
 };
 
 checkBtn.onclick = ()=>{
   const userText = outBox.value.trim();
-  if(!userText){ feedbackBox.textContent="Say something first!"; return; }
+  if(!userText){ feedbackBox.textContent="何か話してみましょう。"; return; }
   checkGrammar(userText);
   nextBtn.style.display="inline-block";
   checkBtn.style.display="none";
@@ -230,7 +290,7 @@ retryBtn.onclick = ()=>{
 nextBtn.onclick = ()=>{
   current++;
   if(current >= questions.length){
-    qBox.textContent = "Great job! You've finished today's diary!";
+    qBox.textContent = "すばらしい！きょうのダイアリーはおわりです。";
     outBox.value = '';
     feedbackBox.textContent = '';
     startBtn.style.display="none";
@@ -247,6 +307,11 @@ nextBtn.onclick = ()=>{
   nextBtn.style.display="none";
   startBtn.style.display="inline-block";
   speakQuestion();
+};
+
+hintBtn.onclick = ()=>{
+  const hint = questions[current].hint;
+  alert("ヒント：" + hint);
 };
 </script>
 </body>
