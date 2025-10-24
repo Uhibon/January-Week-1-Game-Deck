@@ -21,13 +21,19 @@ header h1{font-size:1.6rem;text-shadow:0 0 10px rgba(255,255,255,.5);}
 header h2{color:var(--gold1);text-shadow:0 0 10px var(--gold2);}
 main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;padding:0 1rem;text-align:center;}
 
-.playBtn,.micBtn{
-  width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:#000;font-weight:900;font-size:1.4rem;z-index:5;
+.playBtn{
+  margin-top:1rem;width:120px;height:120px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;font-weight:900;color:#000;cursor:pointer;
+  box-shadow:0 0 25px var(--gold2);
 }
-.playBtn{background:linear-gradient(135deg,var(--gold1),var(--gold2));box-shadow:0 0 15px var(--gold2);}
-.micBtn{background:linear-gradient(135deg,#a855f7,#7e22ce);box-shadow:var(--purpleGlow);position:absolute;right:-18px;top:50%;transform:translateY(-50%);}
-
+.micBtn{
+  position:absolute;right:-18px;top:50%;transform:translateY(-50%);
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,#a855f7,#7e22ce);box-shadow:var(--purpleGlow);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;
+}
 #sageBox{width:100%;min-height:100px;margin-top:1rem;border-radius:24px;
   background:repeating-linear-gradient(45deg,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);
   font-size:1.4rem;font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem;}
@@ -59,11 +65,12 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
 <div id="pointsCircle">0</div>
 
 <main>
+  <div class="playBtn" id="playBtn">▶</div>
   <div id="sageBox"><div id="sageText"></div></div>
   <div id="options"></div>
 
   <div id="studentBox" class="inactive">
-    <div class="micBtn" id="micBtn"></div>
+    <div class="micBtn" id="micBtn">🎤</div>
   </div>
 
   <div class="buttonsRow">
@@ -89,13 +96,12 @@ const questions=[
 let current=0,points=0,recog,listening=false,pointsMode=false,spokenSet=new Set();
 const $=s=>document.querySelector(s);
 const sageText=$("#sageText"),studentBox=$("#studentBox"),micBtn=$("#micBtn"),
-      nextBtn=$("#nextBtn"),pointsBtn=$("#pointsBtn"),pointsCircle=$("#pointsCircle"),counter=$("#counter"),optionsBox=$("#options");
+      nextBtn=$("#nextBtn"),pointsBtn=$("#pointsBtn"),pointsCircle=$("#pointsCircle"),counter=$("#counter"),optionsBox=$("#options"),playBtn=$("#playBtn");
 
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,\"'\").replace(/[^a-z0-9'\\s]/g,' ').replace(/\\s+/g,' ').trim();}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
 function audioPlay(p){return new Promise(r=>{const a=new Audio(p);a.onended=r;a.onerror=r;a.play().catch(r);});}
-async function ensureMicPermissionOnce(){try{await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){}}
 
 function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return;recog=new R();recog.lang='en-US';recog.interimResults=true;
   recog.onstart=()=>{listening=true;studentBox.classList.add('active');studentBox.classList.remove('inactive');studentBox.textContent='';};
@@ -104,14 +110,11 @@ function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecogn
 function startMic(){if(!recog)initRecog();if(recog&&!listening){try{recog.start();}catch{}}}
 
 async function playQuestion(){
-  // Ask for mic first
-  try { await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){}
-  const q = questions[current];
-  sageText.textContent = q.q;
-
-  // Play ONLY after a click gesture so autoplay allows it
-  const a = new Audio(q.audio);
-  a.play().catch(err => console.warn('Audio blocked:', err));
+  // Wait for mic permission BEFORE audio (gesture safe)
+  try{await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){}
+  const q=questions[current];
+  sageText.textContent=q.q;
+  await audioPlay(q.audio);
   startMic();
 }
 
@@ -162,18 +165,17 @@ async function checkSpeech(spoken){
 }
 
 function loadQuestion(){
-  <button id="playBtn">▶ Play</button>
   sageText.textContent=questions[current].q;
   studentBox.textContent='';
   renderAnswers();
   updateUI();
 }
 
+playBtn.onclick=()=>{playBtn.style.display='none';loadQuestion();playQuestion();};
 micBtn.onclick=()=>{if(!recog)initRecog();if(listening){try{recog.stop();}catch{}}else startMic();};
-nextBtn.onclick=()=>{try{if(listening)recog.stop();}catch{}current++;if(current>=questions.length)current=0;loadQuestion();};
+nextBtn.onclick=()=>{try{if(listening)recog.stop();}catch{}current++;if(current>=questions.length)current=0;loadQuestion();playQuestion();};
 pointsBtn.onclick=()=>{pointsMode=!pointsMode;pointsBtn.style.opacity=pointsMode?0.6:1;if(pointsMode)startMic();};
 
-loadQuestion();
 </script>
 </body>
 </html>
