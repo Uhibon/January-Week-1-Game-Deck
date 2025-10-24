@@ -21,9 +21,9 @@ header{text-align:center;padding:1.3rem 0 1rem;font-family:'Cinzel',serif;}
 header h1{font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:2px;text-shadow:0 0 10px rgba(255,255,255,.5);}
 header h2{font-size:clamp(1rem,3vw,1.3rem);color:var(--gold1);text-shadow:var(--goldGlow);}
 main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
-.sageWrapper{position:relative;width:100%;}
+.sageWrapper{position:relative;width:100%;margin-top:1.5rem;}
 #sageBox{
-  width:100%;min-height:150px;border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:1rem;
+  width:100%;min-height:150px;border-radius:var(--radius);overflow:hidden;position:relative;margin-top:3.5rem;
   font-size:clamp(1.4rem,5vw,2rem);font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;
 }
 #sageBox::before{
@@ -33,14 +33,24 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 @keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
 #sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
 .word{opacity:0;margin:0 0.45rem;transition:opacity .25s ease;}
+
 .playBtn{
-  position:absolute;left:-18px;top:50%;transform:translateY(-50%);
-  width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
   box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;animation:shimmer 2s infinite;z-index:5;
 }
-.playBtn::after{content:"▶";color:#000;font-size:1.2rem;font-weight:900;}
-@keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
+.playBtn::after{content:"▶";color:#000;font-size:1.6rem;font-weight:900;}
+@keyframes shimmer{
+  0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}
+  50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}
+}
+
 .studentWrapper{position:relative;width:100%;}
 #studentBox{
   width:100%;min-height:90px;background:#fff;border-radius:var(--radius);margin-bottom:1.4rem;
@@ -56,9 +66,27 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
 @keyframes micGlow{from{box-shadow:0 0 10px #c084fc,0 0 20px #a855f7;}to{box-shadow:0 0 20px #e879f9,0 0 40px #f0abfc;}}
-.option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;opacity:0.9;transition:all .4s ease;}
+
+.option{
+  border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;
+  width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;opacity:0.9;transition:all .4s ease;
+}
 .option.glow{box-shadow:var(--blueGlow);border-color:#60a5fa;opacity:1;}
-#pointsCircle{position:fixed;left:1rem;top:1rem;width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;box-shadow:var(--goldGlow);}
+
+#pointsContainer{
+  position:fixed;bottom:1rem;right:1rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;
+}
+#pointsLabel{
+  color:var(--gold1);font-family:'Cinzel',serif;font-size:1rem;text-shadow:var(--goldGlow);
+  animation:pulseText 2s infinite alternate;
+}
+@keyframes pulseText{from{opacity:.6;}to{opacity:1;}}
+#pointsCircle{
+  width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;
+  font-size:1.4rem;font-weight:900;box-shadow:var(--goldGlow);transition:transform .3s;
+}
+
 #counter{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;color:#fff;font-size:1rem;}
 footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
 </style>
@@ -68,7 +96,12 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
   <h1>THE BOO-RICULUM</h1>
   <h2>Eigo Adventure – January Week 1</h2>
 </header>
-<div id="pointsCircle">0</div>
+
+<div id="pointsContainer">
+  <div id="pointsLabel">Points</div>
+  <div id="pointsCircle">0</div>
+</div>
+
 <main>
   <div class="sageWrapper">
     <div class="playBtn" id="playBtn"></div>
@@ -85,8 +118,10 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
     <div class="option"></div>
   </div>
 </main>
+
 <div id="counter">1 / 15</div>
 <footer>Bryan’s English School</footer>
+
 <script>
 const questions=[
 {q:"What do you eat for breakfast?",a:0,options:[
@@ -170,12 +205,28 @@ const correctAudios=['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3
 const extraAudios=['nice_pronunciation.mp3','youre_unstoppable.mp3','lets_gooo.mp3','thats_so_clear.mp3','keep_going.mp3'];
 const wrongAudios=['hmm_try_again.mp3','what_language_was_that.mp3','do_you_have_a_cookie_in_your_mouth.mp3'];
 
-let current=0,points=0;let recog,listening=false;let bonusActive=false;let bonusTimer;
-const sageText=document.getElementById('sageText');const studentBox=document.getElementById('studentBox');const playBtn=document.getElementById('playBtn');const micBtn=document.getElementById('micBtn');const options=document.querySelectorAll('.option');const pointsCircle=document.getElementById('pointsCircle');const counter=document.getElementById('counter');
+let current=0,points=0;
+let recog,listening=false,bonusActive=false,bonusTimer;
+const sageText=document.getElementById('sageText');
+const studentBox=document.getElementById('studentBox');
+const playBtn=document.getElementById('playBtn');
+const micBtn=document.getElementById('micBtn');
+const options=document.querySelectorAll('.option');
+const pointsCircle=document.getElementById('pointsCircle');
+const counter=document.getElementById('counter');
 
 function sanitizeFile(text){return text.toLowerCase().replace(/[^a-z0-9\s']/gi,'').replace(/\s+/g,'_')+'.mp3';}
 function playAudio(file){const a=new Audio('audio/'+file);a.play().catch(()=>{});}
-function animateSageText(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,220*i);});}
+function animateSageText(t){
+  sageText.innerHTML='';
+  t.split(' ').forEach((w,i)=>{
+    const s=document.createElement('span');
+    s.className='word';
+    s.textContent=w;
+    sageText.appendChild(s);
+    setTimeout(()=>s.style.opacity=1,220*i);
+  });
+}
 function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function glowOptions(){options.forEach(o=>o.classList.remove('glow'));options[Math.floor(Math.random()*options.length)].classList.add('glow');}
 setInterval(glowOptions,1000);
@@ -183,19 +234,60 @@ setInterval(glowOptions,1000);
 function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 
-function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return alert('Speech Recognition not supported');recog=new R();recog.lang='en-US';recog.interimResults=true;
+function initRecog(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R)return alert('Speech Recognition not supported');
+  recog=new R();recog.lang='en-US';recog.interimResults=true;
   recog.onstart=()=>{micBtn.classList.add('active');listening=true;studentBox.textContent='';};
-  recog.onresult=(e)=>{const transcript=Array.from(e.results).map(r=>r[0].transcript).join('').toLowerCase();studentBox.textContent=transcript;checkSpeech(transcript);};
-  recog.onend=()=>{micBtn.classList.remove('active');listening=false;};}
+  recog.onresult=(e)=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join('').toLowerCase();
+    studentBox.textContent=transcript;
+    checkSpeech(transcript);
+  };
+  recog.onend=()=>{micBtn.classList.remove('active');listening=false;};
+}
 
-function loadQuestion(){bonusActive=false;clearTimeout(bonusTimer);const q=questions[current];animateSageText(q.q);options.forEach((o,i)=>o.textContent=q.options[i]);studentBox.textContent='';playAudio(sanitizeFile(q.q));setTimeout(()=>startMic(),5000);updateUI();}
+function loadQuestion(){
+  bonusActive=false;
+  clearTimeout(bonusTimer);
+  const q=questions[current];
+  animateSageText(q.q);
+  options.forEach((o,i)=>o.textContent=q.options[i]);
+  studentBox.textContent='';
+  updateUI();
+}
 
 function startMic(){if(!recog)initRecog();if(!listening)recog.start();}
 function nextQuestion(){current++;if(current>=questions.length){current=0;points=0;}loadQuestion();}
 
-function checkSpeech(t){const q=questions[current];const foundIndex=q.options.findIndex(o=>t.includes(o.toLowerCase()));if(foundIndex>=0){if(foundIndex===q.a){if(!bonusActive){points++;pulsePoints();playAudio(randomItem(correctAudios));bonusActive=true;bonusTimer=setTimeout(nextQuestion,10000);}else{points++;pulsePoints();playAudio(randomItem(extraAudios));}}else{if(bonusActive){points++;pulsePoints();playAudio(randomItem(extraAudios));}}updateUI();}else{playAudio(randomItem(wrongAudios));}}
+function checkSpeech(t){
+  const q=questions[current];
+  const foundIndex=q.options.findIndex(o=>t.includes(o.toLowerCase()));
+  if(foundIndex>=0){
+    if(foundIndex===q.a){
+      if(!bonusActive){
+        points++;pulsePoints();
+        playAudio(randomItem(correctAudios));
+        bonusActive=true;
+        bonusTimer=setTimeout(nextQuestion,10000);
+      }else{
+        points++;pulsePoints();playAudio(randomItem(extraAudios));
+      }
+    }else{
+      if(bonusActive){points++;pulsePoints();playAudio(randomItem(extraAudios));}
+    }
+    updateUI();
+  }else{
+    playAudio(randomItem(wrongAudios));
+  }
+}
 
-playBtn.onclick=()=>{loadQuestion();};micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
+playBtn.onclick=()=>{
+  const q=questions[current];
+  playAudio(sanitizeFile(q.q)); // Sage plays only when Play is clicked
+  setTimeout(()=>startMic(),5000);
+};
+micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
 
 loadQuestion();
 </script>
