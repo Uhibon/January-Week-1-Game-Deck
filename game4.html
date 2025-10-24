@@ -14,6 +14,8 @@
   --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
   --greenGlow:0 0 10px #4ade80,0 0 20px #22c55e;
   --redGlow:0 0 10px #f87171,0 0 20px #ef4444;
+  --purpleGlow:0 0 12px #c084fc,0 0 24px #a855f7;
+  --pinkGlow:0 0 12px #f472b6,0 0 24px #ec4899;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);
@@ -24,17 +26,14 @@ header h2{font-size:clamp(1rem,3vw,1.3rem);color:var(--gold1);text-shadow:var(--
 main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
 
 .sageWrapper{position:relative;width:100%;display:flex;align-items:center;justify-content:center;margin-top:1rem;}
-.playBtn,.micBtn{
-  position:absolute;top:50%;transform:translateY(-50%);
+.playBtn{
+  position:absolute;left:-18px;top:50%;transform:translateY(-50%);
   width:60px;height:60px;border-radius:50%;
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
   box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
   display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;z-index:5;
 }
-.playBtn{left:-18px;}
-.micBtn{right:-18px;}
 .playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
-.micBtn::after{content:"🎤";font-size:1.3rem;}
 @keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
 
 #sageBox{width:100%;min-height:140px;border-radius:var(--radius);overflow:hidden;position:relative;
@@ -49,9 +48,15 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .studentWrapper{position:relative;width:100%;margin-top:1rem;}
 #studentBox{width:100%;min-height:90px;background:#fff;border-radius:var(--radius);margin-bottom:1.4rem;
   box-shadow:inset 0 0 20px rgba(0,0,0,.15);color:#000;font-size:1.3rem;
-  display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;transition:all .3s;}
+  display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;transition:all .3s;position:relative;}
 #studentBox.active{box-shadow:0 0 20px 8px #22c55e;background:#e8ffe8;}
 #studentBox.inactive{border:4px solid #ef4444;}
+.micBtn{
+  position:absolute;right:-18px;top:50%;transform:translateY(-50%);
+  width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#7e22ce);
+  box-shadow:var(--purpleGlow);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;
+}
+.micBtn::after{content:"🎤";font-size:1.3rem;}
 
 .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;
   font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;cursor:pointer;transition:opacity .2s;}
@@ -63,6 +68,8 @@ button{padding:.7rem 2rem;border-radius:var(--radius);
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
   color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;border:none;
   box-shadow:var(--goldGlow);cursor:pointer;}
+#pointsBtn{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:var(--blueGlow);}
+#nextBtn{background:linear-gradient(135deg,#f472b6,#ec4899);box-shadow:var(--pinkGlow);}
 
 #pointsContainer{position:fixed;bottom:1rem;right:1rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
 #pointsLabel{color:var(--gold1);font-family:'Cinzel',serif;font-size:1rem;text-shadow:var(--goldGlow);}
@@ -86,22 +93,23 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;fo
   <div class="sageWrapper">
     <div class="playBtn" id="playBtn"></div>
     <div id="sageBox"><div id="sageText"></div></div>
-    <div class="micBtn" id="micBtn"></div>
   </div>
   <div class="studentWrapper">
-    <div id="studentBox" class="inactive"></div>
+    <div id="studentBox" class="inactive">
+      <div class="micBtn" id="micBtn"></div>
+    </div>
   </div>
   <div id="options"></div>
   <div id="hintBox"></div>
   <div class="buttonsRow">
-    <button id="pointsBtn">Points Mode</button>
-    <button id="nextBtn">Next ▶</button>
+    <button id="pointsBtn">Points モード</button>
+    <button id="nextBtn">次へ ▶</button>
   </div>
 </main>
 <div id="counter">1 / 15</div>
 <footer>Bryan’s English School</footer>
 <script>
-const EIGO = "assets/audio/eigo.mp3";
+const EIGO="assets/audio/eigo.mp3";
 const PRAISE=['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3'];
 const TRY_AGAIN=['hmm_try_again.mp3','what_language_was_that.mp3','do_you_have_a_cookie_in_your_mouth.mp3'];
 
@@ -124,15 +132,15 @@ function playLocalAudio(f){const p=f.includes('/')?f:`assets/audio/${f}`;return 
 
 function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return;recog=new R();recog.lang='en-US';recog.interimResults=true;
   recog.onstart=()=>{listening=true;studentBox.classList.add('active');studentBox.classList.remove('inactive');studentBox.textContent='';};
-  recog.onend=()=>{listening=false;studentBox.classList.remove('active');studentBox.classList.add('inactive');};
+  recog.onend=()=>{listening=false;studentBox.classList.remove('active');studentBox.classList.add('inactive');if(pointsMode)startMic();};
   recog.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join(' ');studentBox.textContent=t;checkSpeech(t);};}
 function startMic(){if(!recog)initRecog();if(recog&&!listening){try{recog.start();}catch{}}}
 
-async function playQuestion(){if(playing)return;playing=true;const q=questions[current];animateWords(q.q);await playLocalAudio(q.audio);playing=false;startMic();}
+async function playQuestion(){if(playing)return;playing=true;await navigator.mediaDevices.getUserMedia({audio:true}).catch(()=>{});const q=questions[current];animateWords(q.q);await playLocalAudio(q.audio);playing=false;startMic();}
 
-function renderAnswers(){optionsBox.innerHTML='';questions[current].answers.forEach((a,i)=>{const d=document.createElement('div');d.className='option';d.textContent=a;d.onclick=async()=>{await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,'_')+'.mp3');};optionsBox.appendChild(d);});}
+function renderAnswers(){optionsBox.innerHTML='';questions[current].answers.forEach((a,i)=>{const d=document.createElement('div');d.className='option';d.textContent=a;d.onclick=async()=>{await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,'_')+'.mp3');await playLocalAudio(a.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,'_')+'.mp3');};optionsBox.appendChild(d);});}
 
-async function checkSpeech(sp){const q=questions[current];if(pointsMode){await playLocalAudio(EIGO);points+=1;pulsePoints();updateUI();return;}
+async function checkSpeech(sp){const q=questions[current];if(pointsMode){for(const ans of q.answers){if(normalize(sp).includes(normalize(ans))){await playLocalAudio(EIGO);points+=1;pulsePoints();updateUI();return;}}return;}
   let m=-1;for(let i=0;i<q.answers.length;i++){if(normalize(sp).includes(normalize(q.answers[i]))){m=i;break;}}
   if(m===q.a){await playLocalAudio(PRAISE[Math.floor(Math.random()*PRAISE.length)]);await playLocalAudio(EIGO);points+=5;pulsePoints();updateUI();nextBtn.style.display='inline-block';}
   else if(m!==-1){await playLocalAudio(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);}}
@@ -142,7 +150,7 @@ function loadQ(){sageText.textContent='';studentBox.textContent='';renderAnswers
 playBtn.onclick=playQuestion;
 micBtn.onclick=()=>{if(!recog)initRecog();if(listening){try{recog.stop();}catch{}}else startMic();};
 nextBtn.onclick=()=>{try{if(listening)recog.stop();}catch{}current++;if(current>=questions.length)current=0;loadQ();};
-pointsBtn.onclick=()=>{pointsMode=!pointsMode;pointsBtn.style.opacity=pointsMode?0.6:1;};
+pointsBtn.onclick=()=>{pointsMode=!pointsMode;pointsBtn.style.opacity=pointsMode?0.6:1;if(pointsMode)startMic();};
 
 loadQ();
 </script>
