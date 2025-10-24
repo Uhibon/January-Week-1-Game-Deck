@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;--outline:#ffffff26;--radius:24px;
-  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
+  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;--purpleGlow:0 0 20px #c084fc,0 0 40px #c084fc;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;}
@@ -32,12 +32,15 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 
 .studentWrapper{position:relative;width:100%;}
 #studentBox{width:100%;min-height:100px;background:#fff;border-radius:var(--radius);margin-bottom:1.4rem;box-shadow:inset 0 0 20px rgba(0,0,0,.15);color:#000;font-size:1.3rem;display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;transition:box-shadow .3s,background .3s;}
-#studentBox.glow{box-shadow:0 0 20px #00ff80,0 0 40px #00ff80;}
+#studentBox.glow{box-shadow:var(--purpleGlow);}
+#studentBox.shake{animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
 .micBtn{position:absolute;right:-18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 
-#options .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;color:#fff;cursor:pointer;transition:opacity .2s;}
+#options .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;color:#fff;cursor:pointer;transition:opacity .2s,background .3s;}
 .option.played{opacity:.6;}
+.option.correct{background:#4ade80;}
 
 #hintBox{margin-top:.8rem;font-size:1rem;color:var(--gold1);text-shadow:var(--goldGlow);}
 .btnRow{display:flex;gap:1rem;justify-content:center;margin-top:1rem;}
@@ -90,6 +93,9 @@ const EIGO="assets/audio/eigo.mp3";
 const PRAISE=['yesgoodjob.mp3','perfectenglish.mp3','wownicework.mp3'];
 const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookieinyourmouth.mp3'];
 
+const preloadFiles=[...PRAISE,...TRY_AGAIN,'whatdoyoueatforbreakfast.mp3','whatdoyoudoeverymorning.mp3',DING,EIGO];
+preloadFiles.forEach(f=>{const a=new Audio(f.includes('/')?f:'audio/'+f);});
+
 const questions=[
  {q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
  "I eat rice and miso soup for breakfast.","I eat curry for breakfast.","I eat toothpaste for breakfast.","I eat pencils and notebooks for breakfast."]},
@@ -108,19 +114,23 @@ function updateUI(){pointsCircle.textContent=points;counter.textContent=(current
 function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,180*i);});}
 
 function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert('Speech Recognition not supported');return;}recog=new R();recog.lang='en-US';recog.interimResults=true;recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};recog.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join(' ');studentBox.textContent=t;checkSpeech(t);};}
-function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
+function startMic(){if(!recog)initRecog();if(!listening){try{recog.start();}catch{}}}
 
-async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);await new Promise(r=>setTimeout(r,500));startMic();}
+async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);await new Promise(r=>setTimeout(r,500));}
 
 function strictMatch(spoken,answer){const s=normalize(spoken),a=normalize(answer);if(!s||!a)return false;if(s.includes(a))return true;const sTok=new Set(s.split(' ')),aTok=a.split(' ');const overlap=aTok.filter(w=>sTok.has(w)).length;return overlap>=Math.ceil(aTok.length*0.8);}
 
-async function checkSpeech(spoken){const q=questions[current];if(pointsMode){await playAudio(EIGO);points++;pulsePoints();updateUI();return;}let match=-1;for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){match=i;break;}}if(match===-1)return;if(match===q.a&&!gotCorrect){gotCorrect=true;await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);await playAudio(DING);points+=5;pulsePoints();updateUI();nextBtn.style.display='inline-block';pointsBtn.style.display='inline-block';hintBox.innerHTML='Read all answers for points or click Next.<br>すべてのこたえをよんでポイントをゲット！つぎへすすむなら Next をクリック';}else if(match!==q.a){studentBox.style.background='#fca5a5';await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);setTimeout(()=>studentBox.style.background='#fff',700);}}
+async function checkSpeech(spoken){const q=questions[current];if(pointsMode){await playAudio(EIGO);points++;pulsePoints();updateUI();return;}let match=-1;for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){match=i;break;}}if(match===-1)return;if(match===q.a&&!gotCorrect){gotCorrect=true;const correctOption=[...document.querySelectorAll('.option')][q.a];correctOption.classList.add('correct');await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);await playAudio(DING);points+=5;pulsePoints();updateUI();setTimeout(()=>{correctOption.remove();},1200);nextBtn.style.display='inline-block';pointsBtn.style.display='inline-block';hintBox.innerHTML='Read all answers for points or click Next.<br>すべてのこたえをよんでポイントをゲット！つぎへすすむなら Next をクリック';}else if(match!==q.a){studentBox.classList.add('shake');studentBox.style.background='#fca5a5';await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';studentBox.textContent='';},700);}}
 
 function renderAnswers(){optionsBox.innerHTML='';const q=questions[current];q.answers.forEach(a=>{const div=document.createElement('div');div.className='option';div.textContent=a;div.onclick=async()=>{if(div.classList.contains('played'))return;const f=a.toLowerCase().replace(/[^a-z0-9]/g,'')+'.mp3';await playAudio('audio/'+f);div.classList.add('played');points++;pulsePoints();updateUI();};optionsBox.appendChild(div);});}
 
 function loadQuestion(){gotCorrect=false;pointsMode=false;nextBtn.style.display='none';pointsBtn.style.display='none';hintBox.textContent='';sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();}
 
-playBtn.onclick=playQuestion;micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};pointsBtn.onclick=()=>{pointsMode=!pointsMode;pointsBtn.textContent=pointsMode?'Points★':'Points';};loadQuestion();
+playBtn.onclick=async()=>{await playQuestion();startMic();};
+micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
+nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
+pointsBtn.onclick=()=>{pointsMode=!pointsMode;pointsBtn.textContent=pointsMode?'Points★':'Points';};
+loadQuestion();
 </script>
 </body>
 </html>
