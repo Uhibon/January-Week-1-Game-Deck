@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover" />
-<title>Booha Diary (Test)</title>
+<title>Booha Diary (Test v2)</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 
@@ -66,9 +66,7 @@ h1 {
   resize: none;
 }
 button {
-  margin-top: 20px;
-  background: #fff;
-  color: #000;
+  margin: 10px;
   font-weight: bold;
   font-size: 1.1em;
   border: none;
@@ -77,8 +75,21 @@ button {
   cursor: pointer;
   transition: all 0.2s;
 }
-button:hover {
-  background: gold;
+#startBtn { background: #2ecc71; color: #fff; }       /* green */
+#stopBtn { background: #e74c3c; color: #fff; }        /* red */
+#checkBtn { background: linear-gradient(90deg,#ff00cc,#3333ff,#00ccff); color: #fff; background-size: 200% 200%; animation: rainbow 3s linear infinite; display:none; }
+#retryBtn { background: #3498db; color: #fff; display:none; } /* blue */
+#nextBtn { background: gold; color: #000; display:none; }
+#menuBtn { background: #fff; color:#000; position:absolute; bottom:15px; left:50%; transform:translateX(-50%); }
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+#feedbackBox {
+  margin-top: 10px;
+  font-size: 1.1em;
+  min-height: 40px;
+  text-shadow: 0 0 10px #fff;
 }
 </style>
 </head>
@@ -89,11 +100,16 @@ button:hover {
   <textarea id="speechOutput" placeholder="Your answer will appear here..."></textarea>
   <div>
     <button id="startBtn">🎤 Start</button>
-    <button id="nextBtn" disabled>Next ➡️</button>
+    <button id="stopBtn" style="display:none;">⏹ Stop</button>
+    <button id="checkBtn">✅ Check</button>
+    <button id="retryBtn">🔁 Retry</button>
+    <button id="nextBtn">➡️ Next</button>
   </div>
+  <div id="feedbackBox"></div>
 </div>
+<button id="menuBtn" onclick="location.href='index.html'">🏠 Back to Menu</button>
 
-<!-- local Sage audio -->
+<!-- Local Sage audio -->
 <audio id="sageQ1" src="audio/what_do_you_do_after_school.mp3" preload="auto"></audio>
 <audio id="sageQ2" src="audio/what_do_you_do_before_bed.mp3" preload="auto"></audio>
 
@@ -109,7 +125,11 @@ let recog;
 const qBox = document.getElementById("questionBox");
 const outBox = document.getElementById("speechOutput");
 const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const checkBtn = document.getElementById("checkBtn");
+const retryBtn = document.getElementById("retryBtn");
 const nextBtn = document.getElementById("nextBtn");
+const feedbackBox = document.getElementById("feedbackBox");
 
 function speakQuestion(){
   const q = questions[current];
@@ -133,11 +153,16 @@ function initRecog(){
     transcript = cleanText(transcript);
     outBox.value = transcript;
   };
-  recog.onend = ()=>{ recognizing=false; startBtn.textContent="🎤 Start"; };
+  recog.onend = ()=>{
+    recognizing=false;
+    startBtn.style.display="none";
+    stopBtn.style.display="none";
+    checkBtn.style.display="inline-block";
+    retryBtn.style.display="inline-block";
+  };
 }
 
 function cleanText(t){
-  // replace spoken punctuation
   return t
     .replace(/\bcomma\b/gi, ',')
     .replace(/\bperiod\b/gi, '.')
@@ -147,33 +172,80 @@ function cleanText(t){
     .trim();
 }
 
+function checkGrammar(sentence){
+  let feedback = "Nice! Looks good!";
+  let lowers = sentence.toLowerCase();
+
+  // simple checks
+  if(!/i\s+(am|go|do|eat|play|study|like|have|watch)/i.test(sentence)){
+    feedback = "Hmm... try using 'I' + a verb like 'I play', 'I study', 'I eat'.";
+  }
+  if(/yesterday|last|ago/i.test(lowers) && /\b(am|do|play|go|eat|watch)\b/.test(lowers)){
+    feedback = "Past tense time word! Try 'went', 'played', 'ate', etc.";
+  }
+  if(/i\b(?!\s)/.test(sentence)){
+    feedback = "Remember to put a space after 'I'.";
+  }
+  if(!/[.?!]$/.test(sentence)){
+    feedback = "Don't forget punctuation at the end!";
+  }
+
+  feedbackBox.textContent = feedback;
+}
+
 startBtn.onclick = ()=>{
   if(!recog) initRecog();
-  if(!recognizing){
-    speakQuestion();
-    recognizing=true;
-    outBox.value='';
-    recog.start();
-    startBtn.textContent="⏹ Stop";
-    nextBtn.disabled=true;
-  } else {
+  speakQuestion();
+  recognizing=true;
+  outBox.value='';
+  feedbackBox.textContent='';
+  startBtn.style.display="none";
+  stopBtn.style.display="inline-block";
+  recog.start();
+};
+
+stopBtn.onclick = ()=>{
+  if(recognizing){
     recog.stop();
-    recognizing=false;
-    startBtn.textContent="🎤 Start";
-    nextBtn.disabled=false;
   }
+};
+
+checkBtn.onclick = ()=>{
+  const userText = outBox.value.trim();
+  if(!userText){ feedbackBox.textContent="Say something first!"; return; }
+  checkGrammar(userText);
+  nextBtn.style.display="inline-block";
+  checkBtn.style.display="none";
+};
+
+retryBtn.onclick = ()=>{
+  outBox.value='';
+  feedbackBox.textContent='';
+  checkBtn.style.display="none";
+  retryBtn.style.display="none";
+  nextBtn.style.display="none";
+  startBtn.style.display="inline-block";
 };
 
 nextBtn.onclick = ()=>{
   current++;
-  if(current>=questions.length){
-    qBox.textContent="Great job! You've finished today’s diary!";
-    startBtn.disabled=true;
-    nextBtn.disabled=true;
+  if(current >= questions.length){
+    qBox.textContent = "Great job! You've finished today's diary!";
+    outBox.value = '';
+    feedbackBox.textContent = '';
+    startBtn.style.display="none";
+    stopBtn.style.display="none";
+    checkBtn.style.display="none";
+    retryBtn.style.display="none";
+    nextBtn.style.display="none";
     return;
   }
   outBox.value='';
-  nextBtn.disabled=true;
+  feedbackBox.textContent='';
+  checkBtn.style.display="none";
+  retryBtn.style.display="none";
+  nextBtn.style.display="none";
+  startBtn.style.display="inline-block";
   speakQuestion();
 };
 </script>
