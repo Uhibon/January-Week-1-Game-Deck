@@ -1,201 +1,239 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Eigo Adventure – January Week 1</title>
+<title>Booha Speak & Listen – Final Fix</title>
 <meta name="theme-color" content="#0b1530" />
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;--silver:#cfd8dc;--purple:#c084fc;
-  --outline:#ffffff26;--radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
-  --blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
+  --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;
+  --radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{
-  font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;
-}
-header{text-align:center;padding:1.3rem 0 1rem;font-family:'Cinzel',serif;}
-header h1{font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:2px;text-shadow:0 0 10px rgba(255,255,255,.5);}
-header h2{font-size:clamp(1rem,3vw,1.3rem);color:var(--gold1);text-shadow:var(--goldGlow);}
-main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
-.sageWrapper{position:relative;width:100%;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+header{text-align:center;padding:1rem 0;font-family:'Cinzel',serif;}
+header h1{font-size:1.8rem;letter-spacing:2px;}
+header h2{font-size:1.1rem;color:var(--gold1);text-shadow:var(--goldGlow);}
+main{flex:1;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
+
+/* Sage box */
+.sageWrapper{position:relative;width:100%;display:flex;align-items:center;justify-content:center;margin-top:1rem;}
 #sageBox{
-  width:100%;min-height:150px;border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:1rem;
+  width:100%;min-height:140px;border-radius:var(--radius);overflow:hidden;position:relative;
   font-size:clamp(1.4rem,5vw,2rem);font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;
 }
-#sageBox::before{
-  content:'';position:absolute;inset:0;z-index:0;animation:stripeMove 8s linear infinite;background-size:100% 300%;
-  background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);
-}
+#sageBox::before{content:'';position:absolute;inset:0;z-index:0;
+  animation:stripeMove 8s linear infinite;background-size:100% 300%;
+  background:repeating-linear-gradient(to bottom,#ffd6ff,#caffbf,#9bf6ff,#a0c4ff,#ffadad);}
 @keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
 #sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
-.word{opacity:0;margin:0 0.45rem;transition:opacity .25s ease;}
-.playBtn{
-  position:absolute;left:-18px;top:50%;transform:translateY(-50%);
-  width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;
-}
-.playBtn::after{content:"▶";color:#000;font-size:1.2rem;font-weight:900;}
+.word{opacity:0;transition:opacity .15s linear;}
+
+/* Play button */
+.playBtn{position:absolute;left:-18px;top:50%;transform:translateY(-50%);
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;z-index:5;}
+.playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
 @keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
-.studentWrapper{position:relative;width:100%;}
+
+/* Student + mic */
+.studentWrapper{position:relative;width:100%;margin-top:1.2rem;}
 #studentBox{
-  width:100%;min-height:90px;background:#fff;border-radius:var(--radius);margin-bottom:1.4rem;
-  box-shadow:inset 0 0 20px rgba(0,0,0,.15);color:#000;font-size:1.3rem;
-  display:flex;align-items:center;justify-content:center;padding:0.5rem 2.5rem;
+  width:100%;min-height:80px;background:#fff;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;color:#000;font-size:1.2rem;
+  padding:0.5rem 3.5rem;
 }
-.micBtn{
-  position:absolute;right:-18px;top:50%;transform:translateY(-50%);
-  width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);
-  box-shadow:0 0 12px rgba(255,255,255,.4),0 0 24px rgba(192,132,252,.4);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-}
-.micBtn::after{content:"🎤";font-size:1.3rem;}
+.micBtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,#b388ff,#9d4edd);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.5rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
-@keyframes micGlow{from{box-shadow:0 0 10px #c084fc,0 0 20px #a855f7;}to{box-shadow:0 0 20px #e879f9,0 0 40px #f0abfc;}}
-.option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;opacity:0.9;transition:all .4s ease;}
-.option.glow{box-shadow:var(--blueGlow);border-color:#60a5fa;opacity:1;}
-#pointsCircle{position:fixed;left:1rem;top:1rem;width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;box-shadow:var(--goldGlow);}
-#counter{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;color:#fff;font-size:1rem;}
-footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;}
+@keyframes micGlow{from{box-shadow:0 0 10px #c084fc;}to{box-shadow:0 0 20px #e879f9;}}
+
+/* Answers + points */
+.option{border:2px solid #ffffff33;border-radius:var(--radius);padding:0.8rem;margin:0.4rem 0;background:#00000020;cursor:pointer;}
+.option.played{opacity:0.5;}
+#nextBtn{margin-top:1rem;padding:0.7rem 2rem;border:none;border-radius:var(--radius);
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;font-weight:900;
+  font-family:'Cinzel',serif;font-size:1.1rem;display:none;cursor:pointer;}
+#pointsCircle{margin-top:1rem;width:70px;height:70px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#000;
+  font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;display:flex;
+  align-items:center;justify-content:center;box-shadow:var(--goldGlow);transition:transform .3s;}
+footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;font-size:0.9rem;}
 </style>
 </head>
 <body>
 <header>
   <h1>THE BOO-RICULUM</h1>
-  <h2>Eigo Adventure – January Week 1</h2>
+  <h2>Eigo Adventure – Test Build</h2>
 </header>
-<div id="pointsCircle">0</div>
+
 <main>
   <div class="sageWrapper">
     <div class="playBtn" id="playBtn"></div>
     <div id="sageBox"><div id="sageText"></div></div>
   </div>
+
   <div class="studentWrapper">
     <div id="studentBox"></div>
-    <div class="micBtn" id="micBtn"></div>
+    <div class="micBtn" id="micBtn">🎤</div>
   </div>
-  <div id="options">
-    <div class="option"></div>
-    <div class="option"></div>
-    <div class="option"></div>
-    <div class="option"></div>
-  </div>
+
+  <div id="options"></div>
+  <button id="nextBtn">Next ▶</button>
+  <div id="pointsCircle">0</div>
 </main>
-<div id="counter">1 / 15</div>
+
 <footer>Bryan’s English School</footer>
+
 <script>
-const questions=[
-{q:"What do you eat for breakfast?",a:0,options:[
-"I eat rice and miso soup for breakfast.",
-"I eat curry for breakfast.",
-"I eat toothpaste for breakfast.",
-"I eat pencils and notebooks for breakfast."],},
-{q:"What do you do every morning?",a:0,options:[
-"I brush my teeth every morning before breakfast.",
-"I fight dragons every morning before breakfast.",
-"I dance with my mirror every morning before breakfast.",
-"I call my refrigerator every morning before breakfast."],},
-{q:"What time do you eat breakfast?",a:0,options:[
-"I eat breakfast at seven o’clock every morning.",
-"I eat breakfast at midnight because I’m a vampire.",
-"I eat breakfast after brushing my shoes.",
-"I eat breakfast inside the refrigerator."],},
-{q:"What time do you go to school?",a:0,options:[
-"I go to school at seven thirty every morning.",
-"I go to school at ten because my bed loves me.",
-"I go to school riding a giant cat.",
-"I go to school at midnight with a flashlight."],},
-{q:"What do you bring to school?",a:0,options:[
-"I bring my textbooks and my lunch to school.",
-"I bring my pet turtle to school.",
-"I bring my robot army to school.",
-"I bring my goldfish to school."],},
-{q:"What do you do after school?",a:0,options:[
-"I do my homework after school.",
-"I climb trees after school.",
-"I build a spaceship after school.",
-"I wrestle with ghosts after school."],},
-{q:"What do you do before bed?",a:0,options:[
-"I brush my teeth before bed every night.",
-"I play the drums before bed every night.",
-"I cook spaghetti before bed every night.",
-"I go jogging before bed every night."],},
-{q:"What time do you go to bed?",a:0,options:[
-"I go to bed at ten o’clock every night.",
-"I go to bed at sunrise because I’m a bat.",
-"I go to bed at school every night.",
-"I go to bed at noon every night."],},
-{q:"What do you like to do on Sunday?",a:0,options:[
-"I play games with my friends on Sunday afternoon.",
-"I eat my homework on Sunday afternoon.",
-"I fly to Mars on Sunday afternoon.",
-"I wash the clouds on Sunday afternoon."],},
-{q:"What do you do on rainy days?",a:0,options:[
-"I read books and drink hot chocolate on rainy days.",
-"I ride my bike on rainy days.",
-"I paint my ceiling on rainy days.",
-"I wash my cat on rainy days."],},
-{q:"What do you do on your birthday?",a:0,options:[
-"I eat cake with my family on my birthday.",
-"I invite my dog to a party on my birthday.",
-"I open presents underwater on my birthday.",
-"I sing to my goldfish on my birthday."],},
-{q:"What do you eat for lunch?",a:0,options:[
-"I eat curry rice for lunch at school.",
-"I eat ice cream for lunch at school.",
-"I eat paper for lunch at school.",
-"I eat sand for lunch at school."],},
-{q:"What do you do after dinner?",a:0,options:[
-"I help my parents clean the table after dinner.",
-"I juggle spaghetti after dinner.",
-"I play soccer in the kitchen after dinner.",
-"I sleep under the table after dinner."],},
-{q:"What do you do on Saturday?",a:0,options:[
-"I clean my room and do laundry on Saturday.",
-"I build a snowman on Saturday.",
-"I chase pigeons on Saturday.",
-"I take a nap in the refrigerator on Saturday."],},
-{q:"What do you study at school?",a:0,options:[
-"I study English and math at school.",
-"I study sleeping at school.",
-"I study dinosaurs at school.",
-"I study pizza at school."],},
+const EIGO = "assets/audio/eigo.mp3"; // ding for correct
+const PRAISE = ["yes_good_job.mp3","perfect_english.mp3","wow_nice_work.mp3"];
+const TRY_AGAIN = ["hmm_try_again.mp3","what_language_was_that.mp3","do_you_have_a_cookie_in_your_mouth.mp3"];
+
+const questions = [
+  {
+    q:"What do you eat for breakfast?",
+    a:0,
+    audio:"what_do_you_eat_for_breakfast.mp3",
+    answers:[
+      "I eat rice and miso soup for breakfast.",
+      "I eat curry for breakfast.",
+      "I eat toothpaste for breakfast.",
+      "I eat pencils and notebooks for breakfast."
+    ]
+  },
+  {
+    q:"What do you do on your birthday?",
+    a:0,
+    audio:"what_do_you_do_on_your_birthday.mp3",
+    answers:[
+      "I eat cake and open presents on my birthday.",
+      "I eat toothpaste on my birthday.",
+      "I call my refrigerator on my birthday.",
+      "I fight dragons on my birthday."
+    ]
+  }
 ];
 
-const correctAudios=['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3','youre_a_genius.mp3','thats_amazing.mp3'];
-const extraAudios=['nice_pronunciation.mp3','youre_unstoppable.mp3','lets_gooo.mp3','thats_so_clear.mp3','keep_going.mp3'];
-const wrongAudios=['hmm_try_again.mp3','what_language_was_that.mp3','do_you_have_a_cookie_in_your_mouth.mp3'];
+let current=0,points=0,recog,listening=false,playing=false,gotCorrect=false;
+const $=s=>document.querySelector(s);
+const playBtn=$("#playBtn"),sageText=$("#sageText"),studentBox=$("#studentBox"),
+      micBtn=$("#micBtn"),options=$("#options"),nextBtn=$("#nextBtn"),pointsCircle=$("#pointsCircle");
 
-let current=0,points=0;let recog,listening=false;let bonusActive=false;let bonusTimer;
-const sageText=document.getElementById('sageText');const studentBox=document.getElementById('studentBox');const playBtn=document.getElementById('playBtn');const micBtn=document.getElementById('micBtn');const options=document.querySelectorAll('.option');const pointsCircle=document.getElementById('pointsCircle');const counter=document.getElementById('counter');
-
-function sanitizeFile(text){return text.toLowerCase().replace(/[^a-z0-9\s']/gi,'').replace(/\s+/g,'_')+'.mp3';}
-function playAudio(file){const a=new Audio('audio/'+file);a.play().catch(()=>{});}
-function animateSageText(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,220*i);});}
-function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function glowOptions(){options.forEach(o=>o.classList.remove('glow'));options[Math.floor(Math.random()*options.length)].classList.add('glow');}
-setInterval(glowOptions,1000);
-
-function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
+function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
+function updatePoints(){pointsCircle.textContent=points;}
+function audioPlay(path){return new Promise(res=>{const a=new Audio(path);a.onended=res;a.onerror=res;a.play().catch(res);});}
+function playSage(file){return audioPlay(`audio/${file}`);} // all Sage audio in /audio/
 
-function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return alert('Speech Recognition not supported');recog=new R();recog.lang='en-US';recog.interimResults=true;
-  recog.onstart=()=>{micBtn.classList.add('active');listening=true;studentBox.textContent='';};
-  recog.onresult=(e)=>{const transcript=Array.from(e.results).map(r=>r[0].transcript).join('').toLowerCase();studentBox.textContent=transcript;checkSpeech(transcript);};
-  recog.onend=()=>{micBtn.classList.remove('active');listening=false;};}
+function initRecog(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){alert("Speech Recognition not supported.");return;}
+  recog=new R();recog.lang='en-US';recog.interimResults=true;
+  recog.onstart=()=>{listening=true;micBtn.classList.add('active');studentBox.textContent='Listening...';};
+  recog.onend=()=>{listening=false;micBtn.classList.remove('active');};
+  recog.onresult=(e)=>{
+    const t=Array.from(e.results).map(r=>r[0].transcript).join(' ');
+    studentBox.textContent=t;
+    checkSpeech(t);
+  };
+}
+function startMic(){if(!recog) initRecog();if(recog&&!listening){try{recog.start();}catch(_){}}}
 
-function loadQuestion(){bonusActive=false;clearTimeout(bonusTimer);const q=questions[current];animateSageText(q.q);options.forEach((o,i)=>o.textContent=q.options[i]);studentBox.textContent='';playAudio(sanitizeFile(q.q));setTimeout(()=>startMic(),5000);updateUI();}
+/* animate text while Sage speaks */
+async function typeSentence(sentence){
+  sageText.innerHTML='';
+  const words=sentence.split(' ');
+  for(let i=0;i<words.length;i++){
+    const span=document.createElement('span');
+    span.className='word';
+    span.textContent=words[i]+' ';
+    sageText.appendChild(span);
+    await new Promise(r=>setTimeout(r,150));
+    span.style.opacity=1;
+  }
+}
 
-function startMic(){if(!recog)initRecog();if(!listening)recog.start();}
-function nextQuestion(){current++;if(current>=questions.length){current=0;points=0;}loadQuestion();}
+/* play question */
+async function playQuestion(){
+  if(playing)return;
+  playing=true;
+  const q=questions[current];
+  gotCorrect=false;
+  await typeSentence(q.q);
+  await playSage(q.audio);
+  playing=false;
+  startMic();
+}
 
-function checkSpeech(t){const q=questions[current];const foundIndex=q.options.findIndex(o=>t.includes(o.toLowerCase()));if(foundIndex>=0){if(foundIndex===q.a){if(!bonusActive){points++;pulsePoints();playAudio(randomItem(correctAudios));bonusActive=true;bonusTimer=setTimeout(nextQuestion,10000);}else{points++;pulsePoints();playAudio(randomItem(extraAudios));}}else{if(bonusActive){points++;pulsePoints();playAudio(randomItem(extraAudios));}}updateUI();}else{playAudio(randomItem(wrongAudios));}}
+/* compare */
+function matchesAnswer(spoken,answer){
+  const s=normalize(spoken),a=normalize(answer);
+  if(s.includes(a))return true;
+  const sSet=new Set(s.split(' '));
+  const aTok=a.split(' ').filter(x=>x);
+  const overlap=aTok.filter(w=>sSet.has(w)).length;
+  return overlap>=Math.max(2,Math.ceil(aTok.length*0.6));
+}
 
-playBtn.onclick=()=>{loadQuestion();};micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
+/* check speech */
+async function checkSpeech(spoken){
+  const q=questions[current];
+  for(let i=0;i<q.answers.length;i++){
+    if(matchesAnswer(spoken,q.answers[i])){
+      if(i===q.a && !gotCorrect){
+        gotCorrect=true;
+        await playSage(PRAISE[Math.floor(Math.random()*PRAISE.length)]); // Sage reaction
+        await audioPlay(EIGO); // ding after reaction
+        points+=5;pulsePoints();updatePoints();
+        nextBtn.style.display='inline-block';
+      }else if(i!==q.a && !gotCorrect){
+        gotCorrect=true; // prevent spamming
+        await playSage(TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
+      }
+      break;
+    }
+  }
+}
+
+/* render answer list */
+function renderAnswers(){
+  options.innerHTML='';
+  const q=questions[current];
+  q.answers.forEach(a=>{
+    const div=document.createElement('div');
+    div.className='option';
+    div.textContent=a;
+    div.onclick=async()=>{
+      await playSage(a.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'_')+'.mp3');
+      if(!div.classList.contains('played')){
+        div.classList.add('played');points++;pulsePoints();updatePoints();
+      }
+    };
+    options.appendChild(div);
+  });
+}
+
+function loadQuestion(){
+  nextBtn.style.display='none';
+  sageText.textContent='';studentBox.textContent='';
+  renderAnswers();updatePoints();
+}
+
+/* events */
+playBtn.onclick=playQuestion;
+micBtn.onclick=()=>{if(!recog) initRecog();if(listening){try{recog.stop();}catch(_){}}else{startMic();}};
+nextBtn.onclick=()=>{
+  try{if(listening)recog.stop();}catch(_){}
+  current++;if(current>=questions.length)current=0;
+  loadQuestion();
+};
 
 loadQuestion();
 </script>
