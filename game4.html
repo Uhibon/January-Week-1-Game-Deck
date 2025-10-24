@@ -9,8 +9,9 @@
 <style>
 :root{
   --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;--outline:#ffffff26;
-  --radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;--blueGlow:0 0 10px #60a5fa,0 0 20px #3b82f6;
-  --greenGlow:0 0 10px #4ade80,0 0 20px #22c55e;--redGlow:0 0 10px #f87171,0 0 20px #ef4444;
+  --radius:24px;--goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
+  --greenGlow:0 0 10px #4ade80,0 0 20px #22c55e;
+  --redGlow:0 0 10px #f87171,0 0 20px #ef4444;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
@@ -32,21 +33,16 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 }
 @keyframes stripeMove{0%{background-position:0 0;}100%{background-position:0 100%;}}
 #sageText{position:relative;z-index:1;color:#fff;padding:0 1rem;font-weight:700;text-shadow:0 0 8px #000,0 0 16px #000;}
-.word{opacity:0;margin:0 0.45rem;transition:opacity .25s ease;}
 
 .playBtn{
-  margin-right:0.8rem;
-  width:60px;height:60px;border-radius:50%;
+  margin-right:0.8rem;width:60px;height:60px;border-radius:50%;
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
   box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;animation:shimmer 2s infinite;
 }
 .playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
-@keyframes shimmer{
-  0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}
-  50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}
-}
+@keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
 
 .studentWrapper{position:relative;width:100%;margin-top:1.5rem;}
 #studentBox{
@@ -57,40 +53,26 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .micBtn{
   position:absolute;right:50px;top:50%;transform:translateY(-50%);
   width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);
-  box-shadow:0 0 12px rgba(255,255,255,.4),0 0 24px rgba(192,132,252,.4);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
 }
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 .micBtn.active{animation:micGlow 1s infinite alternate;}
-@keyframes micGlow{from{box-shadow:0 0 10px #c084fc,0 0 20px #a855f7;}to{box-shadow:0 0 20px #e879f9,0 0 40px #f0abfc;}}
+@keyframes micGlow{from{box-shadow:0 0 10px #c084fc;}to{box-shadow:0 0 20px #e879f9;}}
 
-#micStatus{
-  position:absolute;right:-25px;top:50%;transform:translateY(-50%);
-  font-weight:700;font-size:0.9rem;
-}
+#micStatus{position:absolute;right:-25px;top:50%;transform:translateY(-50%);font-weight:700;font-size:0.9rem;}
 #micStatus.on{color:#22c55e;text-shadow:var(--greenGlow);}
 #micStatus.off{color:#f87171;text-shadow:var(--redGlow);}
 
-.option{
-  border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;
-  width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;opacity:0.9;transition:all .4s ease;
-}
-.option.glow{box-shadow:var(--blueGlow);border-color:#60a5fa;opacity:1;}
+.option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;
+font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;opacity:0.9;}
 
-#pointsContainer{
-  position:fixed;bottom:1rem;right:1rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;
-}
-#pointsLabel{
-  color:var(--gold1);font-family:'Cinzel',serif;font-size:1rem;text-shadow:var(--goldGlow);
-  animation:pulseText 2s infinite alternate;
-}
-@keyframes pulseText{from{opacity:.6;}to{opacity:1;}}
+#pointsContainer{position:fixed;bottom:1rem;right:1rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+#pointsLabel{color:var(--gold1);font-family:'Cinzel',serif;font-size:1rem;text-shadow:var(--goldGlow);}
 #pointsCircle{
   width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));
   display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;
   font-size:1.4rem;font-weight:900;box-shadow:var(--goldGlow);transition:transform .3s;
 }
-
 #counter{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;color:#fff;font-size:1rem;}
 footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:1px;text-shadow:0 0 6px rgba(255,255,255,.4);}
 </style>
@@ -131,89 +113,33 @@ footer{text-align:center;color:#fff;padding:1rem 0;font-family:'Cinzel',serif;fo
 
 <script>
 const questions=[
-{q:"What do you eat for breakfast?",a:0,options:[
-"I eat rice and miso soup for breakfast.",
-"I eat curry for breakfast.",
-"I eat toothpaste for breakfast.",
-"I eat pencils and notebooks for breakfast."],},
-{q:"What do you do every morning?",a:0,options:[
-"I brush my teeth every morning before breakfast.",
-"I fight dragons every morning before breakfast.",
-"I dance with my mirror every morning before breakfast.",
-"I call my refrigerator every morning before breakfast."],},
-{q:"What time do you eat breakfast?",a:0,options:[
-"I eat breakfast at seven o’clock every morning.",
-"I eat breakfast at midnight because I’m a vampire.",
-"I eat breakfast after brushing my shoes.",
-"I eat breakfast inside the refrigerator."],},
-{q:"What time do you go to school?",a:0,options:[
-"I go to school at seven thirty every morning.",
-"I go to school at ten because my bed loves me.",
-"I go to school riding a giant cat.",
-"I go to school at midnight with a flashlight."],},
-{q:"What do you bring to school?",a:0,options:[
-"I bring my textbooks and my lunch to school.",
-"I bring my pet turtle to school.",
-"I bring my robot army to school.",
-"I bring my goldfish to school."],},
-{q:"What do you do after school?",a:0,options:[
-"I do my homework after school.",
-"I climb trees after school.",
-"I build a spaceship after school.",
-"I wrestle with ghosts after school."],},
-{q:"What do you do before bed?",a:0,options:[
-"I brush my teeth before bed every night.",
-"I play the drums before bed every night.",
-"I cook spaghetti before bed every night.",
-"I go jogging before bed every night."],},
-{q:"What time do you go to bed?",a:0,options:[
-"I go to bed at ten o’clock every night.",
-"I go to bed at sunrise because I’m a bat.",
-"I go to bed at school every night.",
-"I go to bed at noon every night."],},
-{q:"What do you like to do on Sunday?",a:0,options:[
-"I play games with my friends on Sunday afternoon.",
-"I eat my homework on Sunday afternoon.",
-"I fly to Mars on Sunday afternoon.",
-"I wash the clouds on Sunday afternoon."],},
-{q:"What do you do on rainy days?",a:0,options:[
-"I read books and drink hot chocolate on rainy days.",
-"I ride my bike on rainy days.",
-"I paint my ceiling on rainy days.",
-"I wash my cat on rainy days."],},
-{q:"What do you do on your birthday?",a:0,options:[
-"I eat cake with my family on my birthday.",
-"I invite my dog to a party on my birthday.",
-"I open presents underwater on my birthday.",
-"I sing to my goldfish on my birthday."],},
-{q:"What do you eat for lunch?",a:0,options:[
-"I eat curry rice for lunch at school.",
-"I eat ice cream for lunch at school.",
-"I eat paper for lunch at school.",
-"I eat sand for lunch at school."],},
-{q:"What do you do after dinner?",a:0,options:[
-"I help my parents clean the table after dinner.",
-"I juggle spaghetti after dinner.",
-"I play soccer in the kitchen after dinner.",
-"I sleep under the table after dinner."],},
-{q:"What do you do on Saturday?",a:0,options:[
-"I clean my room and do laundry on Saturday.",
-"I build a snowman on Saturday.",
-"I chase pigeons on Saturday.",
-"I take a nap in the refrigerator on Saturday."],},
-{q:"What do you study at school?",a:0,options:[
-"I study English and math at school.",
-"I study sleeping at school.",
-"I study dinosaurs at school.",
-"I study pizza at school."],},
+{q:"What do you eat for breakfast?",a:0,audio:[
+"i_eat_rice_and_miso_soup_for_breakfast.mp3",
+"i_eat_curry_for_breakfast.mp3",
+"i_eat_toothpaste_for_breakfast.mp3",
+"i_eat_pencils_and_notebooks_for_breakfast.mp3"]},
+{q:"What time do you eat breakfast?",a:0,audio:[
+"i_eat_breakfast_at_seven_o'clock_every_morning.mp3",
+"i_eat_breakfast_at_midnight_because_i'm_a_vampire.mp3",
+"i_eat_breakfast_inside_the_refrigerator.mp3",
+"i_eat_breakfast_at_six_thirty_before_school.mp3"]},
+{q:"What do you eat for lunch?",a:0,audio:[
+"i_eat_curry_rice_for_lunch_at_school.mp3",
+"i_eat_ice_cream_for_lunch_at_school.mp3",
+"i_eat_paper_for_lunch_at_school.mp3",
+"i_eat_pizza_with_chopsticks_for_lunch.mp3"]},
+{q:"What do you do on your birthday?",a:0,audio:[
+"i_eat_cake_with_my_family_on_my_birthday.mp3",
+"i_eat_my_homework_on_sunday_afternoon.mp3",
+"i_invite_my_dog_to_a_party_on_my_birthday.mp3",
+"i_open_presents_underwater_on_my_birthday.mp3"]},
 ];
 
-const correctAudios=['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3','youre_a_genius.mp3','thats_amazing.mp3'];
-const extraAudios=['nice_pronunciation.mp3','youre_unstoppable.mp3','lets_gooo.mp3','thats_so_clear.mp3','keep_going.mp3'];
+const correctAudios=['yes_good_job.mp3','perfect_english.mp3','wow_nice_work.mp3'];
 const wrongAudios=['hmm_try_again.mp3','what_language_was_that.mp3','do_you_have_a_cookie_in_your_mouth.mp3'];
 
 let current=0,points=0;
-let recog,listening=false,bonusActive=false,bonusTimer;
+let recog,listening=false;
 const sageText=document.getElementById('sageText');
 const studentBox=document.getElementById('studentBox');
 const playBtn=document.getElementById('playBtn');
@@ -223,74 +149,48 @@ const options=document.querySelectorAll('.option');
 const pointsCircle=document.getElementById('pointsCircle');
 const counter=document.getElementById('counter');
 
-function sanitizeFile(text){return text.toLowerCase().replace(/[^a-z0-9\s']/gi,'').replace(/\s+/g,'_')+'.mp3';}
-function playAudio(file){return new Promise(res=>{const a=new Audio('audio/'+file);a.onended=res;a.play().catch(res);});}
-function animateSageText(t){
-  sageText.innerHTML='';
-  t.split(' ').forEach((w,i)=>{
-    const s=document.createElement('span');
-    s.className='word';
-    s.textContent=w;
-    sageText.appendChild(s);
-    setTimeout(()=>s.style.opacity=1,220*i);
-  });
-}
-function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function glowOptions(){options.forEach(o=>o.classList.remove('glow'));options[Math.floor(Math.random()*options.length)].classList.add('glow');}
-setInterval(glowOptions,1000);
-
-function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
+function playAudio(file){return new Promise(res=>{const a=new Audio('audio/'+file);a.onended=res;a.onerror=res;a.play().catch(res);});}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
-
+function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R)return alert('Speech Recognition not supported');
   recog=new R();recog.lang='en-US';recog.interimResults=true;
-  recog.onstart=()=>{micBtn.classList.add('active');micStatus.textContent='ON';micStatus.className='on';listening=true;studentBox.textContent='';};
-  recog.onresult=(e)=>{
+  recog.onstart=()=>{micBtn.classList.add('active');micStatus.textContent='ON';micStatus.className='on';studentBox.textContent='';listening=true;};
+  recog.onend=()=>{micBtn.classList.remove('active');micStatus.textContent='OFF';micStatus.className='off';listening=false;};
+  recog.onresult=e=>{
     const transcript=Array.from(e.results).map(r=>r[0].transcript).join('').toLowerCase();
     studentBox.textContent=transcript;
     checkSpeech(transcript);
   };
-  recog.onend=()=>{micBtn.classList.remove('active');micStatus.textContent='OFF';micStatus.className='off';listening=false;};
 }
-
-function loadQuestion(){
-  bonusActive=false;
-  clearTimeout(bonusTimer);
-  const q=questions[current];
-  animateSageText(q.q);
-  options.forEach((o,i)=>o.textContent=q.options[i]);
-  studentBox.textContent='';
-  updateUI();
-}
-
 function startMic(){if(!recog)initRecog();if(!listening)recog.start();}
-function nextQuestion(){current++;if(current>=questions.length){current=0;points=0;}loadQuestion();}
-
 async function checkSpeech(t){
   const q=questions[current];
-  const foundIndex=q.options.findIndex(o=>t.includes(o.toLowerCase()));
-  if(foundIndex>=0){
-    if(foundIndex===q.a){
-      points++;pulsePoints();
-      await playAudio(randomItem(correctAudios));
-      bonusActive=true;
-      bonusTimer=setTimeout(nextQuestion,7000);
-    }else{
-      await playAudio(randomItem(wrongAudios));
-      studentBox.style.background='#fca5a5';
-      setTimeout(()=>studentBox.style.background='#fff',800);
-    }
-    updateUI();
+  const foundIndex=q.audio.findIndex(o=>t.includes(o.split('.mp3')[0].replace(/_/g,' ').toLowerCase()));
+  if(foundIndex===q.a){
+    points++;pulsePoints();await playAudio(correctAudios[Math.floor(Math.random()*correctAudios.length)]);
+    nextQuestion();
+  }else if(foundIndex>=0){
+    await playAudio(wrongAudios[Math.floor(Math.random()*wrongAudios.length)]);
+    studentBox.style.background='#fca5a5';setTimeout(()=>studentBox.style.background='#fff',700);
   }
+  updateUI();
 }
-
-playBtn.onclick=()=>{
+function loadQuestion(){
   const q=questions[current];
-  playAudio(sanitizeFile(q.q)); // Sage voice local
-  setTimeout(()=>startMic(),4000);
-};
+  sageText.textContent=q.q;
+  q.audio.forEach((f,i)=>options[i].textContent=f.replace(/_/g,' ').replace('.mp3',''));
+  studentBox.textContent='';updateUI();
+}
+async function playSageSet(){
+  const q=questions[current];
+  for(const f of q.audio){await playAudio(f);}
+  setTimeout(startMic,800);
+}
+function nextQuestion(){current++;if(current>=questions.length)current=0;loadQuestion();}
+
+playBtn.onclick=()=>{playSageSet();};
 micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
 
 loadQuestion();
