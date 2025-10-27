@@ -95,7 +95,7 @@ const PRAISE=['yesgoodjob.mp3','perfectenglish.mp3','wownicework.mp3'];
 const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookieinyourmouth.mp3'];
 const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];
 
-const questions=[
+let questions=[
  {q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
   "I eat rice and miso soup for breakfast.",
   "I eat curry for breakfast.",
@@ -109,6 +109,10 @@ const questions=[
   "I wrestle with ghosts after school."
  ]}
 ];
+
+// Shuffle helper
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+questions=shuffle(questions.map(q=>({...q,answers:shuffle(q.answers)})));
 
 let current=0,points=0,listening=false,gotCorrect=false,pointsMode=false,firstAttempt=true;
 let recog,remainingIncorrect=new Set();
@@ -167,16 +171,17 @@ async function checkSpeech(spoken){
  if(idx===-1){firstAttempt=false;await shakeRedErase();return;}
  const optEl=document.querySelector(`.option[data-index="${idx}"]`);
 
- // ✅ First correct = +5 ONLY if first attempt and correct answer
+ // ✅ First correct = +5 ONLY if first attempt and correct
  if(!pointsMode && idx===q.a && !gotCorrect){
    gotCorrect=true;
    await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
    confetti(60);
    await playAudio(DING);
-   points += firstAttempt ? 5 : 1; // 5 only if first try
+   points += firstAttempt ? 5 : 1;
    pulsePoints();
    updateUI();
    optEl?.remove();
+   studentBox.textContent=''; // clear spoken text box ✅
    remainingIncorrect=new Set(q.answers.map((_,i)=>i).filter(i=>i!==q.a));
    pointsMode=true;
    pointsBtn.style.display='inline-block';
@@ -196,7 +201,8 @@ async function checkSpeech(spoken){
      points+=1;
      pulsePoints();
      updateUI();
-     optEl?.remove(); // disappears instantly
+     optEl?.remove();
+     studentBox.textContent=''; // ✅ clear after each correct
      if(remainingIncorrect.size===0){
        pointsBtn.style.display='none';
        nextBtn.style.display='inline-block';
