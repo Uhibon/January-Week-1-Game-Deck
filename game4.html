@@ -33,10 +33,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
 .micBtn{position:absolute;right:-18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:micPulse 2s infinite ease-in-out;}
 .micBtn::after{content:"🎤";font-size:1.3rem;}
-@keyframes micPulse{
- 0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1);}
- 50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}
-}
+@keyframes micPulse{0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1);}50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}}
 #options .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;color:#fff;cursor:pointer;transition:opacity .2s,background .3s;}
 #hintBox{margin-top:.8rem;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);line-height:1.4;}
 #hintBox small{display:block;color:#ffe27a;margin-top:4px;}
@@ -80,7 +77,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   <div id="pointsContainer">
     <div id="pointsCircle"><span id="pointsValue">0</span></div>
     <div id="scoreLabel">SCORE</div>
-    <div id="counter">1 / 2</div>
+    <div id="counter">1 / 15</div>
   </div>
   <button class="nextBtn" id="nextBtn">Next ▶</button>
  </div>
@@ -97,32 +94,49 @@ const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];
 
 let questions=[
  {q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
-  "I eat rice and miso soup for breakfast.",
-  "I eat curry for breakfast.",
-  "I eat toothpaste for breakfast.",
-  "I eat pencils and notebooks for breakfast."
- ]},
+  "I eat rice and miso soup for breakfast.","I eat curry for breakfast.","I eat toothpaste for breakfast.","I eat pencils and notebooks for breakfast."]},
  {q:"What do you do after school?",a:0,audio:"whatdoyoudoafterschool.mp3",answers:[
-  "I do my homework after school.",
-  "I climb trees after school.",
-  "I build a spaceship after school.",
-  "I wrestle with ghosts after school."
- ]}
+  "I do my homework after school.","I climb trees after school.","I build a spaceship after school.","I wrestle with ghosts after school."]},
+ {q:"What time do you wake up?",a:0,audio:"whattimedoyouwakeup.mp3",answers:[
+  "I wake up at seven o'clock.","I sleep until midnight.","I wake up on the moon.","I wake up when my cat starts singing."]},
+ {q:"How do you go to school?",a:0,audio:"howdoyougotoschool.mp3",answers:[
+  "I go to school by bus.","I go to school by rocket.","I go to school on a flying carpet.","I go to school by penguin."]},
+ {q:"What do you drink in the morning?",a:0,audio:"whatdoyoudrinkinthemorning.mp3",answers:[
+  "I drink milk in the morning.","I drink tomato soup in the morning.","I drink hot glue in the morning.","I drink air in the morning."]},
+ {q:"What do you do before bed?",a:0,audio:"whatdoyoudobeforebed.mp3",answers:[
+  "I brush my teeth before bed.","I brush my shoes before bed.","I play soccer before bed.","I eat spaghetti before bed."]},
+ {q:"What do you do on weekends?",a:0,audio:"whatdoyoudoonweekends.mp3",answers:[
+  "I play games on weekends.","I study math all night.","I climb Mount Fuji every weekend.","I wash my dog’s homework."]},
+ {q:"What time do you go to bed?",a:0,audio:"whattimedoyougotobed.mp3",answers:[
+  "I go to bed at nine o'clock.","I go to bed in the morning.","I go to bed on the bus.","I go to bed in the refrigerator."]},
+ {q:"What do you have for lunch?",a:0,audio:"whatdoyouhaveforlunch.mp3",answers:[
+  "I have curry and rice for lunch.","I have cake and cookies for lunch.","I have ice cubes for lunch.","I have crayons for lunch."]},
+ {q:"What do you do in the evening?",a:0,audio:"whatdoyoudointheevening.mp3",answers:[
+  "I watch TV in the evening.","I swim in my bathtub in the evening.","I chase ghosts in the evening.","I do jumping jacks on the roof."]},
+ {q:"What do you do on Monday?",a:0,audio:"whatdoyoudoonmonday.mp3",answers:[
+  "I study English on Monday.","I dance with my teacher on Monday.","I fly to the moon on Monday.","I eat noodles on the roof on Monday."]},
+ {q:"What do you do after dinner?",a:0,audio:"whatdoyoudoafterdinner.mp3",answers:[
+  "I take a bath after dinner.","I do my taxes after dinner.","I chase my cat after dinner.","I eat more dinner after dinner."]},
+ {q:"What time do you eat dinner?",a:0,audio:"whattimedoyoueatdinner.mp3",answers:[
+  "I eat dinner at seven o'clock.","I eat dinner at midnight.","I eat dinner at school.","I eat dinner while running."]},
+ {q:"What do you do on Sunday?",a:0,audio:"whatdoyoudoonsunday.mp3",answers:[
+  "I go shopping on Sunday.","I do push-ups in the park on Sunday.","I scare my brother on Sunday.","I ride a unicorn on Sunday."]},
+ {q:"Who do you eat dinner with?",a:0,audio:"whodoyoueatdinnerwith.mp3",answers:[
+  "I eat dinner with my family.","I eat dinner with my pet rock.","I eat dinner with my teacher’s ghost.","I eat dinner with my shadow."]}
 ];
 
-// Shuffle helper
-function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
-questions=shuffle(questions.map(q=>({...q,answers:shuffle(q.answers)})));
+// --- Shuffle and assign correct answer text ---
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+questions=shuffle(questions.map(q=>{const correct=q.answers[q.a];const mixed=shuffle([...q.answers]);return {...q,answers:mixed,correct};}));
 
 let current=0,points=0,listening=false,gotCorrect=false,pointsMode=false,firstAttempt=true;
 let recog,remainingIncorrect=new Set();
 
 const $=s=>document.querySelector(s);
-const sageText=$('#sageText'),studentBox=$('#studentBox'),
-playBtn=$('#playBtn'),micBtn=$('#micBtn'),optionsBox=$('#options'),
-hintBox=$('#hintBox'),nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),
-pointsCircle=$('#pointsCircle'),pointsValue=$('#pointsValue'),
-counter=$('#counter');
+const sageText=$('#sageText'),studentBox=$('#studentBox'),playBtn=$('#playBtn'),
+micBtn=$('#micBtn'),optionsBox=$('#options'),hintBox=$('#hintBox'),
+nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),pointsCircle=$('#pointsCircle'),
+pointsValue=$('#pointsValue'),counter=$('#counter');
 
 function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f:'audio/'+f);a.onended=r;a.onerror=r;a.play().catch(r);});}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
@@ -131,106 +145,48 @@ function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{cons
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function confetti(n=80){for(let i=0;i<n;i++){const c=document.createElement('div');c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;`;document.body.appendChild(c);const d=900+Math.random()*1200;c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});setTimeout(()=>c.remove(),d);}}
 async function shakeRedErase(){studentBox.classList.add('shake');studentBox.style.background='#ef4444';await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';studentBox.textContent='';},650);}
-
-function strictMatch(spoken,answer){
- const s=normalize(spoken),a=normalize(answer);
- if(!s||!a)return false;
- const sArr=s.split(' '),aArr=a.split(' ');
- const overlap=aArr.filter(w=>sArr.includes(w)).length;
- const extra=sArr.filter(w=>!aArr.includes(w));
- return overlap/aArr.length>=0.9 && extra.length<=2;
-}
-
-function initRecog(){
- const R=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!R){alert('Speech Recognition not supported');return;}
- recog=new R();recog.lang='en-US';recog.interimResults=true;
- recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};
- recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};
- recog.onresult=e=>{let t='';for(const r of e.results){t+=r[0].transcript+' ';if(r.isFinal)checkSpeech(t.trim());}studentBox.textContent=t.trim();};
-}
+function strictMatch(s,a){const ns=normalize(s),na=normalize(a);if(!ns||!na)return false;const sa=ns.split(' '),aa=na.split(' ');const overlap=aa.filter(w=>sa.includes(w)).length;const extra=sa.filter(w=>!aa.includes(w));return overlap/aa.length>=0.9&&extra.length<=2;}
+function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert('Speech Recognition not supported');return;}recog=new R();recog.lang='en-US';recog.interimResults=true;recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};recog.onresult=e=>{let t='';for(const r of e.results){t+=r[0].transcript+' ';if(r.isFinal)checkSpeech(t.trim());}studentBox.textContent=t.trim();};}
 function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
-
 async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);firstAttempt=true;startMic();}
-
-function renderAnswers(){
-  optionsBox.innerHTML='';
-  const q=questions[current];
-  q.answers.forEach((a,i)=>{
-    const d=document.createElement('div');
-    d.className='option';
-    d.dataset.index=i;
-    d.textContent=a;
-    optionsBox.appendChild(d);
-  });
-}
+function renderAnswers(){optionsBox.innerHTML='';const q=questions[current];q.answers.forEach((a,i)=>{const d=document.createElement('div');d.className='option';d.dataset.index=i;d.textContent=a;optionsBox.appendChild(d);});}
 
 async function checkSpeech(spoken){
- const q=questions[current];let idx=-1;
- for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){idx=i;break;}}
- if(idx===-1){firstAttempt=false;await shakeRedErase();return;}
- const optEl=document.querySelector(`.option[data-index="${idx}"]`);
+ const q=questions[current];
+ let matchIndex=q.answers.findIndex(ans=>strictMatch(spoken,ans));
+ if(matchIndex===-1){firstAttempt=false;await shakeRedErase();return;}
+ const matchedText=q.answers[matchIndex];
+ const optEl=document.querySelector(`.option[data-index="${matchIndex}"]`);
 
- // ✅ First correct = +5 ONLY if first attempt and correct
- if(!pointsMode && idx===q.a && !gotCorrect){
-   gotCorrect=true;
-   await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
-   confetti(60);
-   await playAudio(DING);
-   points += firstAttempt ? 5 : 1;
-   pulsePoints();
-   updateUI();
-   optEl?.remove();
-   studentBox.textContent=''; // clear spoken text box ✅
-   remainingIncorrect=new Set(q.answers.map((_,i)=>i).filter(i=>i!==q.a));
-   pointsMode=true;
-   pointsBtn.style.display='inline-block';
+ // ✅ Correct answer check by text
+ if(!pointsMode && !gotCorrect && strictMatch(spoken,q.correct)){
+   gotCorrect=true;await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+   confetti(60);await playAudio(DING);
+   points+=firstAttempt?5:1;pulsePoints();updateUI();
+   optEl?.remove();studentBox.textContent='';
+   remainingIncorrect=new Set(q.answers.filter(a=>a!==q.correct));
+   pointsMode=true;pointsBtn.style.display='inline-block';
    hintBox.innerHTML='Points mode – say the other 3 sentences!<small>ポイントモードです。のこり３つのぶんをいってみよう！</small>';
    return;
  }
-
  if(!pointsMode){firstAttempt=false;await shakeRedErase();return;}
-
- // ✅ Other sentences = +1 point each
  if(pointsMode){
-   if(remainingIncorrect.has(idx)){
-     remainingIncorrect.delete(idx);
+   if(remainingIncorrect.has(matchedText)){
+     remainingIncorrect.delete(matchedText);
      await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
-     confetti(90);
-     await playAudio(EIGO);
-     points+=1;
-     pulsePoints();
-     updateUI();
-     optEl?.remove();
-     studentBox.textContent=''; // ✅ clear after each correct
-     if(remainingIncorrect.size===0){
-       pointsBtn.style.display='none';
-       nextBtn.style.display='inline-block';
-       hintBox.textContent='Great job! Tap Next.';
-     }
-   } else {await shakeRedErase();}
+     confetti(90);await playAudio(EIGO);
+     points+=1;pulsePoints();updateUI();
+     optEl?.remove();studentBox.textContent='';
+     if(remainingIncorrect.size===0){pointsBtn.style.display='none';nextBtn.style.display='inline-block';hintBox.textContent='Great job! Tap Next.';}
+   } else await shakeRedErase();
  }
  studentBox.textContent='';
 }
 
-function loadQuestion(){
- gotCorrect=false;
- pointsMode=false;
- firstAttempt=true;
- remainingIncorrect.clear?.();
- pointsBtn.style.display='none';
- nextBtn.style.display='none';
- hintBox.textContent='';
- sageText.textContent='';
- studentBox.textContent='';
- renderAnswers();
- updateUI();
-}
-
+function loadQuestion(){gotCorrect=false;pointsMode=false;firstAttempt=true;remainingIncorrect.clear?.();pointsBtn.style.display='none';nextBtn.style.display='none';hintBox.textContent='';sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();}
 playBtn.onclick=()=>playQuestion();
 micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
 nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
-
 window.onload=loadQuestion;
 </script>
 </body>
