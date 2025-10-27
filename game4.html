@@ -34,19 +34,16 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 .micBtn{position:absolute;right:-18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 #options .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;color:#fff;cursor:pointer;transition:opacity .2s,background .3s;}
-.option.correct{background:#4ade80;}
 #hintBox{margin-top:.8rem;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);}
 .btnRow{display:flex;gap:1rem;justify-content:center;margin-top:1rem;}
 .nextBtn,.pointsBtn{padding:.7rem 1.8rem;border-radius:var(--radius);color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;border:none;cursor:pointer;display:none;}
 .pointsBtn{background:linear-gradient(135deg,#93c5fd,#3b82f6);animation:blueShimmer 2s infinite;}
 .nextBtn{background:linear-gradient(135deg,#f9a8d4,#ec4899);animation:pinkShimmer 2s infinite;}
-@keyframes blueShimmer{0%,100%{box-shadow:0 0 10px #93c5fd,0 0 20px #3b82f6;}50%{box-shadow:0 0 20px #60a5fa,0 0 40px #2563eb;}}
-@keyframes pinkShimmer{0%,100%{box-shadow:0 0 10px #f9a8d4,0 0 20px #ec4899;}50%{box-shadow:0 0 20px #f472b6,0 0 40px #db2777;}}
 #pointsContainer{position:fixed;bottom:1rem;right:1rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
 #pointsLabel{color:var(--gold1);font-family:'Cinzel',serif;font-size:1rem;text-shadow:var(--goldGlow);}
 #pointsCircle{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;box-shadow:var(--goldGlow);transition:transform .3s;}
 #counter{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;color:#fff;font-size:1rem;}
-footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',serif;font-weight:900;font-size:clamp(14px,2.8vw,20px);letter-spacing:1px;text-shadow:0 0 6px rgba(255,255,255,.4);}
+footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',serif;font-weight:900;font-size:clamp(14px,2.8vw,20px);}
 </style>
 </head>
 <body>
@@ -54,10 +51,12 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
  <div class="h1">THE BOO-RICULUM</div>
  <div class="h2">Eigo Adventure – January Week 1</div>
 </header>
+
 <div id="pointsContainer">
  <div id="pointsLabel">Points</div>
  <div id="pointsCircle">0</div>
 </div>
+
 <main>
  <div class="sageWrapper">
   <div class="playBtn" id="playBtn"></div>
@@ -74,6 +73,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   <button class="nextBtn" id="nextBtn">Next ▶</button>
  </div>
 </main>
+
 <div id="counter">1 / 2</div>
 <footer>Bryan’s English School</footer>
 
@@ -85,18 +85,18 @@ const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookiein
 const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];
 
 const questions=[
-{q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
- "I eat rice and miso soup for breakfast.",
- "I eat curry for breakfast.",
- "I eat toothpaste for breakfast.",
- "I eat pencils and notebooks for breakfast."
-]},
-{q:"What do you do after school?",a:0,audio:"whatdoyoudoafterschool.mp3",answers:[
- "I do my homework after school.",
- "I climb trees after school.",
- "I build a spaceship after school.",
- "I wrestle with ghosts after school."
-]}
+ {q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
+  "I eat rice and miso soup for breakfast.",
+  "I eat curry for breakfast.",
+  "I eat toothpaste for breakfast.",
+  "I eat pencils and notebooks for breakfast."
+ ]},
+ {q:"What do you do after school?",a:0,audio:"whatdoyoudoafterschool.mp3",answers:[
+  "I do my homework after school.",
+  "I climb trees after school.",
+  "I build a spaceship after school.",
+  "I wrestle with ghosts after school."
+ ]}
 ];
 
 let current=0,points=0,listening=false,gotCorrect=false,pointsMode=false;
@@ -137,58 +137,80 @@ function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch
 
 async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);startMic();}
 
+function renderAnswers(){
+  optionsBox.innerHTML='';
+  const q=questions[current];
+  q.answers.forEach((a,i)=>{
+    const d=document.createElement('div');
+    d.className='option';
+    d.dataset.index=i;
+    d.textContent=a;
+    optionsBox.appendChild(d);
+  });
+}
+
 async function checkSpeech(spoken){
  const q=questions[current];let idx=-1;
  for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){idx=i;break;}}
  if(idx===-1){await shakeRedErase();return;}
-const optEl = document.querySelector(`.option[data-index="${idx}"]`); // ✅ precise match by data-index
+ const optEl=document.querySelector(`.option[data-index="${idx}"]`);
 
-// first correct
-if(!pointsMode && idx===q.a && !gotCorrect){
-  gotCorrect = true;
-  await playAudio('audio/' + PRAISE[Math.floor(Math.random() * PRAISE.length)]);
-  confetti(60);
-  await playAudio(DING);
-  points += 5;
-  pulsePoints();
-  updateUI();
-  optEl?.remove(); // ✅ remove the correct spoken option only
-  remainingIncorrect = new Set([0,1,2,3].filter(i => i !== q.a));
-  pointsMode = true;
-  pointsBtn.style.display = 'inline-block';
-  hintBox.textContent = 'Points mode – say the other 3 sentences!';
-  return;
+ if(!pointsMode && idx===q.a && !gotCorrect){
+   gotCorrect=true;
+   await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+   confetti(60);
+   await playAudio(DING);
+   points+=5;
+   pulsePoints();
+   updateUI();
+   optEl?.remove();
+   remainingIncorrect=new Set(q.answers.map((_,i)=>i).filter(i=>i!==q.a));
+   pointsMode=true;
+   pointsBtn.style.display='inline-block';
+   hintBox.textContent='Points mode – say the other 3 sentences!';
+   return;
+ }
+
+ if(!pointsMode){await shakeRedErase();return;}
+
+ if(pointsMode){
+   if(remainingIncorrect.has(idx)){
+     remainingIncorrect.delete(idx);
+     await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
+     confetti(90);
+     await playAudio(EIGO);
+     points++;
+     pulsePoints();
+     updateUI();
+     optEl?.remove();
+     if(remainingIncorrect.size===0){
+       pointsBtn.style.display='none';
+       nextBtn.style.display='inline-block';
+       hintBox.textContent='Great job! Tap Next.';
+     }
+   } else {await shakeRedErase();}
+ }
+ studentBox.textContent='';
 }
 
-if(!pointsMode){
-  await shakeRedErase();
-  return;
+function loadQuestion(){
+ gotCorrect=false;
+ pointsMode=false;
+ remainingIncorrect.clear?.();
+ pointsBtn.style.display='none';
+ nextBtn.style.display='none';
+ hintBox.textContent='';
+ sageText.textContent='';
+ studentBox.textContent='';
+ renderAnswers(); // ✅ ensure options appear each time
+ updateUI();
 }
 
-// points mode strict
-if(pointsMode){
-  if(remainingIncorrect.has(idx)){
-    remainingIncorrect.delete(idx);
-    await playAudio('audio/' + EXTRA_PRAISE[Math.floor(Math.random() * EXTRA_PRAISE.length)]);
-    confetti(90);
-    await playAudio(EIGO);
-    points++;
-    pulsePoints();
-    updateUI();
-    optEl?.remove(); // ✅ now removes the matching spoken answer correctly
-    if(remainingIncorrect.size === 0){
-      pointsBtn.style.display = 'none';
-      nextBtn.style.display = 'inline-block';
-      hintBox.textContent = 'Great job! Tap Next.';
-    }
-  } else {
-    await shakeRedErase();
-  }
-}
-studentBox.textContent = '';
-}
+playBtn.onclick=()=>playQuestion();
+micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
+nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
 
-loadQuestion();
+window.onload=loadQuestion; // ✅ ensures answers render when page first opens
 </script>
 </body>
 </html>
