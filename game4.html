@@ -141,44 +141,53 @@ async function checkSpeech(spoken){
  const q=questions[current];let idx=-1;
  for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){idx=i;break;}}
  if(idx===-1){await shakeRedErase();return;}
- const opts=[...document.querySelectorAll('.option')];
+const optEl = document.querySelector(`.option[data-index="${idx}"]`); // ✅ precise match by data-index
 
- // first correct
- if(!pointsMode && idx===q.a && !gotCorrect){
-  gotCorrect=true;await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
-  confetti(60);await playAudio(DING);points+=5;pulsePoints();updateUI();
-  opts[idx]?.remove();
-  remainingIncorrect=new Set([0,1,2,3].filter(i=>i!==q.a));
-  pointsMode=true;pointsBtn.style.display='inline-block';
-  hintBox.textContent='Points mode – say the other 3 sentences!';
+// first correct
+if(!pointsMode && idx===q.a && !gotCorrect){
+  gotCorrect = true;
+  await playAudio('audio/' + PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+  confetti(60);
+  await playAudio(DING);
+  points += 5;
+  pulsePoints();
+  updateUI();
+  optEl?.remove(); // ✅ remove the correct spoken option only
+  remainingIncorrect = new Set([0,1,2,3].filter(i => i !== q.a));
+  pointsMode = true;
+  pointsBtn.style.display = 'inline-block';
+  hintBox.textContent = 'Points mode – say the other 3 sentences!';
   return;
- }
-
- if(!pointsMode){await shakeRedErase();return;}
-
- // points mode strict
- if(pointsMode){
-  if(remainingIncorrect.has(idx)){
-   remainingIncorrect.delete(idx);
-   await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
-   confetti(90);await playAudio(EIGO);
-   points++;pulsePoints();updateUI();
-   opts[idx]?.remove();
-   if(remainingIncorrect.size===0){
-     pointsBtn.style.display='none';
-     nextBtn.style.display='inline-block';
-     hintBox.textContent='Great job! Tap Next.';
-   }
-  }else{await shakeRedErase();}
- }
- studentBox.textContent='';
 }
 
-function renderAnswers(){optionsBox.innerHTML='';const q=questions[current];q.answers.forEach(a=>{const d=document.createElement('div');d.className='option';d.textContent=a;optionsBox.appendChild(d);});}
-function loadQuestion(){gotCorrect=false;pointsMode=false;remainingIncorrect.clear?.();pointsBtn.style.display='none';nextBtn.style.display='none';hintBox.textContent='';sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();}
-playBtn.onclick=()=>playQuestion();
-micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
-nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
+if(!pointsMode){
+  await shakeRedErase();
+  return;
+}
+
+// points mode strict
+if(pointsMode){
+  if(remainingIncorrect.has(idx)){
+    remainingIncorrect.delete(idx);
+    await playAudio('audio/' + EXTRA_PRAISE[Math.floor(Math.random() * EXTRA_PRAISE.length)]);
+    confetti(90);
+    await playAudio(EIGO);
+    points++;
+    pulsePoints();
+    updateUI();
+    optEl?.remove(); // ✅ now removes the matching spoken answer correctly
+    if(remainingIncorrect.size === 0){
+      pointsBtn.style.display = 'none';
+      nextBtn.style.display = 'inline-block';
+      hintBox.textContent = 'Great job! Tap Next.';
+    }
+  } else {
+    await shakeRedErase();
+  }
+}
+studentBox.textContent = '';
+}
+
 loadQuestion();
 </script>
 </body>
