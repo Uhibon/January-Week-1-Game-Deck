@@ -1,245 +1,118 @@
 // generateAudio.js
-// Booha Sage TTS incremental generator (January Week 1)
+// Booha Sage TTS generator – only from game4.html
+// Saves all Sage mp3 files into /audio folder, no duplicates, retries after 5min on 429.
 // Run: caffeinate -i node generateAudio.js
 
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
-const { default: PQueue } = require("p-queue");
 
-// -------------------------------------
-// SETTINGS
-// -------------------------------------
-const concurrency = 3;           // how many downloads at once
-const baseDelay = 10000;         // 10 sec between batches
-const retryWait = 300000;        // 5 min wait if rate-limited
 const baseUrl = "https://bryanharper.tokyo/_functions/tts?voice=sage&text=";
 const outDir = path.join(__dirname, "audio");
-const failLog = path.join(__dirname, "failures.txt");
+const targetFile = "game4.html";
 
-if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(failLog, "");
+const concurrency = 3;
+const baseDelay = 8000; // 8 seconds between groups
+const retryWait = 5 * 60 * 1000; // 5 minutes
 
-// -------------------------------------
-// HELPERS
-// -------------------------------------
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-const formatTime = (ms) => {
-  const s = Math.round(ms / 1000);
-  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
-};
-function safeName(t) {
-  return (
-    t
-      .toLowerCase()
-      .replace(/[^\wぁ-んァ-ン一-龯０-９a-zA-Z0-9]/g, "")
-      .substring(0, 100) + ".mp3"
-  );
-}
-function download(text) {
-  return new Promise((resolve, reject) => {
-    const fileName = safeName(text);
-    const filePath = path.join(outDir, fileName);
-    if (fs.existsSync(filePath) && fs.statSync(filePath).size > 0)
-      return resolve("skipped");
+// ------------------------------------
+// Extract all Sage-related text
+// ------------------------------------
+function extractTexts(html) {
+  const textList = [];
 
-    const url = baseUrl + encodeURIComponent(text);
-    const file = fs.createWriteStream(filePath);
-    https
-      .get(url, (res) => {
-        if (res.statusCode === 200) {
-          res.pipe(file);
-          file.on("finish", () => file.close(() => resolve("ok")));
-        } else {
-          file.close(() =>
-            fs.unlink(filePath, () => reject(`HTTP ${res.statusCode}`))
-          );
-        }
-      })
-      .on("error", (err) => {
-        fs.unlink(filePath, () => reject(err.message));
-      });
-  });
-}
-
-// -------------------------------------
-// JANUARY WEEK 1 LINES
-// -------------------------------------
-const questions = [
-  "What do you eat for breakfast?",
-  "What do you do on your birthday?",
-  "What do you do before bed?",
-  "What do you do after school?",
-  "What do you do after dinner?",
-  "What do you do every morning?",
-  "What do you do on weekends?",
-  "What do you do every night?",
-  "What do you do in the morning?",
-  "What do you do at school?",
-  "What do you do at home?",
-  "What do you eat for lunch?",
-  "What do you eat for dinner?",
-  "What do you drink in the morning?",
-  "What do you drink with dinner?",
-];
-
-const answers = [
-  // 1 breakfast
-  "I eat rice and miso soup for breakfast.",
-  "I eat curry for breakfast.",
-  "I eat toothpaste for breakfast.",
-  "I eat pencils and notebooks for breakfast.",
-
-  // 2 birthday
-  "I eat cake and open presents on my birthday.",
-  "I eat toothpaste on my birthday.",
-  "I call my refrigerator on my birthday.",
-  "I fight dragons on my birthday.",
-
-  // 3 before bed
-  "I brush my teeth before bed.",
-  "I eat spaghetti before bed.",
-  "I water my homework before bed.",
-  "I call my refrigerator before bed.",
-
-  // 4 after school
-  "I do my homework after school.",
-  "I fight dragons after school.",
-  "I dance with my mirror after school.",
-  "I call my refrigerator after school.",
-
-  // 5 after dinner
-  "I wash the dishes after dinner.",
-  "I watch TV after dinner.",
-  "I play video games after dinner.",
-  "I fight dragons after dinner.",
-
-  // 6 every morning
-  "I brush my teeth every morning before breakfast.",
-  "I fight dragons every morning before breakfast.",
-  "I dance with my mirror every morning before breakfast.",
-  "I call my refrigerator every morning before breakfast.",
-
-  // 7 weekends
-  "I play outside on weekends.",
-  "I fight dragons on weekends.",
-  "I clean my ceiling on weekends.",
-  "I call my refrigerator on weekends.",
-
-  // 8 every night
-  "I go to sleep every night at ten.",
-  "I dance with my mirror every night.",
-  "I call my refrigerator every night.",
-  "I fight dragons every night.",
-
-  // 9 in the morning
-  "I eat breakfast and go to school in the morning.",
-  "I sleep in the morning.",
-  "I fight dragons in the morning.",
-  "I call my refrigerator in the morning.",
-
-  // 10 at school
-  "I study English at school.",
-  "I sleep at school.",
-  "I call my refrigerator at school.",
-  "I fight dragons at school.",
-
-  // 11 at home
-  "I help my mom at home.",
-  "I swim at home.",
-  "I call my refrigerator at home.",
-  "I fight dragons at home.",
-
-  // 12 lunch
-  "I eat rice for lunch.",
-  "I eat my homework for lunch.",
-  "I eat pencils for lunch.",
-  "I eat dragons for lunch.",
-
-  // 13 dinner
-  "I eat fish for dinner.",
-  "I eat soap for dinner.",
-  "I eat dragons for dinner.",
-  "I eat homework for dinner.",
-
-  // 14 drink morning
-  "I drink milk in the morning.",
-  "I drink toothpaste in the morning.",
-  "I drink dragons in the morning.",
-  "I drink homework in the morning.",
-
-  // 15 drink with dinner
-  "I drink tea with dinner.",
-  "I drink toothpaste with dinner.",
-  "I drink dragons with dinner.",
-  "I drink homework with dinner.",
-];
-
-const reactions = [
-  "yes good job",
-  "perfect english",
-  "wow nice work",
-  "hmm try again",
-  "what language was that",
-  "do you have a cookie in your mouth",
-];
-
-// -------------------------------------
-// MAIN
-// -------------------------------------
-(async () => {
-  console.log("🎧 Checking for NEW Sage audio for January Week 1…\n");
-
-  const allLines = [...questions, ...answers, ...reactions];
-  const newLines = allLines.filter((line) => {
-    const fileName = safeName(line);
-    return !fs.existsSync(path.join(outDir, fileName));
+  // all .mp3 filenames
+  const mp3Matches = html.match(/"([^"]+\.mp3)"/g) || [];
+  mp3Matches.forEach(m => {
+    const file = m.replace(/"/g, "");
+    textList.push(file.replace(".mp3", ""));
   });
 
-  console.log(`🆕 ${newLines.length} new lines need Sage audio\n`);
-  if (newLines.length === 0) {
-    console.log("✅ All up to date! No new Sage audio needed.\n");
-    return;
-  }
+  // all questions
+  const questionMatches = html.match(/q:"([^"]+)"/g) || [];
+  questionMatches.forEach(q => {
+    const text = q.replace(/^q:"|\"$/g, "");
+    textList.push(text);
+  });
 
-  const queue = new PQueue({ concurrency });
-  let count = 0;
-  const start = Date.now();
+  // all answer sentences
+  const answerMatches = html.match(/"([^"]+?\.)"/g) || [];
+  answerMatches.forEach(a => {
+    const text = a.replace(/[".]/g, "").trim();
+    if (text && text.length > 2) textList.push(text);
+  });
 
-  for (const line of newLines) {
-    queue.add(async () => {
-      let done = false;
-      while (!done) {
-        try {
-          await download(line);
-          count++;
-          const pct = Math.round((count / newLines.length) * 100);
-          console.log(`✅ (${count}/${newLines.length}, ${pct}%) ${line}`);
-          done = true;
-        } catch (e) {
-          const msg = String(e);
-          if (msg.includes("HTTP 429")) {
-            console.warn(`⚠️ 429 Too Many Requests → waiting ${retryWait / 60000} min`);
-            await wait(retryWait);
-          } else if (msg.includes("HTTP 500")) {
-            console.warn("⚠️ 500 Server error → waiting 2 min before retry");
-            await wait(120000);
-          } else {
-            console.error(`❌ ${line} → ${e}`);
-            fs.appendFileSync(failLog, line + "\n");
-            done = true;
-          }
-        }
+  return textList;
+}
+
+// ------------------------------------
+// Audio download
+// ------------------------------------
+function delay(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function fetchAudio(text, attempt = 1) {
+  return new Promise(resolve => {
+    const safe = encodeURIComponent(text);
+    const url = baseUrl + safe;
+    const filePath = path.join(outDir, `${text}.mp3`);
+
+    if (fs.existsSync(filePath)) {
+      console.log("✅ Exists:", text);
+      return resolve();
+    }
+
+    https.get(url, res => {
+      if (res.statusCode === 429) {
+        const wait = retryWait * attempt;
+        console.log(`⏳ Rate limited (${text}). Retrying in ${wait / 60000} minutes...`);
+        return setTimeout(() => fetchAudio(text, attempt + 1).then(resolve), wait);
       }
-    });
+      if (res.statusCode !== 200) {
+        console.log("❌ Failed:", text, "→", res.statusCode);
+        return resolve();
+      }
+      const file = fs.createWriteStream(filePath);
+      res.pipe(file);
+      file.on("finish", () => file.close(() => {
+        console.log("🎧 Saved:", text);
+        resolve();
+      }));
+    }).on("error", () => resolve());
+  });
+}
 
-    // slow down between bursts
-    if (count % 50 === 0) await wait(baseDelay);
+// ------------------------------------
+// Main
+// ------------------------------------
+(async () => {
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
+  if (!fs.existsSync(targetFile)) {
+    console.error("❌ Could not find", targetFile);
+    process.exit(1);
   }
 
-  await queue.onIdle();
-  const duration = formatTime(Date.now() - start);
-  console.log(`\n✨ Finished. ${count} new Sage audios saved in /audio/`);
-  console.log(`🪶 Failures logged to failures.txt if any`);
-  console.log(`⏱️ Completed in ${duration}\n`);
+  const html = fs.readFileSync(targetFile, "utf8");
+  let allTexts = extractTexts(html);
+
+  // Deduplicate + clean
+  allTexts = [...new Set(allTexts.map(t => t.trim()))]
+    .filter(t => t.length > 1)
+    .sort();
+
+  console.log(`\n🪄 Total unique Sage lines: ${allTexts.length}\n`);
+
+  let index = 0;
+  while (index < allTexts.length) {
+    const group = allTexts.slice(index, index + concurrency);
+    await Promise.all(group.map(fetchAudio));
+    index += concurrency;
+    if (index < allTexts.length) {
+      console.log(`⏳ Waiting ${baseDelay / 1000}s...`);
+      await delay(baseDelay);
+    }
+  }
+
+  console.log("\n✨ All Sage mp3 audio saved in /audio!");
 })();
