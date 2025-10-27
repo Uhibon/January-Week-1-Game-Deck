@@ -31,8 +31,12 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 #studentBox.glow{box-shadow:var(--purpleGlow);}
 #studentBox.shake{animation:shake .3s;}
 @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
-.micBtn{position:absolute;right:-18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.micBtn{position:absolute;right:-18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:micPulse 2s infinite ease-in-out;}
 .micBtn::after{content:"🎤";font-size:1.3rem;}
+@keyframes micPulse{
+ 0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1);}
+ 50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}
+}
 #options .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;color:#fff;cursor:pointer;transition:opacity .2s,background .3s;}
 #hintBox{margin-top:.8rem;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);line-height:1.4;}
 #hintBox small{display:block;color:#ffe27a;margin-top:4px;}
@@ -43,8 +47,9 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max
 @keyframes blueShimmer{0%,100%{box-shadow:0 0 10px #93c5fd,0 0 20px #3b82f6;}50%{box-shadow:0 0 20px #60a5fa,0 0 40px #2563eb;}}
 @keyframes pinkShimmer{0%,100%{box-shadow:0 0 10px #f9a8d4,0 0 20px #ec4899;}50%{box-shadow:0 0 20px #f472b6,0 0 40px #db2777;}}
 #pointsContainer{display:flex;flex-direction:column;align-items:center;margin-top:0.8rem;}
-#pointsCircle{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));display:flex;align-items:center;justify-content:center;color:#000;font-family:'Cinzel',serif;font-size:2rem;font-weight:900;box-shadow:var(--goldGlow);position:relative;overflow:hidden;text-shadow:0 0 10px #fff,0 0 20px #fff;}
-#pointsCircle::after{content:'';position:absolute;width:140%;height:140%;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 70%);animation:pulse 2.5s infinite ease-in-out;}
+#pointsCircle{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:2rem;font-weight:900;box-shadow:var(--goldGlow);position:relative;overflow:hidden;text-shadow:0 0 10px #fff,0 0 20px #fff;z-index:1;}
+#pointsCircle span{position:relative;z-index:2;color:#000;}
+#pointsCircle::after{content:'';position:absolute;width:140%;height:140%;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 70%);animation:pulse 2.5s infinite ease-in-out;z-index:0;}
 @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);opacity:0.6;}}
 #scoreLabel{margin-top:8px;font-family:'Cinzel',serif;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);animation:goldShimmer 2s infinite;}
 @keyframes goldShimmer{0%,100%{text-shadow:0 0 8px #facc15,0 0 20px #fde68a;}50%{text-shadow:0 0 14px #ffef9f,0 0 30px #fde68a;}}
@@ -73,7 +78,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
  <div class="btnRow">
   <button class="pointsBtn" id="pointsBtn">Points</button>
   <div id="pointsContainer">
-    <div id="pointsCircle">0</div>
+    <div id="pointsCircle"><span id="pointsValue">0</span></div>
     <div id="scoreLabel">SCORE</div>
     <div id="counter">1 / 2</div>
   </div>
@@ -105,18 +110,19 @@ const questions=[
  ]}
 ];
 
-let current=0,points=0,listening=false,gotCorrect=false,pointsMode=false;
+let current=0,points=0,listening=false,gotCorrect=false,pointsMode=false,firstAttempt=true;
 let recog,remainingIncorrect=new Set();
 
 const $=s=>document.querySelector(s);
 const sageText=$('#sageText'),studentBox=$('#studentBox'),
 playBtn=$('#playBtn'),micBtn=$('#micBtn'),optionsBox=$('#options'),
 hintBox=$('#hintBox'),nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),
-pointsCircle=$('#pointsCircle'),counter=$('#counter');
+pointsCircle=$('#pointsCircle'),pointsValue=$('#pointsValue'),
+counter=$('#counter');
 
 function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f:'audio/'+f);a.onended=r;a.onerror=r;a.play().catch(r);});}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
-function updateUI(){pointsCircle.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
+function updateUI(){pointsValue.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
 function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,180*i);});}
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function confetti(n=80){for(let i=0;i<n;i++){const c=document.createElement('div');c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;`;document.body.appendChild(c);const d=900+Math.random()*1200;c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});setTimeout(()=>c.remove(),d);}}
@@ -141,7 +147,7 @@ function initRecog(){
 }
 function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
 
-async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);startMic();}
+async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);firstAttempt=true;startMic();}
 
 function renderAnswers(){
   optionsBox.innerHTML='';
@@ -158,16 +164,16 @@ function renderAnswers(){
 async function checkSpeech(spoken){
  const q=questions[current];let idx=-1;
  for(let i=0;i<q.answers.length;i++){if(strictMatch(spoken,q.answers[i])){idx=i;break;}}
- if(idx===-1){await shakeRedErase();return;}
+ if(idx===-1){firstAttempt=false;await shakeRedErase();return;}
  const optEl=document.querySelector(`.option[data-index="${idx}"]`);
 
- // ✅ First correct = +5 points
+ // ✅ First correct = +5 ONLY if first attempt and correct answer
  if(!pointsMode && idx===q.a && !gotCorrect){
    gotCorrect=true;
    await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
    confetti(60);
    await playAudio(DING);
-   points+=5;
+   points += firstAttempt ? 5 : 1; // 5 only if first try
    pulsePoints();
    updateUI();
    optEl?.remove();
@@ -178,7 +184,7 @@ async function checkSpeech(spoken){
    return;
  }
 
- if(!pointsMode){await shakeRedErase();return;}
+ if(!pointsMode){firstAttempt=false;await shakeRedErase();return;}
 
  // ✅ Other sentences = +1 point each
  if(pointsMode){
@@ -190,7 +196,7 @@ async function checkSpeech(spoken){
      points+=1;
      pulsePoints();
      updateUI();
-     optEl?.remove();
+     optEl?.remove(); // disappears instantly
      if(remainingIncorrect.size===0){
        pointsBtn.style.display='none';
        nextBtn.style.display='inline-block';
@@ -204,6 +210,7 @@ async function checkSpeech(spoken){
 function loadQuestion(){
  gotCorrect=false;
  pointsMode=false;
+ firstAttempt=true;
  remainingIncorrect.clear?.();
  pointsBtn.style.display='none';
  nextBtn.style.display='none';
