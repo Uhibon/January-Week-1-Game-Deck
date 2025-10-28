@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Booha Speak Game – January Week 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#0b1530;--ink:#fff;--gold:#ffd166;--green:#22c55e;--red:#ef4444;
+ --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;--radius:26px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',system-ui;
+ display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow:hidden;
+}
+header{padding:20px 16px 10px;text-align:center}
+header h1{font-family:'Cinzel',serif;letter-spacing:.5px;font-size:clamp(1.8rem,5.2vw,2.6rem);opacity:.95;}
+header h2{font-family:'Cinzel',serif;margin-top:6px;font-size:clamp(2.0rem,6.2vw,3rem);}
+.subtitle-stack{opacity:.8;font-size:.95rem;}
+hr{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff44,transparent);margin:12px 0;}
+
+#wordBox{
+ border:4px dashed #ffffff55;border-radius:var(--radius);
+ width:90%;max-width:600px;min-height:200px;margin-top:24px;
+ display:flex;flex-direction:column;justify-content:center;align-items:center;
+ font-size:clamp(1.6rem,5vw,2.4rem);text-align:center;padding:20px;
+ transition:.3s ease all;
+}
+.jp{font-size:1.6rem;margin-bottom:6px;}
+.hira{font-size:1.2rem;opacity:.85;}
+#speechBox{margin-top:20px;min-height:40px;font-size:1.4rem;text-align:center;letter-spacing:.03em;}
+.actions{margin-top:30px;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+button{
+ border:0;border-radius:40px;padding:12px 38px;font-weight:800;font-size:1.1rem;
+ cursor:pointer;transition:.15s;touch-action:manipulation;
+}
+.btn-speak{background:#60a5fa;box-shadow:0 0 14px rgba(96,165,250,.8);}
+.btn-next{background:var(--gold);color:#000;box-shadow:var(--goldGlow);display:none;}
+.btn-speak:disabled{opacity:.4;cursor:not-allowed;}
+
+footer{margin-top:auto;padding:14px 10px;opacity:.8;font-family:'Cinzel',serif;}
+
+.correct{border-color:var(--green)!important;box-shadow:0 0 16px var(--green);}
+.wrong{border-color:var(--red)!important;box-shadow:0 0 16px var(--red);animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+.confetti{position:fixed;width:12px;height:12px;border-radius:50%;top:-12px;left:0;animation:fall 1.3s linear forwards;pointer-events:none;z-index:10}
+@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
+.poof{position:fixed;width:40px;height:40px;border-radius:50%;background:radial-gradient(closest-side, rgba(239,68,68,.95)0%, rgba(239,68,68,.7)55%, rgba(239,68,68,0)70%);filter:blur(2px);pointer-events:none;z-index:19;animation:puff 950ms ease-out forwards;}
+@keyframes puff{0%{opacity:.98;transform:translate(-50%,-50%) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
+
+#results{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:60vh;}
+#resultMsg{font-size:clamp(2.2rem,6vw,3rem);margin-bottom:10px;}
+#resultScore{font-size:1.6rem;opacity:.9;}
+.redGlow{background:#900;box-shadow:inset 0 0 60px 30px #ff2b2b;}
+.orangeGlow{background:#a34f00;box-shadow:inset 0 0 60px 30px #ff9e2b;}
+.blueGlow{background:#0d2b7a;box-shadow:inset 0 0 60px 30px #2b7bff;}
+.goldGlow{background:#725c00;box-shadow:inset 0 0 80px 40px #ffd166;}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>THE BOO-RICULUM</h1>
+  <h2>SPEAK & LISTEN</h2>
+  <div class="subtitle-stack">January Week 1 - Vocabulary / １月第１週 - 語彙</div>
+  <hr>
+</header>
+
+<main id="game">
+  <div id="wordBox">
+    <div class="jp"></div>
+    <div class="hira"></div>
+  </div>
+  <div id="speechBox"></div>
+  <div class="actions">
+    <button id="speakBtn" class="btn-speak">🎙 Speak</button>
+    <button id="nextBtn" class="btn-next">NEXT ➜</button>
+  </div>
+</main>
+
+<section id="results">
+  <div id="resultMsg">結果</div>
+  <div id="resultScore">0/15 (0%)</div>
+  <div class="actions">
+    <button id="playAgain" class="btn-speak">もう一度</button>
+    <button onclick="location.href='index.html'" class="btn-speak">Back to Menu</button>
+  </div>
+</section>
+
+<footer>Bryan's English School</footer>
+
+<audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
+<audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
+<audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
+<audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+
+<script>
+const MASTER=[
+ {en:"goal",jp:"目標",hira:"もくひょう"},
+ {en:"plan",jp:"計画",hira:"けいかく"},
+ {en:"future",jp:"未来",hira:"みらい"},
+ {en:"dream",jp:"夢",hira:"ゆめ"},
+ {en:"challenge",jp:"挑戦",hira:"ちょうせん"},
+ {en:"try",jp:"挑戦する",hira:"ちょうせん する"},
+ {en:"change",jp:"変える",hira:"かえる"},
+ {en:"habit",jp:"習慣",hira:"しゅうかん"},
+ {en:"exercise",jp:"運動",hira:"うんどう"},
+ {en:"study",jp:"勉強",hira:"べんきょう"},
+ {en:"learn",jp:"学ぶ",hira:"まなぶ"},
+ {en:"practice",jp:"練習",hira:"れんしゅう"},
+ {en:"success",jp:"成功",hira:"せいこう"},
+ {en:"focus",jp:"集中",hira:"しゅうちゅう"},
+ {en:"motivation",jp:"やる気",hira:"やるき"}
+];
+
+const jpEl=document.querySelector(".jp"),hiraEl=document.querySelector(".hira");
+const speechEl=document.getElementById("speechBox");
+const wordBox=document.getElementById("wordBox");
+const speakBtn=document.getElementById("speakBtn");
+const nextBtn=document.getElementById("nextBtn");
+let idx=0,total=MASTER.length,score=0,recognition;
+
+function playSfx(id){
+ const s=document.getElementById(id);if(!s)return;
+ const a=s.cloneNode(true);a.currentTime=0;a.play().catch(()=>{});
+ setTimeout(()=>a.remove(),1500);
+}
+function burstConfettiAt(el,c=40){
+ const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+ for(let i=0;i<c;i++){const b=document.createElement("div");b.className="confetti";
+ b.style.left=x+"px";b.style.top=y+"px";
+ const ang=Math.random()*2*Math.PI,dist=80+Math.random()*120;
+ b.style.transform=`translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px)`;
+ b.style.background=`hsl(${Math.random()*360},100%,60%)`;
+ b.style.animationDuration=(0.9+Math.random()*0.8)+"s";
+ document.body.appendChild(b);setTimeout(()=>b.remove(),1800);}
+}
+function fartPoofAt(el){
+ const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+ const p=document.createElement("div");p.className="poof";p.style.left=x+"px";p.style.top=y+"px";
+ document.body.appendChild(p);setTimeout(()=>p.remove(),980);
+}
+function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{});}
+
+function showWord(){
+ const item=MASTER[idx];
+ jpEl.textContent=item.jp;hiraEl.textContent=`(${item.hira})`;
+ speechEl.textContent="";wordBox.className="";
+ nextBtn.style.display="none";speakBtn.disabled=false;
+}
+
+function startRecognition(){
+ if(!("webkitSpeechRecognition" in window||"SpeechRecognition" in window)){
+  alert("Speech Recognition not supported in this browser.");
+  return;
+ }
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ recognition=new SR();
+ recognition.lang="en-US";recognition.interimResults=false;recognition.maxAlternatives=1;
+ recognition.start();
+ speechEl.textContent="Listening...";
+ speakBtn.disabled=true;
+
+ recognition.onresult=e=>{
+  const result=e.results[0][0].transcript.trim().toLowerCase();
+  speechEl.textContent=result;
+  checkAnswer(result);
+ };
+ recognition.onerror=()=>{speechEl.textContent="Try again.";speakBtn.disabled=false;};
+ recognition.onend=()=>{speakBtn.disabled=false;};
+}
+
+function checkAnswer(ans){
+ const correct=MASTER[idx].en.toLowerCase();
+ if(ans===correct){
+  playSfx("s_ding");burstConfettiAt(wordBox);
+  playSage(correct);
+  wordBox.classList.add("correct");
+  score++;
+  nextBtn.style.display="inline-block";
+ }else{
+  playSfx("s_fart");fartPoofAt(wordBox);
+  wordBox.classList.add("wrong");
+ }
+}
+
+function nextWord(){
+ idx++;
+ if(idx<total){showWord();}
+ else{showResults();}
+}
+
+function showResults(){
+ document.getElementById("game").style.display="none";
+ const res=document.getElementById("results");
+ res.style.display="flex";
+ const pct=Math.round((score/total)*100);
+ let msg="いいね！あと少しでパーフェクト！",snd=document.getElementById("s_r1114"),bg="blueGlow";
+ if(score<=5){msg="ブーリキュラム見てないでしょ！";snd=document.getElementById("s_r05");bg="redGlow";}
+ else if(score<=10){msg="YouTube見すぎ！ブーリキュラムもやろう！";snd=document.getElementById("s_r610");bg="orangeGlow";}
+ else if(score===15){msg="すごい！あなたは地球で一番頭がいい！";snd=document.getElementById("s_r15");bg="goldGlow";}
+ document.body.className=bg;
+ document.getElementById("resultMsg").textContent=msg;
+ document.getElementById("resultScore").textContent=`${score}/15（${pct}%）`;
+ snd.play().catch(()=>{});
+ if(score===15){
+  for(let i=0;i<160;i++){
+   setTimeout(()=>{
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=(Math.random()*100)+"vw";
+    c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+    c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1900);
+   },i*10);
+  }
+ }
+}
+
+document.getElementById("playAgain").onclick=()=>{
+ score=0;idx=0;document.body.className="";document.getElementById("results").style.display="none";
+ document.getElementById("game").style.display="block";showWord();
+};
+
+speakBtn.onclick=startRecognition;
+nextBtn.onclick=nextWord;
+
+showWord();
+</script>
+</body>
+</html>
