@@ -139,14 +139,19 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   font-size:1rem;
 }
 
-/* Results */
-#page-results .result-box{min-height:62vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
-.result-msg{font-family:'Noto Sans JP',sans-serif;font-size:clamp(2.4rem,6.4vw,3.2rem);margin-bottom:18px}
-.result-score{font-size:clamp(1.8rem,5.4vw,2.4rem);opacity:.95}
-.redGlow{background:#900;box-shadow:inset 0 0 60px 30px #ff2b2b}
-.orangeGlow{background:#a34f00;box-shadow:inset 0 0 60px 30px #ff9e2b}
-.blueGlow{background:#0d2b7a;box-shadow:inset 0 0 60px 30px #2b7bff}
-.goldGlow{background:#725c00;box-shadow:inset 0 0 80px 40px #ffd166}
+/* Confetti */
+.confetti{
+  position:fixed;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  top:-12px;
+  left:0;
+  animation:fall 1.2s linear forwards;
+  pointer-events:none;
+  z-index:10;
+}
+@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
 
 @media(max-width:700px){
   :root{--barH:88px;--micSize:52px}
@@ -158,14 +163,10 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>SAY THE WORD</h2>
-  <div class="subtitle-stack">
-    <div class="en">January Week 1</div>
-    <div class="jp">１月第１週</div>
-  </div>
+  <div class="subtitle-stack"><div class="en">January Week 1</div><div class="jp">１月第１週</div></div>
   <hr class="sep">
 </header>
 
-<!-- GAME -->
 <section id="page-game" class="page active">
   <div class="stripeBar">
     <div id="stripeInner" class="stripeInner sv1"></div>
@@ -186,7 +187,6 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   <div id="counter" class="counter">1/15</div>
 </section>
 
-<!-- RESULTS -->
 <section id="page-results" class="page">
   <div class="result-box">
     <div id="resultMsg" class="result-msg">結果</div>
@@ -200,7 +200,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 
 <footer>Bryan's English School</footer>
 
-<!-- SFX -->
+<!-- Audio -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
@@ -230,9 +230,9 @@ const MASTER=[
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 function playClone(id){const s=$("#"+id);if(!s)return;const a=s.cloneNode(true);a.currentTime=0;a.play().catch(()=>{});setTimeout(()=>a.remove(),2000)}
+function confettiBurst(cEl,count=60){const r=cEl.getBoundingClientRect();for(let i=0;i<count;i++){const d=document.createElement('div');d.className='confetti';d.style.left=(r.left+r.width/2)+'px';d.style.top=(r.top)+'px';d.style.background=`hsl(${Math.random()*360},100%,60%)`;d.style.animationDuration=(0.9+Math.random()*0.9)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}}
 function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{})}
-function preloadSage(){MASTER.forEach(i=>{const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);a.preload='auto';a.load()})}
-const norm=s=>s.toLowerCase().replace(/[^a-z]/g,'');
+function preloadAll(){MASTER.forEach(i=>{new Audio(`audio/${i.en.toLowerCase()}.mp3`).load()});['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>$("#"+id).load());}
 
 const stripeInner=$('#stripeInner');
 const jpTxt=$('#jpTxt'), hiraTxt=$('#hiraTxt');
@@ -254,7 +254,7 @@ function startListening(){
   recognition.start();
   recognition.onresult=e=>{
     const raw=e.results[0][0].transcript;
-    const heard=norm(raw);
+    const heard=raw.toLowerCase().replace(/[^a-z]/g,'');
     answerText.textContent=raw.trim();
     evaluate(heard);
   };
@@ -276,24 +276,31 @@ function showCard(){
   nextBtn.style.display='none'; answered=false;
   updateCounter();
 }
-function evaluate(heardNorm){
-  const correct=norm(order[idx].en);
-  if(heardNorm===correct){
+
+function evaluate(heard){
+  const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
+  if(heard===correct){
     answered=true;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
     answerBox.classList.add('correct');
-    playClone('s_ding'); playSage(order[idx].en);
+    playClone('s_ding');
+    confettiBurst(answerBox,50);
+    playSage(order[idx].en);
     score++; nextBtn.style.display='inline-block';
   }else{
+    answerBox
     answerBox.classList.add('wrong');
     playClone('s_fart');
   }
 }
+
 nextBtn.addEventListener('click',()=>{
   idx++;
-  if(idx<order.length) showCard(); else showResults();
+  if(idx<order.length){showCard();}
+  else{showResults();}
 });
+
 function showResults(){
   $('#page-game').classList.remove('active');
   const res=$('#page-results'); res.classList.add('active');
@@ -305,7 +312,7 @@ function showResults(){
   document.body.className=bg;
   $('#resultMsg').textContent=msg;
   $('#resultScore').textContent=`${score}/15（${pct}%）`;
-  try{snd.currentTime=0; snd.play()}catch(e){}
+  try{snd.currentTime=0; snd.play();}catch(e){}
   if(score===15){
     for(let i=0;i<160;i++) setTimeout(()=>{
       const c=document.createElement('div');
@@ -328,8 +335,8 @@ $('#playAgain').addEventListener('click',()=>{
   showCard();
 });
 
-// Init
-preloadSage();
+// INIT
+preloadAll();
 showCard();
 </script>
 </body>
