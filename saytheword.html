@@ -20,143 +20,46 @@ body{
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
 }
-
-/* Header */
 header{text-align:center;padding:20px 16px 10px}
 header h1{font-family:'Cinzel',serif;letter-spacing:.5px;font-size:clamp(1.8rem,5.2vw,2.6rem);}
 header h2{font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;font-size:clamp(2.0rem,6.2vw,3rem);}
-.subtitle-stack{
-  display:flex;justify-content:center;align-items:center;gap:.4rem;
-  font-weight:700;font-size:clamp(1.05rem,3vw,1.3rem);line-height:1.2;
-}
+.subtitle-stack{display:flex;justify-content:center;align-items:center;gap:.4rem;font-weight:700;font-size:clamp(1.05rem,3vw,1.3rem);line-height:1.2;}
 .subtitle-stack .en{font-family:'Cinzel',serif;}
 .subtitle-stack .jp{font-family:'Noto Sans JP',sans-serif;}
 .subtitle-stack .en::after{content:" – ";opacity:.8}
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif}
-
-/* Pages */
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 28px}
 .page.active{display:block}
-
-/* Layout */
 #page-game{display:flex;flex-direction:column;align-items:center;margin-top:30px;gap:28px;}
-
-/* Stripe bar */
-.stripeBar{
-  position:relative;
-  width:min(560px,90vw);
-  height:var(--barH);
-  border-radius:30px;
-  overflow:hidden;
-  margin:0 auto 24px auto;
-  box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 0 0 4px rgba(255,255,255,.08);
-}
-.stripeInner{position:absolute;inset:0; background-size:100% var(--barH); animation:stripesV 3.2s linear infinite; filter:saturate(1.05) brightness(1.08)}
+.stripeBar{position:relative;width:min(560px,90vw);height:var(--barH);border-radius:30px;overflow:hidden;margin:0 auto 24px auto;box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 0 0 4px rgba(255,255,255,.08);}
+.stripeInner{position:absolute;inset:0;background-size:100% var(--barH);animation:stripesV 3.2s linear infinite;filter:saturate(1.05) brightness(1.08)}
 @keyframes stripesV{from{background-position:0 0}to{background-position:0 var(--barH)}}
 .sv1{background-image:repeating-linear-gradient(0deg,#ff7eb9 0 18px,#5ee6ff 18px 36px,#ffd166 36px 54px)}
 .sv2{background-image:repeating-linear-gradient(0deg,#a78bfa 0 18px,#60a5fa 18px 36px,#f472b6 36px 54px)}
 .sv3{background-image:repeating-linear-gradient(0deg,#34d399 0 18px,#fbbf24 18px 36px,#60a5fa 36px 54px)}
 .sv4{background-image:repeating-linear-gradient(0deg,#fca5a5 0 18px,#86efac 18px 36px,#93c5fd 36px 54px)}
 .sv5{background-image:repeating-linear-gradient(0deg,#f9a8d4 0 18px,#fef08a 18px 36px,#6ee7b7 36px 54px)}
-
 .jpLabel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:900;letter-spacing:.02em;text-shadow:0 1px 0 #0006,0 3px 12px #0008;}
 .jp{font-size:clamp(1.5rem,3.8vw,2.1rem)}
 .hira{font-size:clamp(1.05rem,3vw,1.25rem);opacity:.95}
-
-/* Answer row */
-.answerRow{
-  width:min(560px,90vw);
-  display:grid;
-  grid-template-columns:1fr var(--micSize);
-  gap:16px;
-  align-items:center;
-  justify-content:center;
-}
-.answerBox{
-  position:relative;
-  height:96px;
-  border-radius:30px;
-  background:#fff;
-  color:#111;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:clamp(1.15rem,3.2vw,1.45rem);
-  font-weight:800;
-  letter-spacing:.01em;
-  box-shadow:0 10px 26px rgba(0,0,0,.3);
-  transition:filter .3s ease, box-shadow .3s ease;
-}
+.answerRow{width:min(560px,90vw);display:grid;grid-template-columns:1fr var(--micSize);gap:16px;align-items:center;justify-content:center;}
+.answerBox{position:relative;height:96px;border-radius:30px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-size:clamp(1.15rem,3.2vw,1.45rem);font-weight:800;letter-spacing:.01em;box-shadow:0 10px 26px rgba(0,0,0,.3);transition:filter .3s ease, box-shadow .3s ease;}
 .answerBox.correct{background:var(--green);color:#052b11;box-shadow:0 0 0 3px rgba(34,197,94,.75),0 10px 28px rgba(34,197,94,.35)}
 .answerBox.wrong{background:#fee2e2;color:#991b1b;box-shadow:0 0 0 3px #ef4444aa;animation:shake .45s}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-
-/* Purple pulse sync */
 .pulsing{animation:purplePulse 1s ease-in-out infinite;}
-@keyframes purplePulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.7);}
-  70%{box-shadow:0 0 25px 10px rgba(124,58,237,0.4);}
-}
-
-/* Mic button */
-.micBtn{
-  width:var(--micSize);
-  height:var(--micSize);
-  border-radius:50%;
-  border:none;
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 62%,#4c1d95 100%);
-  box-shadow:0 0 16px #8b5cf6aa,0 0 36px #7c3aed55;
-  transition:transform .1s ease;
-}
+@keyframes purplePulse{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.7);}70%{box-shadow:0 0 25px 10px rgba(124,58,237,0.4);}}
+.micBtn{width:var(--micSize);height:var(--micSize);border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 62%,#4c1d95 100%);box-shadow:0 0 16px #8b5cf6aa,0 0 36px #7c3aed55;transition:transform .1s ease;}
 .micBtn svg{width:24px;height:24px;fill:#fff;}
 .micBtn:active{transform:scale(.95);}
 .micBtn.idle{animation:breath 2.2s ease-in-out infinite}
 @keyframes breath{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
 .micBtn:disabled{opacity:.5;filter:saturate(.6);cursor:not-allowed}
-
-/* Next button + Counter */
-.btn-next{
-  background:var(--gold);
-  color:#000;
-  box-shadow:var(--goldGlow);
-  border:0;
-  border-radius:28px;
-  padding:12px 34px;
-  font-weight:800;
-  font-size:1.05rem;
-  cursor:pointer;
-  display:none;
-  margin-top:14px;
-}
-.counter{
-  margin-top:10px;
-  text-align:center;
-  opacity:.9;
-  font-size:1rem;
-}
-
-/* Confetti */
-.confetti{
-  position:fixed;
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  top:-12px;
-  left:0;
-  animation:fall 1.2s linear forwards;
-  pointer-events:none;
-  z-index:10;
-}
-@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
-
-@media(max-width:700px){
-  :root{--barH:88px;--micSize:52px}
-  .answerBox{height:90px}
-}
+.btn-next{background:var(--gold);color:#000;box-shadow:var(--goldGlow);border:0;border-radius:28px;padding:12px 34px;font-weight:800;font-size:1.05rem;cursor:pointer;display:none;margin-top:14px;}
+.counter{margin-top:10px;text-align:center;opacity:.9;font-size:1rem;}
+.confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:10;opacity:.9;}
+@media(max-width:700px){:root{--barH:88px;--micSize:52px}.answerBox{height:90px}}
 </style>
 </head>
 <body>
@@ -200,7 +103,6 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 
 <footer>Bryan's English School</footer>
 
-<!-- Audio -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
@@ -226,14 +128,11 @@ const MASTER=[
   {en:"focus",jp:"集中",hira:"しゅうちゅう"},
   {en:"motivation",jp:"やる気",hira:"やるき"}
 ];
-
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
-function playClone(id){const s=$("#"+id);if(!s)return;const a=s.cloneNode(true);a.currentTime=0;a.play().catch(()=>{});setTimeout(()=>a.remove(),2000)}
-function confettiBurst(cEl,count=60){const r=cEl.getBoundingClientRect();for(let i=0;i<count;i++){const d=document.createElement('div');d.className='confetti';d.style.left=(r.left+r.width/2)+'px';d.style.top=(r.top)+'px';d.style.background=`hsl(${Math.random()*360},100%,60%)`;d.style.animationDuration=(0.9+Math.random()*0.9)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}}
-function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{})}
-function preloadAll(){MASTER.forEach(i=>{new Audio(`audio/${i.en.toLowerCase()}.mp3`).load()});['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>$("#"+id).load());}
-
+function playSound(id){const s=$("#"+id);if(!s)return;s.currentTime=0;s.play().catch(()=>{});}
+function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{});}
+function confettiBurst(el,count=60){const r=el.getBoundingClientRect();for(let i=0;i<count;i++){const d=document.createElement('div');d.className='confetti';d.style.left=(r.left+r.width/2)+'px';d.style.top=(r.top+r.height/2)+'px';d.style.background=`hsl(${Math.random()*360},100%,60%)`;const x=(Math.random()-0.5)*300;const y=(Math.random()-1)*300;d.animate([{transform:`translate(0,0)`},{transform:`translate(${x}px,${y}px)`,opacity:0}],{duration:1000+Math.random()*600,easing:"ease-out"});document.body.appendChild(d);setTimeout(()=>d.remove(),1600);}}
 const stripeInner=$('#stripeInner');
 const jpTxt=$('#jpTxt'), hiraTxt=$('#hiraTxt');
 const answerBox=$('#answerBox'), answerText=$('#answerText');
@@ -248,9 +147,7 @@ function startListening(){
   if(!SR){alert('Speech Recognition not supported');return;}
   recognition=new SR();
   recognition.lang='en-US'; recognition.interimResults=false; recognition.maxAlternatives=1;
-  listening=true;
-  micBtn.classList.add('pulsing');
-  answerBox.classList.add('pulsing');
+  listening=true; micBtn.classList.add('pulsing'); answerBox.classList.add('pulsing');
   recognition.start();
   recognition.onresult=e=>{
     const raw=e.results[0][0].transcript;
@@ -259,11 +156,7 @@ function startListening(){
     evaluate(heard);
   };
   recognition.onerror=()=>{answerText.textContent='';};
-  recognition.onend=()=>{
-    listening=false;
-    micBtn.classList.remove('pulsing');
-    answerBox.classList.remove('pulsing');
-  };
+  recognition.onend=()=>{listening=false;micBtn.classList.remove('pulsing');answerBox.classList.remove('pulsing');};
 }
 micBtn.addEventListener('click',startListening);
 
@@ -273,59 +166,43 @@ function showCard(){
   stripeInner.className='stripeInner '+stripeSets[stripeIx%stripeSets.length]; stripeIx++;
   jpTxt.textContent=item.jp; hiraTxt.textContent=`（${item.hira}）`;
   answerText.textContent=''; answerBox.classList.remove('wrong','correct','pulsing');
-  nextBtn.style.display='none'; answered=false;
-  updateCounter();
+  nextBtn.style.display='none'; answered=false; updateCounter();
 }
 
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
-    answered=true;
-    micBtn.classList.remove('pulsing');
-    answerBox.classList.remove('pulsing');
+    answered=true; micBtn.classList.remove('pulsing'); answerBox.classList.remove('pulsing');
     answerBox.classList.add('correct');
-    playClone('s_ding');
-    confettiBurst(answerBox,50);
-    playSage(order[idx].en);
+    playSound('s_ding');
+    confettiBurst(answerBox,60);
+    setTimeout(()=>playSage(order[idx].en),400);
     score++; nextBtn.style.display='inline-block';
   }else{
-    answerBox
     answerBox.classList.add('wrong');
-    playClone('s_fart');
+    playSound('s_fart');
   }
 }
 
 nextBtn.addEventListener('click',()=>{
-  idx++;
-  if(idx<order.length){showCard();}
-  else{showResults();}
+  idx++; if(idx<order.length){showCard();} else{showResults();}
 });
 
 function showResults(){
   $('#page-game').classList.remove('active');
   const res=$('#page-results'); res.classList.add('active');
   const pct=Math.round((score/order.length)*100);
-  let msg='いいね！あと少しでパーフェクト！',snd=$('#s_r1114'),bg='blueGlow';
-  if(score<=5){msg='ブーリキュラム見てないでしょ！';snd=$('#s_r05');bg='redGlow'}
-  else if(score<=10){msg='YouTube見すぎ！ブーリキュラムもやろう！';snd=$('#s_r610');bg='orangeGlow'}
-  else if(score===15){msg='すごい！あなたは地球で一番頭がいい！';snd=$('#s_r15');bg='goldGlow'}
-  document.body.className=bg;
+  let msg='いいね！あと少しでパーフェクト！',snd=$('#s_r1114');
+  if(score<=5){msg='ブーリキュラム見てないでしょ！';snd=$('#s_r05');}
+  else if(score<=10){msg='YouTube見すぎ！ブーリキュラムもやろう！';snd=$('#s_r610');}
+  else if(score===15){msg='すごい！あなたは地球で一番頭がいい！';snd=$('#s_r15');}
   $('#resultMsg').textContent=msg;
   $('#resultScore').textContent=`${score}/15（${pct}%）`;
-  try{snd.currentTime=0; snd.play();}catch(e){}
-  if(score===15){
-    for(let i=0;i<160;i++) setTimeout(()=>{
-      const c=document.createElement('div');
-      c.className='confetti';
-      c.style.left=(Math.random()*100)+'vw';
-      c.style.background=`hsl(${Math.random()*360},100%,60%)`;
-      c.style.animationDuration=(0.9+Math.random()*0.9)+'s';
-      document.body.appendChild(c);
-      setTimeout(()=>c.remove(),1900);
-    }, i*10);
-  }
+  snd.currentTime=0; snd.play().catch(()=>{});
+  if(score===15){for(let i=0;i<160;i++) setTimeout(()=>{confettiBurst(document.body,1)},i*10);}
 }
 
+$('#playAgain').addEventListener
 $('#playAgain').addEventListener('click',()=>{
   document.body.className='';
   order=shuffle([...MASTER]);
@@ -334,6 +211,18 @@ $('#playAgain').addEventListener('click',()=>{
   $('#page-game').classList.add('active');
   showCard();
 });
+
+// preload all audio
+function preloadAll(){
+  MASTER.forEach(i=>{
+    const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);
+    a.load();
+  });
+  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
+    const el=$("#"+id);
+    if(el) el.load();
+  });
+}
 
 // INIT
 preloadAll();
