@@ -44,7 +44,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 .jp{font-size:clamp(1.5rem,3.8vw,2.1rem)}
 .hira{font-size:clamp(1.05rem,3vw,1.25rem);opacity:.95}
 .answerRow{width:min(560px,90vw);display:grid;grid-template-columns:1fr var(--micSize);gap:16px;align-items:center;justify-content:center;}
-.answerBox{position:relative;height:96px;border-radius:30px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-size:clamp(1.15rem,3.2vw,1.45rem);font-weight:800;letter-spacing:.01em;box-shadow:0 10px 26px rgba(0,0,0,.3);transition:filter .3s ease, box-shadow .3s ease;}
+.answerBox{position:relative;height:96px;border-radius:30px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-size:clamp(1.15rem,3.2vw,1.45rem);font-weight:800;letter-spacing:.01em;box-shadow:0 10px 26px rgba(0,0,0,.3);transition:all .3s ease;}
 .answerBox.correct{background:var(--green);color:#052b11;box-shadow:0 0 0 3px rgba(34,197,94,.75),0 10px 28px rgba(34,197,94,.35)}
 .answerBox.wrong{background:#fee2e2;color:#991b1b;box-shadow:0 0 0 3px #ef4444aa;animation:shake .45s}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
@@ -130,8 +130,8 @@ const MASTER=[
 ];
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
-function playSound(id){const s=$("#"+id);if(!s)return;s.currentTime=0;s.play().catch(()=>{});}
-function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{});}
+function playSound(id){const s=$("#"+id);if(!s)return; s.currentTime=0; s.play().catch(()=>{});}
+function playSage(word,onend){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`); if(onend) a.onended=onend; a.play().catch(()=>{if(onend)onend();});}
 function confettiBurst(el,count=60){const r=el.getBoundingClientRect();for(let i=0;i<count;i++){const d=document.createElement('div');d.className='confetti';d.style.left=(r.left+r.width/2)+'px';d.style.top=(r.top+r.height/2)+'px';d.style.background=`hsl(${Math.random()*360},100%,60%)`;const x=(Math.random()-0.5)*300;const y=(Math.random()-1)*300;d.animate([{transform:`translate(0,0)`},{transform:`translate(${x}px,${y}px)`,opacity:0}],{duration:1000+Math.random()*600,easing:"ease-out"});document.body.appendChild(d);setTimeout(()=>d.remove(),1600);}}
 const stripeInner=$('#stripeInner');
 const jpTxt=$('#jpTxt'), hiraTxt=$('#hiraTxt');
@@ -165,7 +165,7 @@ function showCard(){
   const item=order[idx];
   stripeInner.className='stripeInner '+stripeSets[stripeIx%stripeSets.length]; stripeIx++;
   jpTxt.textContent=item.jp; hiraTxt.textContent=`（${item.hira}）`;
-  answerText.textContent=''; answerBox.classList.remove('wrong','correct','pulsing');
+  answerText.textContent=''; answerBox.classList.remove('wrong','correct','pulsing'); answerBox.style.background='#fff'; answerBox.style.color='#111';
   nextBtn.style.display='none'; answered=false; updateCounter();
 }
 
@@ -176,11 +176,19 @@ function evaluate(heard){
     answerBox.classList.add('correct');
     playSound('s_ding');
     confettiBurst(answerBox,60);
-    setTimeout(()=>playSage(order[idx].en),400);
-    score++; nextBtn.style.display='inline-block';
+    setTimeout(()=>{
+      playSage(order[idx].en,()=>{ nextBtn.style.display='inline-block'; });
+    },700);
+    score++;
   }else{
     answerBox.classList.add('wrong');
     playSound('s_fart');
+    setTimeout(()=>{
+      answerBox.classList.remove('wrong');
+      answerBox.style.background='#fff';
+      answerBox.style.color='#111';
+      answerText.textContent='';
+    },700);
   }
 }
 
@@ -202,7 +210,6 @@ function showResults(){
   if(score===15){for(let i=0;i<160;i++) setTimeout(()=>{confettiBurst(document.body,1)},i*10);}
 }
 
-$('#playAgain').addEventListener
 $('#playAgain').addEventListener('click',()=>{
   document.body.className='';
   order=shuffle([...MASTER]);
@@ -212,15 +219,12 @@ $('#playAgain').addEventListener('click',()=>{
   showCard();
 });
 
-// preload all audio
 function preloadAll(){
   MASTER.forEach(i=>{
-    const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);
-    a.load();
+    const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`); a.load();
   });
   ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
-    const el=$("#"+id);
-    if(el) el.load();
+    const el=$("#"+id); if(el) el.load();
   });
 }
 
