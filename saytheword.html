@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Booha Speak & Listen – January Week 1</title>
+<title>Booha Say the Word – January Week 1</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 <style>
 :root{
   --bg:#0b1530; --ink:#fff; --gold:#ffd166; --green:#22c55e; --red:#ef4444; --purple:#8b5cf6;
-  --outline:#ffffff26; --radius:26px; --micSize:54px; --barH:64px;
+  --outline:#ffffff26; --radius:26px; --micSize:56px; --barH:96px;
   --cuteBlue:#60a5fa; --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{min-height:100%; background:var(--bg); color:var(--ink); font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; display:flex;flex-direction:column; align-items:center;}
 
-/* Header / Footer */
+/* Header */
 header{padding:20px 16px 10px;text-align:center}
 header h1{font-family:'Cinzel',serif;letter-spacing:.5px;font-size:clamp(1.8rem,5.2vw,2.6rem);opacity:.95;}
 header h2{font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;font-size:clamp(2.0rem,6.2vw,3rem);text-shadow:0 0 10px rgba(255,255,255,.12)}
@@ -24,56 +24,51 @@ header h2{font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;font-size
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif}
 
-/* Layout */
+/* Pages */
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 28px}
 .page.active{display:block}
 
-main#game{display:flex;flex-direction:column;align-items:center;gap:18px}
+/* Game layout */
+main#game{display:flex;flex-direction:column;align-items:center;gap:28px;margin-top:30px;}
 
-/* Eigo Adventure stripe bar (wide bar behind JP) */
-.stripeBar{position:relative;width:min(800px,92vw);height:var(--barH);border-radius:999px;overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 0 0 4px rgba(255,255,255,.08);}
+/* Stripe bar */
+.stripeBar{position:relative;width:min(560px,90vw);height:var(--barH);border-radius:30px;overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 0 0 4px rgba(255,255,255,.08); margin:0 auto;}
 .stripeInner{position:absolute;inset:0; background-size:100% var(--barH); animation:stripesV 3.2s linear infinite; filter:saturate(1.05) brightness(1.08)}
 @keyframes stripesV{from{background-position:0 0}to{background-position:0 var(--barH)}}
-/* color sets */
 .sv1{background-image:repeating-linear-gradient(0deg,#ff7eb9 0 18px,#5ee6ff 18px 36px,#ffd166 36px 54px)}
 .sv2{background-image:repeating-linear-gradient(0deg,#a78bfa 0 18px,#60a5fa 18px 36px,#f472b6 36px 54px)}
 .sv3{background-image:repeating-linear-gradient(0deg,#34d399 0 18px,#fbbf24 18px 36px,#60a5fa 36px 54px)}
 .sv4{background-image:repeating-linear-gradient(0deg,#fca5a5 0 18px,#86efac 18px 36px,#93c5fd 36px 54px)}
 .sv5{background-image:repeating-linear-gradient(0deg,#f9a8d4 0 18px,#fef08a 18px 36px,#6ee7b7 36px 54px)}
 
-/* JP text sits above the bar */
-.jpWrap{position:relative;width:min(800px,92vw);display:flex;align-items:center;justify-content:flex-start;gap:14px;}
-.jpLabel{position:absolute;left:86px;right:20px;top:50%;transform:translateY(-50%); font-weight:900; letter-spacing:.02em; text-shadow:0 1px 0 #0006,0 3px 12px #0008; display:flex;flex-wrap:wrap;gap:.4rem;align-items:baseline}
-.jp{font-size:clamp(1.2rem,3.4vw,1.8rem)}
-.hira{font-size:clamp(.95rem,2.8vw,1.1rem);opacity:.95}
-/* Play icon at left of bar */
-.playIcon{position:absolute;left:20px;top:50%;transform:translateY(-50%); width:46px;height:46px;border-radius:999px; background:radial-gradient(circle,#ffd166 0%,#fbbf24 45%,#b45309 100%); display:grid;place-items:center; color:#000;font-weight:1000; box-shadow:0 0 10px rgba(255,215,100,.6),0 0 30px rgba(255,215,100,.3); animation:shimmer 2.4s infinite}
-@keyframes shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8)}}
+.jpLabel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center; text-align:center;font-weight:900;letter-spacing:.02em;text-shadow:0 1px 0 #0006,0 3px 12px #0008;}
+.jp{font-size:clamp(1.5rem,3.8vw,2.1rem)}
+.hira{font-size:clamp(1.05rem,3vw,1.25rem);opacity:.95}
 
-/* Student answer white box + attached purple mic */
-.answerRow{width:min(800px,92vw);display:grid;grid-template-columns:1fr var(--micSize);gap:14px;align-items:center}
-.answerBox{position:relative;height:70px;border-radius:999px;background:#fff;color:#111; display:flex;align-items:center;padding:0 20px;font-size:clamp(1.05rem,3.4vw,1.25rem); font-weight:800; letter-spacing:.01em; box-shadow:0 10px 26px rgba(0,0,0,.3)}
-.answerText{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
-/* State colors */
-.answerBox.correct{background:var(--green); color:#052b11; box-shadow:0 0 0 3px rgba(34,197,94,.75), 0 10px 28px rgba(34,197,94,.35)}
-.answerBox.wrong{background:#fee2e2; color:#991b1b; box-shadow:0 0 0 3px #ef4444aa; animation:shake .45s}
+/* Answer row */
+.answerRow{width:min(560px,90vw);display:grid;grid-template-columns:1fr var(--micSize);gap:16px;align-items:center;}
+.answerBox{position:relative;height:96px;border-radius:30px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-size:clamp(1.15rem,3.2vw,1.45rem);font-weight:800;letter-spacing:.01em;box-shadow:0 10px 26px rgba(0,0,0,.3);}
+.answerBox.correct{background:var(--green);color:#052b11;box-shadow:0 0 0 3px rgba(34,197,94,.75),0 10px 28px rgba(34,197,94,.35)}
+.answerBox.wrong{background:#fee2e2;color:#991b1b;box-shadow:0 0 0 3px #ef4444aa;animation:shake .45s}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 
 /* Mic button */
-.micBtn{width:var(--micSize);height:var(--micSize);border-radius:999px;border:none; cursor:pointer; display:grid;place-items:center; color:#fff; background:radial-gradient(circle at 30% 30%, #a78bfa 0%, #7c3aed 62%, #4c1d95 100%); box-shadow:0 0 16px #8b5cf6aa, 0 0 36px #7c3aed55}
-.micBtn .dot{width:14px;height:14px;border-radius:999px;background:#fff}
+.micBtn{width:var(--micSize);height:var(--micSize);border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 62%,#4c1d95 100%);box-shadow:0 0 16px #8b5cf6aa,0 0 36px #7c3aed55;}
+/* Mic glyph */
+.micBtn .icon{position:relative;width:18px;height:26px}
+.micBtn .icon::before{content:"";position:absolute;inset:0;border-radius:9px;background:#fff}
+.micBtn .icon::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:22px;height:10px;border-radius:0 0 11px 11px;background:#fff}
 .micBtn.idle{animation:breath 2.2s ease-in-out infinite}
 @keyframes breath{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
 .micBtn.listening{animation:pulse 1s ease-in-out infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.7)}70%{box-shadow:0 0 0 18px rgba(124,58,237,0)}100%{box-shadow:0 0 0 0 rgba(124,58,237,0)}}
 .micBtn:disabled{opacity:.5;filter:saturate(.6);cursor:not-allowed}
 
-/* Progress + controls */
-.actions{display:flex;gap:14px;justify-content:center;margin-top:18px}
-.btn{border:0;border-radius:28px;padding:12px 34px;font-weight:800;font-size:1.05rem;cursor:pointer;transition:transform .08s ease,box-shadow .2s ease,filter .2s ease;touch-action:manipulation;}
-.btn:active{transform:translateY(1px)}
-.btn-next{background:var(--gold);color:#000;box-shadow:var(--goldGlow);display:none}
-.btn-next:disabled{filter:saturate(.2) brightness(.8);box-shadow:none;cursor:not-allowed}
+/* Next button */
+.btn-next{background:var(--gold);color:#000;box-shadow:var(--goldGlow);display:none;border:0;border-radius:28px;padding:12px 34px;font-weight:800;font-size:1.05rem;cursor:pointer;transition:transform .08s ease,box-shadow .2s ease,filter .2s ease;}
+
+/* Counter */
+.counter{margin-top:10px;opacity:.9}
 
 /* Results */
 #page-results .result-box{min-height:62vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
@@ -93,47 +88,44 @@ main#game{display:flex;flex-direction:column;align-items:center;gap:18px}
 @keyframes puff{0%{opacity:.98;transform:translate(-50%,-50%) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
 
 @media (max-width:700px){
-  :root{--barH:58px; --micSize:50px}
-  .answerBox{height:64px}
+  :root{--barH:88px; --micSize:52px}
+  .answerBox{height:90px}
 }
 </style>
 </head>
-
 <body>
 <header>
   <h1>THE BOO-RICULUM</h1>
-  <h2>EIGO ADVENTURE – JANUARY WEEK 1</h2>
-  <div class="subtitle-stack"><div class="en">Speak & Listen</div><div class="jp">スピーク＆リッスン</div></div>
+  <h2>SAY THE WORD</h2>
+  <div class="subtitle-stack"><div class="en">January Week 1</div><div class="jp">１月第１週</div></div>
   <hr class="sep">
 </header>
 
+<!-- GAME -->
 <section id="page-game" class="page active">
-  <!-- Stripe bar + JP -->
-  <div class="stripeBar"><div id="stripeInner" class="stripeInner sv1"></div></div>
-  <div class="jpWrap">
-    <div class="playIcon" id="playJP">▶</div>
-    <div class="jpLabel"><span class="jp" id="jpTxt"></span> <span class="hira" id="hiraTxt"></span></div>
+  <div class="stripeBar">
+    <div id="stripeInner" class="stripeInner sv1"></div>
+    <div class="jpLabel"><span id="jpTxt" class="jp"></span><span id="hiraTxt" class="hira"></span></div>
   </div>
 
-  <!-- Answer row -->
   <div class="answerRow">
-    <div class="answerBox" id="answerBox"><div class="answerText" id="answerText">&nbsp;</div></div>
-    <button id="micBtn" class="micBtn idle" aria-label="Speak"><div class="dot"></div></button>
+    <div class="answerBox" id="answerBox"><div id="answerText">&nbsp;</div></div>
+    <button id="micBtn" class="micBtn idle" aria-label="Speak"><div class="icon"></div></button>
   </div>
 
-  <div class="actions">
-    <button id="nextBtn" class="btn btn-next">NEXT ➜</button>
-  </div>
+  <button id="nextBtn" class="btn-next">NEXT ➜</button>
+  <div id="counter" class="counter">1/15</div>
 </section>
 
+<!-- RESULTS -->
 <section id="page-results" class="page">
   <div class="result-box">
     <div id="resultMsg" class="result-msg">結果</div>
     <div id="resultScore" class="result-score">0/15 (0%)</div>
   </div>
-  <div class="actions">
-    <button id="playAgain" class="btn" style="background:#60a5fa;box-shadow:0 0 14px rgba(96,165,250,.8)">もう一度</button>
-    <button onclick="location.href='index.html'" class="btn" style="background:#60a5fa;box-shadow:0 0 14px rgba(96,165,250,.8)">Back to Menu</button>
+  <div class="actions" style="display:flex;gap:12px;justify-content:center">
+    <button id="playAgain" class="btn-next" style="display:inline-block">もう一度</button>
+    <button onclick="location.href='index.html'" class="btn-next" style="display:inline-block">Back to Menu</button>
   </div>
 </section>
 
@@ -183,27 +175,30 @@ function fartPoofAt(el){const {x,y}=centerOf(el);const p=document.createElement(
 function playSage(word){if(!word)return;const a=new Audio(`audio/${word.toLowerCase()}.mp3`);a.play().catch(()=>{})}
 function preloadSage(){MASTER.forEach(i=>{const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);a.preload='auto';a.load()})}
 
+// Normalize recognition (fix first-try false negatives)
+const norm=s=>s.toLowerCase().replace(/[^a-z]/g,''); // strips spaces/punct
+
 // ------------------------------
 // ELEMENTS
 // ------------------------------
 const stripeInner=$('#stripeInner');
 const jpTxt=$('#jpTxt');
 const hiraTxt=$('#hiraTxt');
-const playJP=$('#playJP');
 const answerBox=$('#answerBox');
 const answerText=$('#answerText');
 const micBtn=$('#micBtn');
 const nextBtn=$('#nextBtn');
+const counterEl=$('#counter');
 
 let order=shuffle([...MASTER]);
-let idx=0, score=0, stripeIx=0, recognition=null, listening=false;
+let idx=0, score=0, stripeIx=0, recognition=null, listening=false, answered=false;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
 // ------------------------------
-// SPEECH RECOGNITION (Eigo Adventure style mic)
+// SPEECH (Eigo Adventure behavior)
 // ------------------------------
 function startListening(){
-  if(listening) return;
+  if(listening || answered) return;
   if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
     alert('Speech Recognition not supported in this browser.');
     return;
@@ -218,35 +213,39 @@ function startListening(){
   recognition.start();
 
   recognition.onresult=e=>{
-    const heard=e.results[0][0].transcript.trim().toLowerCase();
-    answerText.textContent=heard;
+    const raw=e.results[0][0].transcript;
+    const heard=norm(raw);
+    answerText.textContent=raw.trim();
     evaluate(heard);
   };
   recognition.onerror=()=>{answerText.textContent='Try again.'};
-  recognition.onend=()=>{listening=false; micBtn.classList.remove('listening'); micBtn.classList.add('idle'); micBtn.disabled=false;};
+  recognition.onend=()=>{listening=false; if(!answered){micBtn.classList.remove('listening'); micBtn.classList.add('idle'); micBtn.disabled=false;}};
 }
-
 micBtn.addEventListener('click',startListening);
 
 // ------------------------------
 // GAME FLOW
 // ------------------------------
+function updateCounter(){counterEl.textContent=`${idx+1}/15`}
+
 function showCard(){
   const item=order[idx];
-  // rotate stripe color set
   stripeInner.className='stripeInner '+stripeSets[stripeIx%stripeSets.length];
   stripeIx++;
   jpTxt.textContent=item.jp; hiraTxt.textContent=`（${item.hira}）`;
   answerText.textContent=''; answerBox.classList.remove('wrong','correct');
   nextBtn.style.display='none';
+  answered=false; micBtn.disabled=false; micBtn.classList.add('idle'); micBtn.classList.remove('listening');
+  updateCounter();
 }
 
-function evaluate(heard){
-  const correct=order[idx].en.toLowerCase();
-  if(heard===correct){
+function evaluate(heardNorm){
+  const correct=norm(order[idx].en);
+  if(heardNorm===correct){
+    answered=true; micBtn.disabled=true; micBtn.classList.remove('listening');
     answerBox.classList.add('correct');
     sparkle(answerBox,28); confettiBurst(answerBox,56); playClone('s_ding');
-    playSage(correct);
+    playSage(order[idx].en);
     score++; nextBtn.style.display='inline-block';
   }else{
     answerBox.classList.add('wrong');
@@ -257,11 +256,6 @@ function evaluate(heard){
 nextBtn.addEventListener('click',()=>{
   idx++;
   if(idx<order.length){showCard()} else {showResults()}
-});
-
-playJP.addEventListener('click',()=>{
-  // Optional: play Sage JP prompt later; keeping silent to match request
-  // Could play a small click or spark here if desired
 });
 
 function showResults(){
@@ -289,7 +283,7 @@ function showResults(){
 
 $('#playAgain').addEventListener('click',()=>{
   document.body.className='';
-  order=shuffle([...MASTER]); idx=0; score=0; stripeIx=0;
+  order=shuffle([...MASTER]); idx=0; score=0; stripeIx=0; answered=false;
   $('#page-results').classList.remove('active'); $('#page-game').classList.add('active');
   showCard();
 });
