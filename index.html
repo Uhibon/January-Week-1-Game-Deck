@@ -14,7 +14,7 @@
   --spinDur: 5s;
 }
 
-/* Reset & base layout */
+/* Reset & layout */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Cinzel',serif;background:#000;color:#fff;overflow:hidden;}
 #welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;animation:fadeIn 1s ease;position:relative;}
@@ -35,9 +35,15 @@ h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2.5em;}
 a.deck{
   position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:180px;height:180px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
-  font-size:1.1rem;overflow:hidden;transition:transform .3s,filter .4s;
-  cursor:pointer;border:5px solid #000; /* outline hides spin edges */
-  box-shadow:0 0 6px rgba(255,255,255,.2);
+  font-size:1.1rem;overflow:hidden;cursor:pointer;
+  border:8px solid #000; /* thicker */
+  box-shadow:0 0 8px rgba(255,215,0,0.3), 0 0 16px rgba(255,215,0,0.15);
+  transition:box-shadow .3s ease, transform .3s ease, filter .4s ease;
+}
+
+/* Border glow on hover or during zoom */
+a.deck.active {
+  box-shadow:0 0 12px rgba(255,215,0,0.8), 0 0 32px rgba(255,215,0,0.5);
 }
 
 /* Base colors */
@@ -48,7 +54,7 @@ a.deck:nth-child(4){background:var(--purple);}
 a.deck:nth-child(5){background:var(--mint);}
 a.deck:nth-child(6){background:var(--orange);}
 
-/* Shared spiral overlay */
+/* Spiral */
 a.deck::after{
   content:"";position:absolute;top:50%;left:50%;width:170%;height:170%;border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
@@ -76,7 +82,7 @@ a.deck::after{
   pointer-events:none;z-index:0;
 }
 
-a.deck:hover{transform:scale(1.08);filter:brightness(1.25);}
+a.deck:hover{filter:brightness(1.25);}
 a.deck span{font-size:0.85em;color:#222;position:relative;z-index:1;}
 a.deck b{position:relative;z-index:1;display:block;}
 
@@ -93,7 +99,7 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   background:radial-gradient(circle at 35% 35%, #fff, #ffd86d 60%, rgba(255,215,0,0) 70%);
   box-shadow:0 0 8px rgba(255,215,0,.9),0 0 18px rgba(255,215,0,.6);
   pointer-events:none;opacity:0;
-  animation:sparkleFly 900ms ease-out forwards;
+  animation:sparkleFly 1000ms ease-out forwards;
 }
 @keyframes sparkleFly{
   0%{transform:translate(0,0) scale(1);opacity:1;}
@@ -123,21 +129,21 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
 </section>
 
 <!-- Audio -->
-<audio id="introSound" src="intro.mp3" preload="auto"></audio>
-<audio id="openSound"  src="openstart.mp3" preload="auto"></audio>
+<audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
+<audio id="openSound"  src="assets/audio/openstart.mp3" preload="auto"></audio>
 
 <script>
 const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
 
-function sparkleBurst(rect,count=36){
+function sparkleBurst(rect,count=55){
   const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
   for(let i=0;i<count;i++){
     const a=Math.random()*Math.PI*2;
     const x=cx+Math.cos(a)*(rect.width/2);
     const y=cy+Math.sin(a)*(rect.height/2);
-    const dx=(Math.cos(a)*60+Math.random()*40).toFixed(2);
-    const dy=(Math.sin(a)*60+Math.random()*40).toFixed(2);
+    const dx=(Math.cos(a)*80+Math.random()*40).toFixed(2);
+    const dy=(Math.sin(a)*80+Math.random()*40).toFixed(2);
     const s=document.createElement('div');
     s.className='sparkle';
     s.style.left=(x-3.5)+'px';
@@ -145,7 +151,7 @@ function sparkleBurst(rect,count=36){
     s.style.setProperty('--dx',dx+'px');
     s.style.setProperty('--dy',dy+'px');
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),900);
+    setTimeout(()=>s.remove(),1000);
   }
 }
 
@@ -154,35 +160,46 @@ document.querySelectorAll('.deck').forEach(deck=>{
     e.preventDefault();
     const target=deck.getAttribute('href');
 
+    deck.classList.add('active');
+    deck.style.setProperty('--spinDur','1.2s');
+
+    // play intro sound
     intro.currentTime=0;
     intro.volume=1;
-    intro.play();
+    intro.play().catch(()=>{});
 
-    deck.style.setProperty('--spinDur','1.2s');
     const r=deck.getBoundingClientRect();
     const cx=window.innerWidth/2-(r.left+r.width/2);
     const cy=window.innerHeight/2-(r.top+r.height/2);
-    deck.style.transition="transform 2.5s ease-in-out";
-    deck.style.transform=`translate(${cx}px,${cy}px) scale(2.5)`;
+    deck.style.transition="transform 3s ease-in-out";
+    deck.style.transform=`translate(${cx}px,${cy}px) scale(2.6)`;
     deck.style.zIndex="9999";
 
-    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),28),250);
+    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),45),200);
 
+    // extend timing (4.5s total before page opens)
     setTimeout(()=>{
       clearInterval(sparkleInt);
-      intro.pause();
-      openSound.currentTime=0;
-      openSound.play();
-      window.location.href=target;
-    },2500);
+      const fade=setInterval(()=>{
+        intro.volume=Math.max(0,intro.volume-0.1);
+        if(intro.volume<=0){
+          clearInterval(fade);
+          intro.pause();
+          openSound.currentTime=0;
+          openSound.play().catch(()=>{});
+          window.location.href=target;
+        }
+      },100);
+    },4500);
 
-    // return to spot after 2 sec (visual only if still here)
+    // after 2 more seconds, return to spot (for safety)
     setTimeout(()=>{
+      deck.classList.remove('active');
       deck.style.transition="transform 1s ease-in-out";
       deck.style.transform="none";
       deck.style.setProperty('--spinDur','5s');
       deck.style.zIndex="";
-    },4500);
+    },6500);
   });
 });
 </script>
