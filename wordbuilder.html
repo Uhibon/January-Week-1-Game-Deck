@@ -239,7 +239,8 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
 
 <script>
 const $=s=>document.querySelector(s);
-const MASTER=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+const MASTER_BASE=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+let WORDS=[]; // shuffled each reload
 let index=0,totalScore=0,firstTry=true;
 
 const drop=$("#dropZone"),bank=$("#bank"),play=$("#playBtn"),check=$("#checkBtn");
@@ -277,9 +278,9 @@ function playSfx(audio){
   }catch{}
 }
 
-/* Sage word audio */
+/* Sage word audio (map for all base words so shuffle doesn't matter) */
 const sage=new Map();
-MASTER.forEach(w=>{
+MASTER_BASE.forEach(w=>{
   const a=new Audio(`audio/${w}.mp3`);
   a.preload='auto'; a.load(); a.loop=false;
   sage.set(w,a);
@@ -287,7 +288,7 @@ MASTER.forEach(w=>{
 
 /* Speak every click; fizzle behind triangle */
 function speak(){
-  const w=MASTER[index], a=sage.get(w);
+  const w=WORDS[index], a=sage.get(w);
   if(!a) return;
   a.currentTime=0; play.classList.add("fizzy");
   a.play().catch(()=>{});
@@ -341,13 +342,11 @@ function addAura(tile){
   removeAura(tile);
   const aura=document.createElement('div');
   aura.className='aura';
-  // create small number of gently floating sparks
   const count=10;
   const w=tile.clientWidth, h=tile.clientHeight;
   for(let i=0;i<count;i++){
     const s=document.createElement('div');
     s.className='spark';
-    // random start/end offsets around the tile edges
     const x0=(Math.random()*w - w/2).toFixed(1)+"px";
     const y0=(Math.random()*h - h/2).toFixed(1)+"px";
     const x1=(Math.random()*w - w/2).toFixed(1)+"px";
@@ -371,14 +370,22 @@ function removeAura(tile){
 }
 
 /* ---- Smooth magnetic snap helper ---- */
-function animateToFixed(tile, x, y, duration=350){
+function animateToFixed(tile, x, y, duration=360){
   return new Promise(resolve=>{
     tile.style.transition='left '+duration+'ms cubic-bezier(0.22,0.61,0.36,1), top '+duration+'ms cubic-bezier(0.22,0.61,0.36,1)';
-    tile.style.left=x+'px';
-    tile.style.top=y+'px';
+    requestAnimationFrame(()=>{
+      tile.style.left=x+'px';
+      tile.style.top=y+'px';
+    });
     const done=()=>{ tile.style.transition=''; tile.removeEventListener('transitionend',done); resolve(); };
     tile.addEventListener('transitionend',done,{once:true});
   });
+}
+
+/* Find slot under a point reliably (tile may be on top) */
+function getHoverSlot(x,y){
+  const els=document.elementsFromPoint(x,y);
+  return els.find(el=>el.classList && el.classList.contains('slot')) || null;
 }
 
 /* ---------- Click-hold drag with release-to-drop (with smooth snap) ---------- */
@@ -402,6 +409,7 @@ function attachTileControls(tile){
     // Start rainbow while being handled
     tile.classList.add('dragging');
     tile.classList.remove('inSlot');
+    tile.style.background="#2a2f6b"; // brighten during drag so rainbow is visible
     removeAura(tile); // stop particles while moving
 
     // elevate & fix-position
@@ -420,8 +428,7 @@ function attachTileControls(tile){
     tile.style.left=nx+'px'; tile.style.top=ny+'px';
 
     // hover slot cue + gold glow on both
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    const slot=el ? (el.classList?.contains('slot') ? el : el.closest?.('.slot')) : null;
+    const slot=getHoverSlot(e.clientX,e.clientY);
     [...drop.children].forEach(s=>{ if(s!==slot && !s.firstChild) s.classList.remove('hover','preDrop'); });
     tile.classList.remove('preDropTile');
     if(slot && !slot.firstChild){
@@ -438,19 +445,18 @@ function attachTileControls(tile){
   }
 
   async function onPointerUp(e){
-    cleanupPointer(e);
+    try{ tile.releasePointerCapture(e.pointerId); }catch{}
 
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    const slot=el ? (el.classList?.contains('slot') ? el : el.closest?.('.slot')) : null;
-
-    // If it was a simple click on a chip sitting in a slot → send back to bank
-    if(!moved && wasInSlot){
-      sendToBank(tile);
-      return;
-    }
-
+    const slot=getHoverSlot(e.clientX,e.clientY);
     const brect=bank.getBoundingClientRect();
     const overBank=(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom);
+
+    // simple click on a chip sitting in a slot → send back to bank
+    if(!moved && wasInSlot && !slot){
+      sendToBank(tile);
+      finalizeDragCleanup();
+      return;
+    }
 
     if(slot && !slot.firstChild){
       // Smooth magnetic snap to slot center
@@ -462,21 +468,21 @@ function attachTileControls(tile){
       slot.classList.add('preDrop');
       await animateToFixed(tile, targetX, targetY, 360);
       placeIntoSlot(tile,slot);
+      finalizeDragCleanup();
     }else if(overBank){
       sendToBank(tile);
+      finalizeDragCleanup();
     }else{
-      // return to bank if not dropped on a slot area
+      // default: return to bank
       sendToBank(tile);
+      finalizeDragCleanup();
     }
     enableCheck();
   }
 
-  function cleanupPointer(e){
-    try{ tile.releasePointerCapture(e.pointerId); }catch{}
+  function finalizeDragCleanup(){
     document.removeEventListener('pointermove',onPointerMove);
     document.removeEventListener('pointerup',onPointerUp);
-    tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
-    tile.classList.remove('dragging','preDropTile');
     [...drop.children].forEach(s=>s.classList.remove('hover','preDrop'));
   }
 
@@ -485,9 +491,16 @@ function attachTileControls(tile){
 
 function placeIntoSlot(tile,slot){
   if(slot.firstChild && slot.firstChild!==tile){
-    // if occupied, swap back to bank
     sendToBank(slot.firstChild);
   }
+  // reset fixed positioning BEFORE appending so it takes slot flow
+  tile.style.position='';
+  tile.style.left='';
+  tile.style.top='';
+  tile.style.zIndex='';
+  tile.style.background='#2a3166'; // lighter normal in slot
+  tile.classList.remove('dragging','preDropTile');
+
   slot.appendChild(tile);
   slot.classList.add("filled");
   tile.classList.add("inSlot");
@@ -496,7 +509,9 @@ function placeIntoSlot(tile,slot){
 
 function sendToBank(tile){
   bank.appendChild(tile);
-  tile.classList.remove('inSlot','preDropTile');
+  tile.classList.remove('inSlot','preDropTile','dragging');
+  tile.style.background = '#1b2046'; // NORMAL color in bank
+  tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
   removeAura(tile);
   // clear 'filled' on any empty slots
   [...drop.children].forEach(s=>{ if(!s.firstChild) s.classList.remove('filled','preDrop'); });
@@ -529,7 +544,7 @@ function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?.textCon
 
 /* Round logic */
 check.addEventListener("click",()=>{
-  const ans=currentAnswer(), correct=MASTER[index];
+  const ans=currentAnswer(), correct=WORDS[index];
   if(ans===correct){
     if(firstTry) totalScore++;
     playSfx(sfx.ding);
@@ -561,8 +576,8 @@ check.addEventListener("click",()=>{
 });
 
 nextBtn.addEventListener("click",()=>{
-  index++; progressCount.textContent=`${Math.min(index+1,15)} / 15`;
-  if(index>=MASTER.length){ showResults(); return; }
+  index++; progressCount.textContent=`${Math.min(index+1,WORDS.length)} / ${WORDS.length}`;
+  if(index>=WORDS.length){ showResults(); return; }
   loadCard();
 });
 
@@ -573,7 +588,7 @@ function showResults(){
   pageResults.style.display="flex";
   backMenu.style.display="inline-block";
 
-  const pct=Math.round((totalScore/15)*100);
+  const pct=Math.round((totalScore/WORDS.length)*100);
   const msg=$("#resultMsg"), score=$("#resultScore");
   let bg="blueGlow", snd=sfx.r11_14, text="いいね！あと少しでパーフェクト！";
   if(totalScore<=5){ bg="redGlow"; snd=sfx.r0_5; text="ブーリキュラム見てないでしょ！"; }
@@ -582,7 +597,7 @@ function showResults(){
 
   document.body.className=bg;
   msg.textContent=text;
-  score.textContent=`${totalScore}/15（${pct}%）`;
+  score.textContent=`${totalScore}/${WORDS.length}（${pct}%）`;
 
   playSfx(snd);
 
@@ -601,21 +616,31 @@ function showResults(){
   }
 }
 
+/* Utils */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
 /* Game init */
 function loadCard(){
-  const w=MASTER[index]; firstTry=true;
+  const w=WORDS[index]; firstTry=true;
   buildSlots(w); buildBank(w);
   check.disabled=true; check.style.display="inline-block";
   nextWrap.style.display="none";
 }
 function initGame(){
+  WORDS = shuffle([...MASTER_BASE]); // shuffle 15 words each reload
   index=0; totalScore=0; firstTry=true;
   document.body.className="";
   pageResults.style.display="none";
   playWrap.style.display="flex";
   pageRound.style.display="flex";
   backMenu.style.display="none";
-  progressCount.textContent="1 / 15";
+  progressCount.textContent=`1 / ${WORDS.length}`;
   loadCard();
 }
 initGame();
