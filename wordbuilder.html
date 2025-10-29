@@ -1,369 +1,81 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Word Builder – January Week 1</title>
-<meta name="theme-color" content="#0b1530" />
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0b1530; --ink:#fff; --outline:#ffffff26; --heart:#ff4fa6; --radius:26px;
-  --gold1:#fdd86d; --gold2:#ffb347; --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
-  --green:#22c55e; --red:#ef4444; --purple:#7c3aed; --white:#fff; --muted:#94a3b8;
+  --bg:#0b1530; --ink:#fff; --outline:#ffffff26; --radius:26px;
+  --gold1:#fdd86d; --gold2:#ffb347; --goldGlow:0 0 10px #facc15,0 0 30px #fde68a;
+  --green:#22c55e; --red:#ef4444; --purple:#7c3aed;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg); color:var(--ink); font-family:system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans JP", sans-serif;}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,'Noto Sans JP',sans-serif;min-height:100vh;display:flex;flex-direction:column}
 
-/* Header / Footer */
-.header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
-  border-bottom:1px solid var(--outline); padding:16px; text-align:center}
-.header h1{font-family:Cinzel, serif; font-weight:900; letter-spacing:0.5px;}
-.header .sub{opacity:.9; font-family:"Noto Sans JP", sans-serif; margin-top:6px}
-.footer{position:sticky;bottom:0;z-index:40;background:linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
-  border-top:1px solid var(--outline); padding:10px 16px; text-align:center}
+header{padding:20px 16px 10px;text-align:center}
+header h1{font-family:'Cinzel',serif;letter-spacing:.5px;font-size:clamp(1.8rem,5.2vw,2.6rem);opacity:.95}
+header h2{font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;font-size:clamp(2.0rem,6.2vw,3rem);text-shadow:0 0 10px rgba(255,255,255,.12)}
+.subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
+.subtitle-stack .en::after{content:" / ";opacity:.8}
+@media(max-width:700px){.subtitle-stack{flex-direction:column;gap:.1rem}.subtitle-stack .en::after{content:""}}
 
-.main{max-width:1100px;margin:0 auto;padding:24px 16px 64px;}
-.section{display:grid;gap:18px;justify-items:center}
-
-/* Gold Play Button */
-.playBtn{appearance:none;border:0; cursor:pointer; padding:18px 34px; border-radius:999px; font-weight:800; font-size:22px;
-  color:#1b1327; background:linear-gradient(135deg, var(--gold1), var(--gold2)); box-shadow:var(--goldGlow);
-  position:relative; overflow:hidden; isolation:isolate;}
-.playBtn::after{content:""; position:absolute; inset:-200%; background:conic-gradient(from 0deg, #fff0 0 340deg, #ffffff66 360deg);
-  animation:shimmer 2.5s linear infinite; opacity:.7}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+.playBtn{appearance:none;border:none;cursor:pointer;padding:40px 70px;border-radius:999px;font-weight:900;font-size:2.2rem;color:#1b1327;background:linear-gradient(135deg,var(--gold1),var(--gold2));box-shadow:var(--goldGlow);position:relative;overflow:hidden;isolation:isolate;touch-action:manipulation}
+.playBtn::after{content:"";position:absolute;inset:-200%;background:conic-gradient(from 0deg,#fff0 0 340deg,#ffffff66 360deg);animation:shimmer 2.5s linear infinite;opacity:.7}
 @keyframes shimmer{to{transform:rotate(360deg)}}
-.playBtn:active{transform:scale(.98)}
+.playBtn:active{transform:scale(.97)}
 
-/* Word Card */
-.wordCard{width:min(860px, 96vw); border:1px solid var(--outline); border-radius:var(--radius); padding:18px; background:rgba(255,255,255,0.04);
-  box-shadow:0 10px 30px rgba(0,0,0,.25);}
-.jp{font-size:20px; text-align:center; margin-bottom:8px;}
-.jp b{font-weight:800}
-.hira{font-size:16px; opacity:.9; text-align:center; color:#e5e7eb}
+.wordCard{width:min(860px,96vw);border:1px solid var(--outline);border-radius:var(--radius);padding:18px;background:rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:1rem}
+.en{text-align:center;font-size:2rem;margin-bottom:.4rem;font-weight:900;letter-spacing:.05em}
+.dropZone{margin:20px auto 10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:70px}
+.slot{width:54px;height:66px;border:2px dashed #ffffff30;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;background:#12142a80;transition:background .3s,border-color .3s,box-shadow .3s}
+.slot.glow{box-shadow:0 0 12px #7c3aed;}
+.slot.filled{background:#14183a;border:2px solid #ffffff70;box-shadow:0 0 10px #facc15}
 
-/* Drop Zone */
-.dropZone{margin:16px auto 6px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; min-height:70px;}
-.slot{width:54px;height:66px;border:2px dashed #ffffff30;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px;
-  font-weight:900;background:#12142a80; transition:transform .2s ease, background .2s ease, border-color .2s ease}
-.slot.filled{border-style:solid;border-color:#ffffff70;background:#14183a}
-.slot.correct{background:#052e15;border-color:#16a34a}
-.slot.incorrect{background:#3a0e13;border-color:#ef4444}
+.bank{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:14px 10px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px dashed #ffffff22;min-height:74px}
+.tile{user-select:none;-webkit-user-drag:none;width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;background:#1b2046;border:1px solid #8690ff33;box-shadow:0 6px 12px rgba(0,0,0,.25);cursor:grab;transition:transform .15s ease,box-shadow .15s ease}
+.tile:active{cursor:grabbing;transform:scale(.96)}
 
-/* Letter Bank */
-.bank{display:flex;gap:12px;justify-content:center;flex-wrap:wrap; padding:14px 10px; border-radius:16px; background:rgba(255,255,255,0.03);
-  border:1px dashed #ffffff22; min-height:74px}
-.tile{user-select:none; -webkit-user-drag:none; width:54px;height:54px;border-radius:12px; display:flex; align-items:center; justify-content:center;
-  font-weight:900;font-size:28px; background:#1b2046; border:1px solid #8690ff33; box-shadow:0 6px 12px rgba(0,0,0,.25);
-  cursor:grab; transition:transform .15s ease, box-shadow .15s ease, opacity .15s}
-.tile:active{cursor:grabbing; transform:scale(.96)}
-.tile.ghost{opacity:.5}
+.btn{appearance:none;border:none;cursor:pointer;padding:12px 20px;border-radius:14px;font-weight:800;font-size:16px;color:#0b1530;background:#e5e7eb;margin:0 5px}
+.btn.primary{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
 
-/* Controls */
-.controls{display:flex; gap:14px; justify-content:center; align-items:center; margin-top:8px}
-.btn{appearance:none;border:0; cursor:pointer; padding:12px 20px; border-radius:14px; font-weight:800; font-size:16px; color:#0b1530;
-  background:#e5e7eb;}
-.btn[disabled]{opacity:.5; cursor:not-allowed}
-.btn.primary{background:linear-gradient(135deg,#a78bfa,#7c3aed); color:#fff; box-shadow:0 0 20px #7c3aed66}
-.btn.success{background:linear-gradient(135deg,#34d399,#059669); color:#052e15}
-.btn.danger{background:linear-gradient(135deg,#fb7185,#ef4444); color:#3a0e13}
-.counter{opacity:.9}
-
-/* Animations */
-.correctGlow{animation:glow 1200ms ease-in-out forwards}
-@keyframes glow{0%{box-shadow:0 0 0 rgba(34,197,94,0)} 30%{box-shadow:0 0 20px rgba(34,197,94,.7)} 100%{box-shadow:0 0 0 rgba(34,197,94,0)}}
-.shake{animation:shake .36s cubic-bezier(.36,.07,.19,.97) both}
-@keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
-.explode{animation:explode .6s ease forwards}
-@keyframes explode{0%{transform:translate(0,0) scale(1); opacity:1} 60%{transform:translate(var(--dx),var(--dy)) scale(.8); opacity:.1} 100%{transform:translate(0,0) scale(1); opacity:0}}
-.sparkle{position:relative}
-.sparkle::after{content:"";position:absolute;inset:-2px;border-radius:16px;box-shadow:0 0 18px #22c55e;opacity:0;animation:spark .9s ease forwards}
-@keyframes spark{0%{opacity:0} 30%{opacity:1} 100%{opacity:0}}
-
-/* Confetti */
-#confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:60}
-.confetti{position:absolute; width:10px; height:10px; background:currentColor; will-change:transform, opacity;}
-
-/* Helper text */
-.helper{font-size:12px; color:#cbd5e1; text-align:center; opacity:.85;}
-
+footer{text-align:center;font-size:.9rem;opacity:.8;padding:12px 0;border-top:1px solid var(--outline)}
 </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Booha Word Builder</h1>
-    <div class="sub">January Week 1 – １月第１週</div>
+<header>
+  <h1>Booha Word Builder</h1>
+  <h2>January Week 1</h2>
+  <div class="subtitle-stack"><span class="en">Word Builder</span></div>
+</header>
+
+<main>
+  <button class="playBtn" id="playBtn">▶ PLAY</button>
+  <div class="wordCard" id="card">
+    <div class="en" id="en">—</div>
+    <div class="dropZone" id="dropZone"></div>
+    <div class="bank" id="bank"></div>
+    <button class="btn primary" id="checkBtn" disabled>CHECK</button>
   </div>
+</main>
 
-  <div class="main">
-    <div class="section">
-      <button class="playBtn" id="playBtn" aria-label="Play word audio">▶ PLAY</button>
-
-      <div class="wordCard" id="card">
-        <div class="jp" id="jp"><b>—</b></div>
-        <div class="hira" id="hira">—</div>
-
-        <div class="dropZone" id="dropZone" aria-label="Answer area"></div>
-        <div class="bank" id="bank" aria-label="Letter tiles"></div>
-
-        <div class="controls">
-          <button class="btn primary" id="checkBtn" disabled>CHECK ／ チェック</button>
-          <button class="btn" id="resetBtn">RESET ／ リセット</button>
-          <button class="btn success" id="nextBtn" style="display:none">NEXT ／ 次へ</button>
-          <div class="counter" id="counter">1 / 15</div>
-        </div>
-        <div class="helper">Drag letters into the slots. 正しい順番にドラッグして並べましょう。</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <small>Local audio in <code>/audio</code>. SFX in <code>/assets/audio</code>.</small>
-  </div>
-
-  <div id="confetti"></div>
+<footer>
+  <p>©2025 Bryan's English School | Local audio: /audio | SFX: /assets/audio</p>
+</footer>
 
 <script>
-// ----------------------
-// DATA
-// ----------------------
-const MASTER=[
-  {en:"goal",jp:"目標",hira:"もくひょう"},
-  {en:"plan",jp:"計画",hira:"けいかく"},
-  {en:"future",jp:"未来",hira:"みらい"},
-  {en:"dream",jp:"夢",hira:"ゆめ"},
-  {en:"challenge",jp:"挑戦",hira:"ちょうせん"},
-  {en:"try",jp:"挑戦する",hira:"ちょうせん する"},
-  {en:"change",jp:"変える",hira:"かえる"},
-  {en:"habit",jp:"習慣",hira:"しゅうかん"},
-  {en:"exercise",jp:"運動",hira:"うんどう"},
-  {en:"study",jp:"勉強",hira:"べんきょう"},
-  {en:"learn",jp:"学ぶ",hira:"まなぶ"},
-  {en:"practice",jp:"練習",hira:"れんしゅう"},
-  {en:"success",jp:"成功",hira:"せいこう"},
-  {en:"focus",jp:"集中",hira:"しゅうちゅう"},
-  {en:"motivation",jp:"やる気",hira:"やるき"}
-];
-
-// Shuffle card order for variety, but keep deterministic per session
-const deck = [...MASTER].sort(()=>Math.random()-0.5);
-let index = 0;
-
-// ----------------------
-// AUDIO (local)
-// ----------------------
-const sfx = {
-  ding: new Audio('assets/audio/ding.mp3'),
-  fart: new Audio('assets/audio/fart.mp3')
-};
-// Preload SFX
-Object.values(sfx).forEach(a=>{a.preload='auto'});
-
-const sageCache = new Map();
-function getSage(word){
-  const key = word.toLowerCase();
-  if(!sageCache.has(key)){
-    const a = new Audio(`audio/${key}.mp3`);
-    a.preload='auto';
-    sageCache.set(key,a);
-  }
-  return sageCache.get(key);
-}
-
-// ----------------------
-// ELEMENTS
-// ----------------------
-const jpEl = document.getElementById('jp');
-const hiraEl = document.getElementById('hira');
-const dropZone = document.getElementById('dropZone');
-const bank = document.getElementById('bank');
-const playBtn = document.getElementById('playBtn');
-const checkBtn = document.getElementById('checkBtn');
-const nextBtn = document.getElementById('nextBtn');
-const resetBtn = document.getElementById('resetBtn');
-const counter = document.getElementById('counter');
-const card = document.getElementById('card');
-const confettiRoot = document.getElementById('confetti');
-
-// ----------------------
-// HELPERS
-// ----------------------
-function textSlots(word){
-  dropZone.innerHTML='';
-  const letters = [...word];
-  for(let i=0;i<letters.length;i++){
-    const slot = document.createElement('div');
-    slot.className='slot';
-    slot.dataset.index=i;
-    slot.addEventListener('dragover', e=>{e.preventDefault(); slot.style.transform='scale(1.06)'});
-    slot.addEventListener('dragleave', ()=>{slot.style.transform='scale(1)'});
-    slot.addEventListener('drop', e=>{
-      e.preventDefault(); slot.style.transform='scale(1)';
-      const id = e.dataTransfer.getData('text/plain');
-      const tile = document.getElementById(id);
-      if(!tile) return;
-      // If slot already filled, send old tile back to bank
-      if(slot.firstChild){ bank.appendChild(slot.firstChild); }
-      slot.appendChild(tile);
-      slot.classList.add('filled');
-      evaluateCheckEnabled();
-    });
-    // allow dragging a tile out by dropping to bank or other slot
-    dropZone.appendChild(slot);
-  }
-}
-
-function makeBankTiles(word){
-  bank.innerHTML='';
-  const chars = [...word];
-  // scramble until order != original (when possible)
-  let scrambled = [...chars];
-  if(chars.length>1){
-    do { scrambled.sort(()=>Math.random()-0.5); } while(scrambled.join('')===word);
-  }
-  scrambled.forEach((ch, idx)=>{
-    const t=document.createElement('div');
-    t.className='tile';
-    t.id = `tile-${idx}-${Date.now()}`;
-    t.textContent=ch.toUpperCase();
-    t.draggable=true;
-    t.addEventListener('dragstart', e=>{
-      e.dataTransfer.setData('text/plain', t.id);
-      requestAnimationFrame(()=>t.classList.add('ghost'));
-    });
-    t.addEventListener('dragend', ()=>t.classList.remove('ghost'));
-    // Allow dragging back to bank
-    bank.addEventListener('dragover', e=>e.preventDefault());
-    bank.addEventListener('drop', e=>{e.preventDefault(); if(t.parentElement!==bank){ bank.appendChild(t); evaluateCheckEnabled(); }});
-    bank.appendChild(t);
-  });
-}
-
-function currentAnswer(){
-  return [...dropZone.querySelectorAll('.slot')].map(s=>s.firstChild? s.firstChild.textContent.toLowerCase(): '').join('');
-}
-
-function allFilled(){
-  return [...dropZone.querySelectorAll('.slot')].every(s=>s.firstChild);
-}
-
-function evaluateCheckEnabled(){
-  checkBtn.disabled = !allFilled();
-}
-
-function setCounter(){ counter.textContent = `${index+1} / ${deck.length}`; }
-
-function clearStyles(){
-  dropZone.classList.remove('shake','sparkle','correctGlow');
-  [...dropZone.children].forEach(s=>s.classList.remove('correct','incorrect'));
-}
-
-function playConfetti(){
-  const N = 120;
-  const w = window.innerWidth; const h = window.innerHeight;
-  for(let i=0;i<N;i++){
-    const piece = document.createElement('div');
-    piece.className='confetti';
-    piece.style.left = (Math.random()*w) + 'px';
-    piece.style.top = '-10px';
-    piece.style.color = ['#f59e0b','#22c55e','#3b82f6','#a78bfa','#ef4444','#f472b6'][Math.floor(Math.random()*6)];
-    const dx = (Math.random()*2-1)*200;
-    const dy = 600 + Math.random()*400;
-    const rot = Math.random()*720;
-    piece.animate([
-      {transform:`translate(0,0) rotate(0deg)`, opacity:1},
-      {transform:`translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity:0}
-    ], {duration: 1400 + Math.random()*800, easing:'cubic-bezier(.22,.61,.36,1)'});
-    confettiRoot.appendChild(piece);
-    setTimeout(()=>piece.remove(), 2400);
-  }
-}
-
-function explodeTilesThenReset(){
-  const tiles = [...dropZone.querySelectorAll('.tile')];
-  tiles.forEach(t=>{
-    const dx = (Math.random()*2-1)*120 + 'px';
-    const dy = (Math.random()*2-1)*80 + 'px';
-    t.style.setProperty('--dx', dx);
-    t.style.setProperty('--dy', dy);
-    t.classList.add('explode');
-  });
-  setTimeout(()=>{
-    tiles.forEach(t=>{ t.classList.remove('explode'); bank.appendChild(t); });
-    [...dropZone.children].forEach(s=>s.classList.remove('filled'));
-    evaluateCheckEnabled();
-  }, 650);
-}
-
-function loadCard(){
-  clearStyles();
-  const {en,jp,hira} = deck[index];
-  jpEl.innerHTML = `<b>${jp}</b>`;
-  hiraEl.textContent = hira;
-  textSlots(en);
-  makeBankTiles(en);
-  setCounter();
-  nextBtn.style.display='none';
-  checkBtn.disabled = true;
-}
-
-function speakWord(delayMs=0){
-  const {en} = deck[index];
-  const a = getSage(en);
-  a.currentTime=0;
-  if(delayMs){ setTimeout(()=>a.play().catch(()=>{}), delayMs); }
-  else{ a.play().catch(()=>{}); }
-}
-
-// ----------------------
-// EVENTS
-// ----------------------
-playBtn.addEventListener('click',()=>{
-  speakWord(0);
-});
-
-resetBtn.addEventListener('click',()=>{
-  const tiles = [...dropZone.querySelectorAll('.tile')];
-  tiles.forEach(t=>bank.appendChild(t));
-  [...dropZone.children].forEach(s=>s.classList.remove('filled','correct','incorrect'));
-  checkBtn.disabled = true;
-});
-
-checkBtn.addEventListener('click', async ()=>{
-  const {en} = deck[index];
-  const ans = currentAnswer();
-  if(ans === en){
-    // Correct flow
-    [...dropZone.children].forEach(s=>s.classList.add('correct'));
-    dropZone.classList.add('sparkle','correctGlow');
-    checkBtn.disabled = true;
-    // SFX then confetti then Sage then Next
-    try{ sfx.ding.currentTime=0; await sfx.ding.play(); }catch{}
-    playConfetti();
-    // small pause for effect
-    setTimeout(()=>{ speakWord(200); }, 300);
-    setTimeout(()=>{ nextBtn.style.display='inline-block'; }, 1200);
-  } else {
-    // Incorrect flow
-    [...dropZone.children].forEach(s=>s.classList.add('incorrect'));
-    dropZone.classList.add('shake');
-    try{ sfx.fart.currentTime=0; sfx.fart.play(); }catch{}
-    setTimeout(()=>dropZone.classList.remove('shake'), 400);
-    explodeTilesThenReset();
-  }
-});
-
-nextBtn.addEventListener('click',()=>{
-  index = (index+1) % deck.length;
-  loadCard();
-  // Auto prompt: play word after 300ms like other games
-  setTimeout(()=>speakWord(0), 300);
-});
-
-// Initialize
+const MASTER=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+let index=0;
+const en=document.getElementById('en');const drop=document.getElementById('dropZone');const bank=document.getElementById('bank');const play=document.getElementById('playBtn');const check=document.getElementById('checkBtn');
+function loadCard(){const eng=MASTER[index];en.textContent=eng.toUpperCase();drop.innerHTML='';bank.innerHTML='';const letters=[...eng];letters.forEach(()=>{const s=document.createElement('div');s.className='slot';drop.appendChild(s);});let scrambled=[...letters].sort(()=>Math.random()-.5);scrambled.forEach((ch,i)=>{const t=document.createElement('div');t.className='tile';t.textContent=ch.toUpperCase();t.draggable=true;t.addEventListener('touchstart',()=>t.dataset.dragging=true);t.addEventListener('touchmove',e=>{e.preventDefault();const touch=e.touches[0];t.style.position='fixed';t.style.left=touch.clientX-25+'px';t.style.top=touch.clientY-25+'px';});t.addEventListener('touchend',e=>{t.style.position='';const touch=e.changedTouches[0];const target=document.elementFromPoint(touch.clientX,touch.clientY);if(target&&target.classList.contains('slot')&&!target.firstChild){target.appendChild(t);target.classList.add('filled');t.classList.add('lit');glowNextSlot();evaluate();}else{bank.appendChild(t);}t.dataset.dragging=false;});t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',i));t.addEventListener('dragend',()=>{glowNextSlot();evaluate();});bank.appendChild(t);});glowNextSlot();}
+function glowNextSlot(){drop.querySelectorAll('.slot').forEach(s=>s.classList.remove('glow'));const next=[...drop.children].find(s=>!s.firstChild);if(next)next.classList.add('glow');}
+function evaluate(){const filled=[...drop.children].every(s=>s.firstChild);check.disabled=!filled;}
+function speak(){const a=new Audio(`audio/${MASTER[index]}.mp3`);a.play();}
+play.onclick=()=>speak();
+check.onclick=()=>{const ans=[...drop.children].map(s=>s.firstChild?s.firstChild.textContent.toLowerCase():'').join('');if(ans===MASTER[index]){drop.querySelectorAll('.slot').forEach(s=>{s.style.background='#052e15';s.style.boxShadow='0 0 20px #22c55e';});new Audio('assets/audio/ding.mp3').play();setTimeout(()=>{index=(index+1)%MASTER.length;loadCard();speak();},1500);}else{drop.querySelectorAll('.slot').forEach(s=>{s.style.background='#3a0e13';s.style.boxShadow='0 0 20px #ef4444';if(s.firstChild){bank.appendChild(s.firstChild);}s.classList.remove('filled');});new Audio('assets/audio/fart.mp3').play();setTimeout(()=>{drop.querySelectorAll('.slot').forEach(s=>{s.style.background='#12142a80';s.style.boxShadow='none';});glowNextSlot();evaluate();},1000);}}
 loadCard();
-setTimeout(()=>speakWord(300), 500);
 </script>
 </body>
 </html>
