@@ -320,18 +320,18 @@ function spawnHeart(x,y){
   overlay.appendChild(h); setTimeout(()=>h.remove(),1300);
 }
 function spawnFartAtTileMid(tile){
-  const r = tile.getBoundingClientRect();
-  const midX = r.left + r.width / 2;
-  // small correction for first render + unified vertical line
-  const midY = r.top + r.height / 2 - 8; 
-  const f = document.createElement("div");
-  f.className = "fart";
-  f.textContent = "💨";
-  f.style.left = (midX - 18) + "px";
-  f.style.top  = (midY - 18) + "px";
-  f.style.transform = "translateY(-2px)"; // extra gentle alignment
-  overlay.appendChild(f);
-  setTimeout(() => f.remove(), 1200);
+  requestAnimationFrame(() => {  // wait one frame for layout to settle
+    const r = tile.getBoundingClientRect();
+    const midX = r.left + r.width / 2;
+    const midY = r.top - 6; // top-aligned puff
+    const f = document.createElement("div");
+    f.className = "fart";
+    f.textContent = "💨";
+    f.style.left = (midX - 18) + "px";
+    f.style.top  = (midY - 18) + "px";
+    overlay.appendChild(f);
+    setTimeout(() => f.remove(), 1200);
+  });
 }
 
 function flashRedScreen(){
