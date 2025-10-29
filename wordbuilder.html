@@ -104,7 +104,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .dropZone,.bank{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 .slot,.tile{
   width:96px;height:96px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .12s, filter .1s;
+  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .12s, filter .1s, color .1s;
 }
 .slot{
   border:2px dashed #ffffff3a;
@@ -142,29 +142,39 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   filter:hue-rotate(var(--hue,0deg)) saturate(1.15) brightness(1.05);
 }
 
-/* In-slot = lighter normal + pulsing gold glow */
+/* In-slot = unified lighter + pulsing gold glow + black text */
 .tile.inSlot{
-  background:#fef3c7; /* lighter normal */
+  background:#fff4c2; /* uniform light-gold */
+  color:#000; /* black text */
   animation:glowPulse 1.6s ease-in-out infinite;
 }
 
-/* Sparkles rising (overlay-based) */
+/* Sparkles rising from tile top (overlay-based) */
 .auraTop{
   position:fixed; pointer-events:none;
-  transform:translateX(-50%); /* we set left to tile center, this centers container */
+  transform:translateX(-50%); /* left is set to tile center; this centers container */
   z-index:9998;
 }
 .spark{
   position:absolute; width:6px; height:6px; border-radius:50%;
-  background:radial-gradient(circle,#fff 0%, #ffe49a 40%, transparent 70%);
-  animation:riseSpark 1.6s linear infinite;
-  will-change:transform,opacity;
+  color:#ffd54a; /* start gold */
+  background:currentColor;
+  box-shadow:0 0 6px currentColor, 0 0 12px currentColor;
+  animation: riseSpark 3.8s ease-in-out infinite, sparkleColor 3.8s linear infinite;
+  will-change:transform,opacity,box-shadow,color;
+  opacity:.75;
+}
+@keyframes sparkleColor{
+  0%   { color:#ffd54a; }      /* gold */
+  50%  { color:#ffc58a; }      /* peach */
+  100% { color:#ffc0cb; }      /* pale pink */
 }
 @keyframes riseSpark{
-  0%  { transform:translate(var(--sx, 0px), 0) scale(.9); opacity:0; }
-  15% { opacity:.9; }
-  50% { transform:translate(var(--sx, 0px), -36px) scale(1.05); opacity:1; }
-  100%{ transform:translate(var(--sx, 0px), -72px) scale(1.2); opacity:0; }
+  0%   { transform:translate(var(--sx, 0px), 0) scale(.85); opacity:0; }
+  10%  { opacity:.55; }
+  35%  { transform:translate(var(--sx, 0px), -18px) scale(.95); opacity:.8; }
+  70%  { transform:translate(var(--sx, 0px), -44px) scale(1.05); opacity:.82; } /* linger visible */
+  100% { transform:translate(var(--sx, 0px), -70px) scale(1.18); opacity:0; }
 }
 
 /* Controls + Next + counter under buttons */
@@ -347,35 +357,31 @@ function addAura(tile){
   removeAura(tile);
   const c=document.createElement('div');
   c.className='auraTop';
-  // position container over tile top center and keep it there
+  // keep container positioned over tile top center
   let running=true;
   function raf(){
     if(!running) return;
-    if(!tile.isConnected || !tile.classList.contains('inSlot')){
-      running=false; c.remove(); return;
-    }
+    if(!tile.isConnected || !tile.classList.contains('inSlot')){ running=false; c.remove(); return; }
     const r=tile.getBoundingClientRect();
     c.style.left = (r.left + r.width/2) + 'px';
-    c.style.top  = (r.top - 6) + 'px'; // just above top edge
+    c.style.top  = (r.top - 6) + 'px';
     requestAnimationFrame(raf);
   }
   requestAnimationFrame(raf);
 
-  // spawn a few continuous, gently staggered sparks
   for(let i=0;i<10;i++){
     const s=document.createElement('div');
     s.className='spark';
     s.style.setProperty('--sx', (Math.random()*28 - 14).toFixed(1)+'px'); // -14..14px drift
     s.style.left='0px'; s.style.top='0px';
-    s.style.animationDelay=(Math.random()*1.2).toFixed(2)+'s';
+    s.style.animationDelay=(Math.random()*1.6).toFixed(2)+'s';
     c.appendChild(s);
   }
   overlay.appendChild(c);
   tile._auraRef=c;
 }
 function removeAura(tile){
-  const c=tile._auraRef;
-  if(c){ c.remove(); tile._auraRef=null; }
+  const c=tile._auraRef; if(c){ c.remove(); tile._auraRef=null; }
 }
 
 /* ====== Drag & Drop with smooth magnet ====== */
@@ -484,7 +490,8 @@ function placeIntoSlot(tile,slot){
 
   // reset fixed positioning before appending
   tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
-  tile.style.background='#fef3c7';
+  tile.style.background='#fff4c2';
+  tile.style.color='#000';
   tile.classList.remove('dragging','preDropTile');
 
   slot.appendChild(tile);
@@ -496,6 +503,7 @@ function sendToBank(tile){
   bank.appendChild(tile);
   tile.classList.remove('inSlot','preDropTile','dragging');
   tile.style.background = '#1b2046'; // NORMAL in bank
+  tile.style.color = '#fff';
   tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
   removeAura(tile);
   [...drop.children].forEach(s=>{ if(!s.firstChild) s.classList.remove('filled','preDrop'); });
