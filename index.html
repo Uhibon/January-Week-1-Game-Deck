@@ -96,7 +96,7 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   background:radial-gradient(circle at 35% 35%, #fff, #ffd86d 60%, rgba(255,215,0,0) 70%);
   box-shadow:0 0 8px rgba(255,215,0,.9),0 0 22px rgba(255,215,0,.7);
   pointer-events:none;opacity:0;
-  animation:sparkleFly 2s ease-out forwards; /* linger longer */
+  animation:sparkleFly 2.5s ease-out forwards; /* linger longer */
 }
 @keyframes sparkleFly{
   0%{transform:translate(0,0) scale(1);opacity:1;}
@@ -133,14 +133,14 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
 const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
 
-function sparkleBurst(rect, count=65){
+function sparkleBurst(rect,count=65){
   const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
   for(let i=0;i<count;i++){
     const a=Math.random()*Math.PI*2;
     const x=cx+Math.cos(a)*(rect.width/2);
     const y=cy+Math.sin(a)*(rect.height/2);
-    const dx=(Math.cos(a)*(60+Math.random()*60)).toFixed(2);
-    const dy=(Math.sin(a)*(60+Math.random()*60)).toFixed(2);
+    const dx=(Math.cos(a)*(80+Math.random()*60)).toFixed(2);
+    const dy=(Math.sin(a)*(80+Math.random()*60)).toFixed(2);
     const s=document.createElement('div');
     s.className='sparkle';
     s.style.left=(x-3.5)+'px';
@@ -148,7 +148,7 @@ function sparkleBurst(rect, count=65){
     s.style.setProperty('--dx',dx+'px');
     s.style.setProperty('--dy',dy+'px');
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),2000);
+    setTimeout(()=>s.remove(),2500);
   }
 }
 
@@ -170,9 +170,9 @@ document.querySelectorAll('.deck').forEach(deck=>{
     deck.style.transform=`translate(${cx}px,${cy}px) scale(2.6)`;
     deck.style.zIndex="9999";
 
-    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),40),220);
+    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),40),200);
 
-    // fade out intro → play openstart → then open game
+    // fade out intro → play openstart → jump to fullscreen → open game
     setTimeout(()=>{
       clearInterval(sparkleInt);
       const fade=setInterval(()=>{
@@ -182,22 +182,26 @@ document.querySelectorAll('.deck').forEach(deck=>{
           intro.pause();
           openSound.currentTime=0;
           openSound.play().catch(()=>{});
-          // wait briefly so openstart plays first
-          setTimeout(()=>{
-            window.location.href=target;
-          },800);
+          // jump expand to full screen for ultra-wide look
+          deck.style.transition="transform 0.5s ease-out";
+          deck.style.transform="translate(0,0) scale(14)";
+          deck.style.borderRadius="0";
+          deck.style.setProperty('--spinDur','0.6s');
+          deck.style.zIndex="99999";
+          // open game when the jump completes
+          setTimeout(()=>window.location.href=target,500);
         }
       },100);
     },4000);
 
-    // reset visuals automatically
+    // optional reset if user returns
     setTimeout(()=>{
       deck.classList.remove('active');
       deck.style.transition="transform 1s ease-in-out";
       deck.style.transform="none";
       deck.style.setProperty('--spinDur','5s');
       deck.style.zIndex="";
-    },5200);
+    },6000);
   });
 });
 </script>
