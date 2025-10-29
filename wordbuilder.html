@@ -9,6 +9,7 @@
 :root{
   --bg:#0b1530; --ink:#fff; --outline:#ffffff26;
   --green:#22c55e; --red:#ef4444; --purple:#7c3aed;
+  --gold:#ffd54a; --goldSoft:#ffe59966;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -66,26 +67,34 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .dropZone,.bank{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 .slot,.tile{
   width:96px;height:96px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .15s;
+  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .15s, filter .1s;
 }
 .slot{
-  border:2px dashed #ffffff3a;         /* lighter border */
-  background:#27306b99;                /* lighter base than before */
+  border:2px dashed #ffffff3a;
+  background:#27306b99;
 }
 .slot.filled{
-  background:#2a2f6b;                  /* slightly darker when filled */
+  background:#2a2f6b;
   border-color:#fff9;
   box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66; /* steady gold */
 }
-.slot.gold{ /* kept for steady gold if needed elsewhere */
-  background:#2a2f6b;
-  border-color:#ffd54a;
-  box-shadow:0 0 18px #ffd54a,0 0 32px #ffe59966;
+/* Hover highlight for auto-drop cue */
+.slot.hover{
+  border-color:#fff;
+  box-shadow:0 0 22px #7dd3fc66,0 0 44px #a78bfa55;
 }
 
 .tile{
   background:#1b2046;border:1px solid #8690ff33;box-shadow:0 8px 14px rgba(0,0,0,.28);
   cursor:grab;color:#fff
+}
+/* extra fun glow while dragging */
+.tile.dragging{box-shadow:0 0 22px #93c5fd80,0 0 44px #a78bfa60}
+
+/* Steady gold glow when sitting in a slot (not pulsing) */
+.tile.inSlot{
+  box-shadow:0 0 18px var(--gold),0 0 32px var(--goldSoft);
+  filter:saturate(1.05)
 }
 
 /* Controls + Next + counter under buttons */
@@ -103,15 +112,12 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes nextPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 #progressCount{margin-top:10px;font-weight:700;font-size:1.1rem}
 
-/* RGB slot cycle (unfilled only — continuous) */
-@keyframes slotGlow {0%{box-shadow:0 0 20px var(--c),0 0 40px color-mix(in oklab, var(--c) 60%, transparent)} 100%{box-shadow:0 0 20px var(--c),0 0 40px color-mix(in oklab, var(--c) 60%, transparent)}}
-
-/* Hearts / Farts (brown, consistent point) */
+/* Hearts / Farts (brown, consistent mid-line of each chip) */
 @keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-140px) scale(1.6);opacity:0}}
 @keyframes fartCloud{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:translateY(-60px) scale(1.6);opacity:0}}
-.heart,.fart{position:absolute;font-size:36px;pointer-events:none}
+.heart,.fart{position:fixed;font-size:36px;pointer-events:none}
 .heart{color:#ff4fa6;animation:floatHeart 1.3s ease-out forwards}
-.fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards} /* brown */
+.fart{color:#8B5A2B;animation:fartCloud 1.2s ease-out forwards} /* brownish */
 
 /* Results (minimal) */
 #page-results{display:none;text-align:center;padding:60px 16px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
@@ -178,11 +184,43 @@ const overlay=$("#overlay"),pageRound=$("#page-round"),pageResults=$("#page-resu
 const playWrap=$("#playWrap");
 const backMenu=$("#backMenu");
 
-/* Audio (local) */
-const sfx={ding:new Audio('assets/audio/ding.mp3'), fart:new Audio('assets/audio/fart.mp3')};
-Object.values(sfx).forEach(a=>a.preload='auto');
+/* ---------- Audio (local) ---------- */
+const sfx={
+  ding:new Audio('assets/audio/ding.mp3'),
+  fart:new Audio('assets/audio/fart.mp3'),
+  r0_5:new Audio('assets/audio/result_0-5.mp3'),
+  r6_10:new Audio('assets/audio/result_6-10.mp3'),
+  r11_14:new Audio('assets/audio/result_11-14.mp3'),
+  r15:new Audio('assets/audio/result_15.mp3'),
+};
+Object.values(sfx).forEach(a=>{a.preload='auto'; a.load();});
+
+/* Robust SFX play to avoid missed 'ding' */
+function playSfx(audio){
+  try{
+    // If it's already playing, clone and play the clone to avoid being cut off
+    if(!audio.paused){
+      const clone = audio.cloneNode(true);
+      clone.preload='auto';
+      clone.play().catch(()=>{});
+      return;
+    }
+    audio.currentTime=0;
+    audio.play().catch(()=>{
+      const clone = audio.cloneNode(true);
+      clone.preload='auto';
+      clone.play().catch(()=>{});
+    });
+  }catch{}
+}
+
+/* Sage word audio */
 const sage=new Map();
-MASTER.forEach(w=>{const a=new Audio(`audio/${w}.mp3`);a.preload='auto';a.loop=false;sage.set(w,a);});
+MASTER.forEach(w=>{
+  const a=new Audio(`audio/${w}.mp3`);
+  a.preload='auto'; a.load(); a.loop=false;
+  sage.set(w,a);
+});
 
 /* Speak every click; fizzle behind triangle */
 function speak(){
@@ -194,17 +232,20 @@ function speak(){
 }
 play.addEventListener("click", speak);
 
-/* Effects */
+/* ---------- Effects ---------- */
 function spawnHeart(x,y){
   const h=document.createElement("div");
   h.className="heart"; h.textContent="❤️";
-  h.style.left=x+"px"; h.style.top=y+"px";
+  h.style.left=(x-18)+"px"; h.style.top=(y-18)+"px";
   overlay.appendChild(h); setTimeout(()=>h.remove(),1300);
 }
-function spawnFart(x,y){
+function spawnFartAtTileMid(tile){
+  const r=tile.getBoundingClientRect();
+  const midX = r.left + r.width/2;
+  const midY = r.top  + r.height/2; // middle line across all chips
   const f=document.createElement("div");
   f.className="fart"; f.textContent="💨";
-  f.style.left=x+"px"; f.style.top=y+"px";
+  f.style.left=(midX-18)+"px"; f.style.top=(midY-18)+"px";
   overlay.appendChild(f); setTimeout(()=>f.remove(),1200);
 }
 /* Screen blink red on incorrect */
@@ -215,79 +256,135 @@ function flashRedScreen(){
   setTimeout(()=>el.remove(),400);
 }
 
-/* RGB cycle for unfilled slots (continuous) */
+/* RGB cycle for unfilled slots (continuous single highlight marching) */
 const glowColors=['#a78bfa','#22c55e','#3b82f6','#f59e0b','#ef4444','#f472b6'];
 let glowIdx=0;
 setInterval(()=>{
   const slots=[...drop.children];
   if(!slots.length) return;
-  // clear unfilled
-  slots.forEach(s=>{
-    if(!s.classList.contains('filled')){
-      s.style.boxShadow='none';
-      s.classList.remove('gold'); // ensure only filled get steady gold
-    }
-  });
-  // find next unfilled to glow
+  // remove previous hover cue from unfilled
+  slots.forEach(s=>{ if(!s.firstChild) s.classList.remove('hover'); });
+  // march highlight to next unfilled (visual rhythm)
   let i=glowIdx, count=0;
-  while(count<slots.length && slots[i%slots.length].classList.contains('filled')){ i++; count++; }
+  while(count<slots.length && slots[i%slots.length].firstChild){ i++; count++; }
   const target=slots[i%slots.length];
-  if(target && !target.classList.contains('filled')){
-    const c=glowColors[i%glowColors.length];
-    target.style.boxShadow=`0 0 20px ${c},0 0 40px ${c}66`;
+  if(target && !target.firstChild){
+    target.classList.add('hover');
+    target.style.setProperty('--c', glowColors[i%glowColors.length]);
     glowIdx=(i+1)%slots.length;
   }
 }, 480);
 
-/* Drag & drop with auto-snap and return */
+/* ---------- Drag & Auto-Drop ---------- */
 function attachTileDnD(tile){
   tile.draggable=true;
+
+  // HTML5 drag (for mouse) – fallback path
   tile.addEventListener("dragstart",e=>{
     e.dataTransfer.setData("text/plain",tile.id);
-    requestAnimationFrame(()=>tile.style.opacity=".7");
+    requestAnimationFrame(()=>{ tile.style.opacity=".7"; tile.classList.add('dragging'); tile.classList.remove('inSlot'); });
   });
-  tile.addEventListener("dragend",()=>{ tile.style.opacity="1"; enableCheck(); });
+  tile.addEventListener("dragend",()=>{
+    tile.style.opacity="1"; tile.classList.remove('dragging');
+    enableCheck();
+  });
+
+  // Pointer-based smooth drag with auto-snap to slot or bank
   tile.addEventListener("pointerdown",e=>{
     tile.setPointerCapture(e.pointerId);
+    tile.classList.remove('inSlot'); // shimmer stops immediately when moving
     const rect=tile.getBoundingClientRect(), ox=e.clientX-rect.left, oy=e.clientY-rect.top;
+
+    // elevate tile
+    tile.style.position="fixed";
+    tile.style.left=(rect.left)+"px";
+    tile.style.top=(rect.top)+"px";
+    tile.style.zIndex="1000";
+    tile.classList.add('dragging');
+
+    let lastHoverSlot=null;
+
     const move=ev=>{
-      tile.style.position="fixed";
-      tile.style.left=(ev.clientX-ox)+"px";
-      tile.style.top=(ev.clientY-oy)+"px";
-      tile.style.zIndex="1000";
-    };
-    const up=ev=>{
-      tile.releasePointerCapture(e.pointerId);
-      document.removeEventListener("pointermove",move);
-      document.removeEventListener("pointerup",up);
-      tile.style.position=""; tile.style.zIndex="";
+      const x=ev.clientX-ox, y=ev.clientY-oy;
+      tile.style.left=x+"px"; tile.style.top=y+"px";
+
+      // hover highlighting for slots
       const el=document.elementFromPoint(ev.clientX,ev.clientY);
       const slot=el ? (el.classList?.contains("slot") ? el : el.closest?.(".slot")) : null;
-      if(slot) placeTileInSlot(tile,slot);
-      else bank.appendChild(tile);
-      enableCheck();
+      if(lastHoverSlot && lastHoverSlot!==slot){ lastHoverSlot.classList.remove('hover'); }
+      if(slot && !slot.firstChild){ slot.classList.add('hover'); lastHoverSlot=slot; }
+
+      // AUTO-DROP into slot when overlapping
+      if(slot){
+        autoPlaceIntoSlot(tile,slot);
+      }else{
+        // AUTO-DROP back to bank if overlapping bank area significantly
+        const brect=bank.getBoundingClientRect();
+        if(ev.clientX>brect.left && ev.clientX<brect.right && ev.clientY>brect.top && ev.clientY<brect.bottom){
+          autoPlaceIntoBank(tile);
+        }
+      }
     };
+
+    const up=()=>{
+      cleanupDrag();
+    };
+
+    function cleanupDrag(){
+      document.removeEventListener("pointermove",move);
+      document.removeEventListener("pointerup",up);
+      tile.releasePointerCapture(e.pointerId);
+      tile.style.position=""; tile.style.zIndex=""; tile.style.left=""; tile.style.top="";
+      tile.classList.remove('dragging');
+      if(lastHoverSlot) lastHoverSlot.classList.remove('hover');
+      enableCheck();
+    }
+
     document.addEventListener("pointermove",move);
     document.addEventListener("pointerup",up);
   });
 }
+
+function autoPlaceIntoSlot(tile,slot){
+  // If slot already has a child, swap it back to bank
+  if(slot.firstChild && slot.firstChild!==tile){
+    bank.appendChild(slot.firstChild);
+    slot.firstChild.classList.remove('inSlot');
+  }
+  // Snap in
+  slot.appendChild(tile);
+  // Visuals: slot steady gold + tile steady gold (shimmer) only when in slot
+  slot.classList.add("filled");
+  tile.classList.add("inSlot");
+  // ensure hover class removed once filled
+  slot.classList.remove("hover");
+  enableCheck();
+  // end drag instantly so it "auto-drops"
+  tile.dispatchEvent(new PointerEvent('pointerup')); // harmless if no capture
+}
+
+function autoPlaceIntoBank(tile){
+  bank.appendChild(tile);
+  tile.classList.remove('inSlot'); // no shimmer in bank
+  // clear any slot 'filled' that lost child
+  [...drop.children].forEach(s=>{ if(!s.firstChild) s.classList.remove('filled'); });
+  enableCheck();
+  // end drag instantly so it "auto-drops" to start area
+  tile.dispatchEvent(new PointerEvent('pointerup'));
+}
+
 function attachSlotDnD(slot){
-  slot.addEventListener("dragover",e=>e.preventDefault());
+  slot.addEventListener("dragover",e=>{e.preventDefault(); if(!slot.firstChild) slot.classList.add('hover');});
+  slot.addEventListener("dragleave",()=>slot.classList.remove('hover'));
   slot.addEventListener("drop",e=>{
     e.preventDefault();
+    slot.classList.remove('hover');
     const id=e.dataTransfer.getData("text/plain");
     const t=document.getElementById(id);
-    if(t) placeTileInSlot(t,slot);
+    if(t) autoPlaceIntoSlot(t,slot);
   });
 }
-function placeTileInSlot(tile,slot){
-  if(slot.firstChild) bank.appendChild(slot.firstChild);
-  slot.appendChild(tile);
-  slot.classList.add("filled","gold"); // steady gold on fill
-  // steady gold visual (redundant but explicit)
-  slot.style.boxShadow='0 0 18px #ffd54a,0 0 32px #ffe59966';
-  enableCheck();
-}
+
 function enableCheck(){ check.disabled=!allFilled(); }
 function allFilled(){ return [...drop.children].every(s=>s.firstChild); }
 function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join(""); }
@@ -316,8 +413,8 @@ check.addEventListener("click",()=>{
   const ans=currentAnswer(), correct=MASTER[index];
   if(ans===correct){
     if(firstTry) totalScore++;
-    try{ sfx.ding.currentTime=0; sfx.ding.play(); }catch{}
-    // hearts from a consistent point on each tile (center-top)
+    playSfx(sfx.ding);
+    // hearts from consistent mid-top of each tile
     [...drop.querySelectorAll(".tile")].forEach(t=>{
       const r=t.getBoundingClientRect();
       spawnHeart(r.left + r.width/2, r.top);
@@ -326,20 +423,20 @@ check.addEventListener("click",()=>{
     check.style.display="none";
   } else {
     firstTry=false;
-    // screen blink red; fart sfx and brown fart from consistent point
     flashRedScreen();
-    try{ sfx.fart.currentTime=0; sfx.fart.play(); }catch{}
+    playSfx(sfx.fart);
+    // fart clouds from middle of each chip, aligned in a row
     [...drop.children].forEach(s=>{
       if(s.firstChild){
         const t=s.firstChild;
-        const r=t.getBoundingClientRect();
-        spawnFart(r.left + r.width/2, r.top);
+        spawnFartAtTileMid(t);
+        // quick red shake + return to bank
         t.style.background="#3b0f0f";
-        setTimeout(()=>t.style.background="#1b2046",800);
+        setTimeout(()=>t.style.background="#1b2046",300);
         bank.appendChild(t);
+        t.classList.remove('inSlot'); // shimmer off when leaving slot
       }
-      s.classList.remove("filled","gold");
-      s.style.boxShadow='';
+      s.classList.remove("filled","hover");
     });
     enableCheck();
   }
@@ -361,17 +458,16 @@ function showResults(){
 
   const pct=Math.round((totalScore/15)*100);
   const msg=$("#resultMsg"), score=$("#resultScore");
-  let bg="blueGlow", file="result_11-14.mp3", text="いいね！あと少しでパーフェクト！";
-  if(totalScore<=5){ bg="redGlow"; file="result_0-5.mp3"; text="ブーリキュラム見てないでしょ！"; }
-  else if(totalScore<=10){ bg="orangeGlow"; file="result_6-10.mp3"; text="YouTube見すぎ！ブーリキュラムもやろう！"; }
-  else if(totalScore===15){ bg="goldGlow"; file="result_15.mp3"; text="すごい！あなたは地球で一番頭がいい！"; }
+  let bg="blueGlow", snd=sfx.r11_14, text="いいね！あと少しでパーフェクト！";
+  if(totalScore<=5){ bg="redGlow"; snd=sfx.r0_5; text="ブーリキュラム見てないでしょ！"; }
+  else if(totalScore<=10){ bg="orangeGlow"; snd=sfx.r6_10; text="YouTube見すぎ！ブーリキュラムもやろう！"; }
+  else if(totalScore===15){ bg="goldGlow"; snd=sfx.r15; text="すごい！あなたは地球で一番頭がいい！"; }
 
   document.body.className=bg;
   msg.textContent=text;
   score.textContent=`${totalScore}/15（${pct}%）`;
 
-  const snd=new Audio(`assets/audio/${file}`);
-  snd.play().catch(()=>{});
+  playSfx(snd);
 
   if(totalScore===15){
     for(let i=0;i<160;i++){
@@ -407,8 +503,14 @@ function initGame(){
 }
 initGame();
 
-/* Animations on page (for spec completeness) */
+/* Keep script alive */
 function noop(){}
+
+/* Pre-warm all audio by a silent play attempt (won't error if blocked) */
+setTimeout(()=>{
+  Object.values(sfx).forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
+  sage.forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
+}, 300);
 </script>
 </body>
 </html>
