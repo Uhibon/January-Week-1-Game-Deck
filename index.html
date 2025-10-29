@@ -70,7 +70,7 @@ a.deck::after{
     rgba(255,255,255,0.8) 320deg 340deg,
     rgba(255,255,255,0) 340deg 360deg);
   opacity:.55;mix-blend-mode:overlay;
-  animation:spin 5s linear infinite; /* faster spin */
+  animation:spin 5s linear infinite;
   pointer-events:none;z-index:0;
 }
 
@@ -104,20 +104,8 @@ a.deck:hover{transform:scale(1.08);filter:brightness(1.25);}
 a.deck span{font-size:0.85em;color:#222;position:relative;z-index:1;}
 a.deck b{position:relative;z-index:1;display:block;}
 
-/* Fade & footer */
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
-
-/* Fullscreen zoom animation */
-@keyframes zoomFull {
-  to {
-    position:fixed;
-    top:0; left:0; width:100vw; height:100vh;
-    border-radius:0;
-    transform:scale(1.05);
-    z-index:9999;
-  }
-}
 </style>
 </head>
 <body>
@@ -164,38 +152,45 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   </footer>
 </section>
 
-<!-- Audio elements -->
-<audio id="bgm" src="assets/audio/opening2.mp3" preload="auto" loop></audio>
+<!-- Audio -->
+<audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
 <audio id="openSound" src="assets/audio/openstart.mp3" preload="auto"></audio>
 
 <script>
-const bgm = document.getElementById('bgm');
+const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
-
-// play background immediately on interaction
-window.addEventListener('click', () => {
-  if (bgm.paused) bgm.play().catch(()=>{});
-},{once:true});
-
-// ensure tight loop with no gap
-bgm.addEventListener('ended', ()=>{
-  bgm.currentTime = 0;
-  bgm.play();
-});
 
 document.querySelectorAll('.deck').forEach(deck=>{
   deck.addEventListener('click', e=>{
     e.preventDefault();
     const target = deck.getAttribute('href');
 
-    // stop bgm and play open sound
-    bgm.pause();
-    openSound.currentTime = 0;
-    openSound.play();
+    // start intro sound
+    intro.currentTime = 0;
+    intro.volume = 1;
+    intro.play();
 
-    // zoom animation
-    deck.style.animation = 'zoomFull 0.8s forwards ease-in-out';
-    setTimeout(()=>window.location.href = target, 900);
+    // smoothly enlarge box over 3.5s
+    deck.style.transition = "transform 3.5s ease-in-out, border-radius 3.5s ease-in-out";
+    deck.style.transform = "scale(10)";
+    deck.style.borderRadius = "0";
+    deck.style.zIndex = "9999";
+
+    // fade intro, then play open sound
+    setTimeout(()=>{
+      const fade = setInterval(()=>{
+        intro.volume = Math.max(0, intro.volume - 0.05);
+        if(intro.volume <= 0){
+          clearInterval(fade);
+          intro.pause();
+          openSound.currentTime = 0;
+          openSound.play();
+        }
+      },100);
+    },3200);
+
+    // redirect to game
+    setTimeout(()=>window.location.href = target,3500);
   });
 });
 </script>
