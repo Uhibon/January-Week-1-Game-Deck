@@ -12,66 +12,187 @@
   --green:#22c55e; --red:#ef4444; --purple:#7c3aed;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:system-ui,'Noto Sans JP',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,'Noto Sans JP',sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+}
+
+/* Overlay for all effects */
+#overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:9999;
+}
 
 /* ===== HEADER ===== */
-header{padding:18px 16px 8px;text-align:center;z-index:5;position:relative}
-header h1, header h2, header h3{font-family:'Cinzel',serif;letter-spacing:.6px}
+header{
+  padding:18px 16px 8px;
+  text-align:center;
+  z-index:5;
+  position:relative;
+}
+header h1,header h2,header h3{
+  font-family:'Cinzel',serif;
+  letter-spacing:.6px;
+}
 header h1{font-size:clamp(1.6rem,4.8vw,2.2rem);opacity:.95}
 header h2{font-size:clamp(2.0rem,6.2vw,3.1rem);text-shadow:0 0 10px rgba(255,255,255,.12);margin-top:4px}
 header h3{font-size:clamp(1rem,3.5vw,1.2rem);opacity:.9;margin-top:6px}
 
-main{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;padding:8px 12px 24px;position:relative;overflow:hidden;z-index:1}
+main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  padding:8px 12px 24px;
+  position:relative;
+  overflow:hidden;
+  z-index:1;
+}
 
 /* ===== PLAY BUTTON ===== */
-.playWrap{display:flex;justify-content:center;align-items:center;margin-top:0;position:relative;z-index:50}
-.playBtn{appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:999px;display:grid;place-items:center;font-size:6rem;font-weight:900;color:#0b1530;background:conic-gradient(from 0deg,#ff4fa6,#ffa733,#ffe066,#fdd86d,#fff3b0,#ffd54a,#ff4fa6);box-shadow:0 0 70px #ffd54a99,0 0 140px #ffe59999;filter:hue-rotate(0deg);animation:huerotate 4s linear infinite,pulse 2.2s ease-in-out infinite;position:relative;overflow:hidden}
+.playWrap{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:0;
+  position:relative;
+  z-index:9999;
+}
+.playBtn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  width:240px;height:240px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  font-size:6rem;
+  font-weight:900;
+  color:#0b1530;
+  background:conic-gradient(from 0deg,#ff007f,#ff7f00,#ffff00,#00ff00,#00ffff,#007fff,#ff00ff,#ff007f);
+  box-shadow:0 0 80px #ff00ff88,0 0 150px #00ffff66;
+  animation:rgbSpin 4s linear infinite,pulse 2s ease-in-out infinite;
+  position:relative;
+  overflow:hidden;
+}
 .playBtn span{transform:translateX(4px)}
-@keyframes huerotate{to{filter:hue-rotate(360deg)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.playBtn:active{transform:scale(.98)}
+@keyframes rgbSpin{
+  to{filter:hue-rotate(360deg);}
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+.playBtn:active{transform:scale(.96)}
 
-/* ===== FIZZY GOLD EFFECT ===== */
-.playBtn.fizzy::before, .playBtn.fizzy::after{
-  content:"";position:absolute;inset:0;border-radius:999px;pointer-events:none;
+/* ===== FIZZY RGB EFFECT ===== */
+.playBtn.fizzy::before,.playBtn.fizzy::after{
+  content:"";
+  position:absolute;inset:0;
+  border-radius:999px;
+  pointer-events:none;
 }
 .playBtn.fizzy::before{
   background:
-  radial-gradient(circle at 20% 80%,rgba(255,215,0,.6),transparent 60%),
-  radial-gradient(circle at 80% 30%,rgba(255,255,200,.6),transparent 60%),
-  radial-gradient(circle at 50% 50%,rgba(255,255,150,.3),transparent 60%);
-  animation:fizzmove .5s infinite linear;
+    radial-gradient(circle at 25% 75%,rgba(255,255,255,.6),transparent 60%),
+    radial-gradient(circle at 75% 25%,rgba(255,255,255,.4),transparent 60%),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.3),transparent 60%);
+  animation:fizzmove .35s infinite linear;
 }
 .playBtn.fizzy::after{
-  box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #ffd54a80;
-  animation:fizzglow .3s ease-in-out infinite alternate;
+  box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #00ffff99;
+  animation:fizzglow .25s ease-in-out infinite alternate;
 }
 @keyframes fizzmove{
   0%{transform:translate(0,0) rotate(0deg)}
-  50%{transform:translate(-3px,-3px) rotate(180deg)}
+  50%{transform:translate(-4px,-4px) rotate(180deg)}
   100%{transform:translate(0,0) rotate(360deg)}
 }
 @keyframes fizzglow{
-  0%{opacity:.3;filter:blur(3px)}
-  100%{opacity:.9;filter:blur(8px)}
+  0%{opacity:.4;filter:blur(3px)}
+  100%{opacity:1;filter:blur(7px)}
 }
 
 /* ===== CARD ===== */
-.card{width:min(980px,96vw);border:1px solid var(--outline);border-radius:var(--radius);padding:18px 16px;background:rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,.25);}
+.card{
+  width:min(980px,96vw);
+  border:1px solid var(--outline);
+  border-radius:var(--radius);
+  padding:18px 16px;
+  background:rgba(255,255,255,0.04);
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
 
 /* ===== DROP ZONE ===== */
-.dropZone{margin:20px auto 14px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;min-height:112px}
-.slot{width:96px;height:112px;border:2px dashed #ffffff2e;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:900;background:#12142a80;transition:background .25s,border-color .25s,box-shadow .25s;flex-shrink:0;white-space:nowrap}
+.dropZone{
+  margin:20px auto 14px;
+  display:flex;
+  gap:18px;
+  justify-content:center;
+  flex-wrap:wrap;
+  min-height:112px;
+}
+.slot{
+  width:96px;height:112px;
+  border:2px dashed #ffffff2e;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:56px;
+  font-weight:900;
+  background:#12142a80;
+  transition:background .25s,border-color .25s,box-shadow .25s;
+  flex-shrink:0;
+  white-space:nowrap;
+}
 .slot.filled{background:#14183a;border:2px solid #ffffff80;box-shadow:0 0 12px #facc15}
 .slot.gold{background:#1b1630;border-color:#ffd54a;box-shadow:0 0 18px #ffd54a,0 0 32px #ffe59966}
 
 /* ===== LETTER BANK ===== */
-.bank{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;padding:16px 12px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px dashed #ffffff22;min-height:110px}
-.tile{user-select:none;-webkit-user-drag:none;width:96px;height:96px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:54px;background:#1b2046;border:1px solid #8690ff33;box-shadow:0 8px 14px rgba(0,0,0,.28);cursor:grab;transition:transform .12s ease,box-shadow .12s ease;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.bank{
+  display:flex;
+  gap:18px;
+  justify-content:center;
+  flex-wrap:wrap;
+  padding:16px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.03);
+  border:1px dashed #ffffff22;
+  min-height:110px;
+}
+.tile{
+  user-select:none;
+  -webkit-user-drag:none;
+  width:96px;height:96px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:54px;
+  background:#1b2046;
+  border:1px solid #8690ff33;
+  box-shadow:0 8px 14px rgba(0,0,0,.28);
+  cursor:grab;
+  transition:transform .12s ease,box-shadow .12s ease;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+}
 .tile:active{cursor:grabbing;transform:scale(.97)}
 .tile.lit{box-shadow:0 0 16px #a78bfa99,0 0 30px #a78bfa55}
 
-/* ===== HEART & FART EFFECTS ===== */
+/* ===== HEART & FART ===== */
 @keyframes floatHeart{
   0%{transform:translateY(0) scale(1);opacity:1}
   100%{transform:translateY(-140px) scale(1.6);opacity:0}
@@ -81,20 +202,53 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;paddi
   40%{transform:scale(1.2);opacity:1}
   100%{transform:translateY(-60px) scale(1.6);opacity:0}
 }
-.heart,.fart{position:absolute;font-size:36px;pointer-events:none}
+.heart,.fart{
+  position:absolute;
+  font-size:36px;
+  pointer-events:none;
+}
 .heart{color:#ff4fa6;animation:floatHeart 1.3s ease-out forwards}
 .fart{color:#ccc;animation:fartCloud 1.2s ease-out forwards}
 
 /* ===== CONTROLS ===== */
-.controls{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:10px}
-.btn{appearance:none;border:none;cursor:pointer;padding:12px 20px;border-radius:14px;font-weight:800;font-size:16px;color:#0b1530;background:#e5e7eb}
-.btn.primary{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;box-shadow:0 0 20px #7c3aed66}
+.controls{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  margin-top:10px;
+}
+.btn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  padding:12px 20px;
+  border-radius:14px;
+  font-weight:800;
+  font-size:16px;
+  color:#0b1530;
+  background:#e5e7eb;
+}
+.btn.primary{
+  background:linear-gradient(135deg,#a78bfa,#7c3aed);
+  color:#fff;
+  box-shadow:0 0 20px #7c3aed66;
+}
 
-footer{text-align:center;font-size:clamp(.9rem,2.5vw,1.05rem);opacity:.9;padding:14px 0 16px;border-top:1px solid var(--outline);font-family:'Cinzel',serif}
+footer{
+  text-align:center;
+  font-size:clamp(.9rem,2.5vw,1.05rem);
+  opacity:.9;
+  padding:14px 0 16px;
+  border-top:1px solid var(--outline);
+  font-family:'Cinzel',serif;
+}
 .dropZone,.bank,.tile,.slot{touch-action:none}
 </style>
 </head>
 <body>
+<div id="overlay"></div>
+
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>WORD BUILDER</h2>
@@ -119,43 +273,48 @@ footer{text-align:center;font-size:clamp(.9rem,2.5vw,1.05rem);opacity:.9;padding
 </footer>
 
 <script>
-const MASTER=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"].map(w=>w.toLowerCase());
+const MASTER=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
 let index=0;
+
 const drop=document.getElementById('dropZone');
 const bank=document.getElementById('bank');
 const play=document.getElementById('playBtn');
 const check=document.getElementById('checkBtn');
+const overlay=document.getElementById('overlay');
 
 const sfx={ding:new Audio('assets/audio/ding.mp3'),fart:new Audio('assets/audio/fart.mp3')};
 Object.values(sfx).forEach(a=>a.preload='auto');
 const sage=new Map();
-MASTER.forEach(w=>{const a=new Audio(`audio/${w}.mp3`);a.preload='auto';sage.set(w,a);});
+MASTER.forEach(w=>{
+  const a=new Audio(`audio/${w.toLowerCase()}.mp3`);
+  a.preload='auto';
+  a.loop=false;
+  sage.set(w.toLowerCase(),a);
+});
 
 function speak(){
-  const word=MASTER[index];
-  const a=sage.get(word);
-  if(!a) return;
+  const word=MASTER[index].toLowerCase();
+  const audio=sage.get(word);
+  if(!audio)return;
+  audio.currentTime=0;
   play.classList.add('fizzy');
-  a.currentTime=0;
-  a.play().catch(()=>{});
-  a.onended=()=>play.classList.remove('fizzy');
+  audio.play().catch(()=>{});
+  audio.onended=()=>play.classList.remove('fizzy');
 }
 
 /* === Effects === */
 function spawnHeart(x,y){
   const h=document.createElement('div');
-  h.className='heart';
-  h.textContent='❤️';
+  h.className='heart';h.textContent='❤️';
   h.style.left=x+'px';h.style.top=y+'px';
-  document.body.appendChild(h);
+  overlay.appendChild(h);
   setTimeout(()=>h.remove(),1300);
 }
 function spawnFart(x,y){
   const f=document.createElement('div');
-  f.className='fart';
-  f.textContent='💨';
+  f.className='fart';f.textContent='💨';
   f.style.left=x+'px';f.style.top=y+'px';
-  document.body.appendChild(f);
+  overlay.appendChild(f);
   setTimeout(()=>f.remove(),1200);
 }
 
@@ -253,8 +412,10 @@ function buildBank(word){
 /* === Game Flow === */
 function loadCard(){
   const w=MASTER[index];
-  buildSlots(w);buildBank(w);
-  check.disabled=true;startGlowSequence();
+  buildSlots(w);
+  buildBank(w);
+  check.disabled=true;
+  startGlowSequence();
 }
 play.addEventListener('click',()=>speak());
 
