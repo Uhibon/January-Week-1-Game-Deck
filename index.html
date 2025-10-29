@@ -11,6 +11,7 @@
 :root{
   --pink:#ff7eb9; --blue:#5ee6ff; --yellow:#fff680;
   --purple:#c77dff; --mint:#a6f7b2; --orange:#ffb366;
+  --spinDur: 5s; /* default spin speed, will speed up on click */
 }
 
 /* Reset & base layout */
@@ -46,7 +47,7 @@ a.deck:nth-child(4){background:var(--purple);}
 a.deck:nth-child(5){background:var(--mint);}
 a.deck:nth-child(6){background:var(--orange);}
 
-/* Shared spiral overlay */
+/* Shared spiral overlay (spins faster by changing --spinDur) */
 a.deck::after{
   content:"";position:absolute;top:50%;left:50%;width:170%;height:170%;border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
@@ -70,7 +71,7 @@ a.deck::after{
     rgba(255,255,255,0.8) 320deg 340deg,
     rgba(255,255,255,0) 340deg 360deg);
   opacity:.55;mix-blend-mode:overlay;
-  animation:spin 5s linear infinite;
+  animation:spin var(--spinDur) linear infinite;
   pointer-events:none;z-index:0;
 }
 
@@ -85,20 +86,18 @@ a.deck b{position:relative;z-index:1;display:block;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
 
-/* Sparkles */
-.sparkle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: gold;
-  border-radius: 50%;
-  opacity: 0.8;
-  pointer-events: none;
-  animation: sparkleRise 1s ease-out forwards;
+/* Magical sparkles (gold glow) */
+.sparkle{
+  position:fixed; /* global so it stays during transforms */
+  width:7px;height:7px;border-radius:50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #ffd86d 60%, rgba(255,215,0,0) 70%);
+  box-shadow: 0 0 8px rgba(255,215,0,.9), 0 0 18px rgba(255,215,0,.6);
+  pointer-events:none;opacity:0;
+  animation: sparkleFly 900ms ease-out forwards;
 }
-@keyframes sparkleRise {
-  0% { transform: translateY(0) scale(1); opacity:1; }
-  100% { transform: translateY(-100px) scale(0); opacity:0; }
+@keyframes sparkleFly{
+  0%{ transform:translate(0,0) scale(1); opacity:1; }
+  100%{ transform:translate(var(--dx),var(--dy)) scale(0); opacity:0; }
 }
 </style>
 </head>
@@ -123,68 +122,90 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   </footer>
 </section>
 
-<!-- Audio -->
-<audio id="bgm" src="assets/audio/opening2.mp3" preload="auto" autoplay loop muted></audio>
-<audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
-<audio id="openSound" src="assets/audio/openstart.mp3" preload="auto"></audio>
+<!-- Only the two sounds you asked for -->
+<audio id="introSound" src="intro.mp2" preload="auto"></audio>
+<audio id="openSound"  src="openstart.mp3" preload="auto"></audio>
 
 <script>
-const bgm = document.getElementById('bgm');
 const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
 
-// Unmute BGM on first touch
-window.addEventListener('click',()=>{bgm.muted=false; bgm.play();},{once:true});
+function sparkleBurstAroundRect(rect, count=36){
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top  + rect.height/2;
+  const maxR = Math.hypot(rect.width, rect.height)/2 + 20;
 
-// sparkle generator
-function spawnSparkle(x, y){
-  const s=document.createElement('div');
-  s.className='sparkle';
-  s.style.left=x+'px';
-  s.style.top=y+'px';
-  document.body.appendChild(s);
-  setTimeout(()=>s.remove(),1000);
+  for (let i=0;i<count;i++){
+    // random angle around the box perimeter zone
+    const angle = Math.random()*Math.PI*2;
+    // pick a point roughly on the perimeter (ellipse-ish)
+    const rx = (rect.width/2)  * Math.cos(angle);
+    const ry = (rect.height/2) * Math.sin(angle);
+    const x = cx + rx;
+    const y = cy + ry;
+
+    const dx = (Math.cos(angle) * (40 + Math.random()*60)).toFixed(2);
+    const dy = (Math.sin(angle) * (40 + Math.random()*60)).toFixed(2);
+
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (x-3.5) + 'px';
+    s.style.top  = (y-3.5) + 'px';
+    s.style.setProperty('--dx', dx+'px');
+    s.style.setProperty('--dy', dy+'px');
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 1000);
+  }
 }
 
 document.querySelectorAll('.deck').forEach(deck=>{
   deck.addEventListener('click', e=>{
     e.preventDefault();
-    const target=deck.getAttribute('href');
+    const target = deck.getAttribute('href');
 
-    // stop bgm
-    bgm.pause();
-    bgm.currentTime=0;
+    // Start intro.mp2 immediately
+    try{
+      intro.currentTime = 0;
+      intro.volume = 1;
+      intro.play();
+    }catch(_){}
 
-    // play intro
-    intro.currentTime=0;
-    intro.volume=1;
-    intro.play();
+    // Speed up internal spin WHILE growing
+    deck.style.setProperty('--spinDur', '1.2s');
 
-    // center the box
-    const rect=deck.getBoundingClientRect();
-    const centerX=window.innerWidth/2 - (rect.left + rect.width/2);
-    const centerY=window.innerHeight/2 - (rect.top + rect.height/2);
-    deck.style.transition="transform 3s ease-in-out";
-    deck.style.transform=`translate(${centerX}px,${centerY}px) scale(2.5)`;
-    deck.style.zIndex="9999";
+    // Move to center and grow (not fullscreen)
+    const r = deck.getBoundingClientRect();
+    const centerX = (window.innerWidth/2)  - (r.left + r.width/2);
+    const centerY = (window.innerHeight/2) - (r.top  + r.height/2);
+    deck.style.transition = "transform 3s ease-in-out";
+    deck.style.transform  = `translate(${centerX}px, ${centerY}px) scale(2.6)`;
+    deck.style.zIndex = "9999";
 
-    // sparkle trail
-    const sparkleInt=setInterval(()=>{
-      const r=deck.getBoundingClientRect();
-      const x=r.left + r.width/2 + (Math.random()*60-30);
-      const y=r.top + r.height/2;
-      spawnSparkle(x,y);
-    },100);
+    // Sparkles for the whole 3 seconds (ring bursts)
+    const burst = () => sparkleBurstAroundRect(deck.getBoundingClientRect(), 28);
+    burst();
+    const sparkleTimer = setInterval(burst, 250); // gentle, magical
 
-    // fade out intro, play open sound
+    // End of 3s: fade intro → play openstart → open page
     setTimeout(()=>{
-      clearInterval(sparkleInt);
-      intro.pause();
-      openSound.currentTime=0;
-      openSound.play();
-      window.location.href=target;
-    },3000);
-  });
+      clearInterval(sparkleTimer);
+
+      // fade out intro over ~500ms
+      const fade = setInterval(()=>{
+        intro.volume = Math.max(0, intro.volume - 0.1);
+        if (intro.volume <= 0){
+          clearInterval(fade);
+          try{ intro.pause(); }catch(_){}
+          try{
+            openSound.currentTime = 0;
+            openSound.play();
+          }catch(_){}
+          // Navigate right after trigger (the game "pops up")
+          window.location.href = target;
+        }
+      }, 50);
+    }, 3000);
+  }, {once:false});
 });
 </script>
 
