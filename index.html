@@ -35,6 +35,7 @@ a.deck{
   position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:180px;height:180px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
   font-size:1.1rem;overflow:hidden;transition:transform .3s,filter .4s;
+  cursor:pointer;
 }
 
 /* Base colors */
@@ -69,7 +70,7 @@ a.deck::after{
     rgba(255,255,255,0.8) 320deg 340deg,
     rgba(255,255,255,0) 340deg 360deg);
   opacity:.55;mix-blend-mode:overlay;
-  animation:spin 10s linear infinite;
+  animation:spin 5s linear infinite; /* faster spin */
   pointer-events:none;z-index:0;
 }
 
@@ -106,6 +107,17 @@ a.deck b{position:relative;z-index:1;display:block;}
 /* Fade & footer */
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
+
+/* Fullscreen zoom animation */
+@keyframes zoomFull {
+  to {
+    position:fixed;
+    top:0; left:0; width:100vw; height:100vh;
+    border-radius:0;
+    transform:scale(1.05);
+    z-index:9999;
+  }
+}
 </style>
 </head>
 <body>
@@ -121,37 +133,72 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
     <span>ドラッグ＆ドロップ</span>
   </a>
 
-  <a class="deck" href="sentencequiz.html">
-    <b>Make the Sentences</b>
-    <span>ぶんをつくろう！</span>
+  <a class="deck" href="saytheword.html">
+    <b>Say the Word</b>
+    <span>ワードを言おう</span>
+  </a>
+
+  <a class="deck" href="wordbuilder.html">
+    <b>Word Builder</b>
+    <span>ワードビルダー</span>
   </a>
 
   <a class="deck" href="speak.html">
     <b>Eigo Pera Pera</b>
-    <span>えいごペラペラ</span>
+    <span>英語ペラペラ</span>
+  </a>
+
+  <a class="deck" href="sentencequiz.html">
+    <b>Make the Sentences</b>
+    <span>文を作ろう</span>
   </a>
 
   <a class="deck" href="game4.html">
     <b>Eigo Adventure</b>
     <span>英語アドベンチャー</span>
   </a>
-
-  <a class="deck" href="saytheword.html">
-  <b>Say the Word</b>
-  <span>ブーハーダイアリー</span>
-</a>
-
-  <a class="deck" href="wordbuilder.html">
-    <b>Word Builder</b>
-    <span>こうしんちゅう</span>
-  </a>
 </div>
-
 
   <footer>
     Bryan's English School
   </footer>
 </section>
+
+<!-- Audio elements -->
+<audio id="bgm" src="assets/audio/opening2.mp3" preload="auto" loop></audio>
+<audio id="openSound" src="assets/audio/openstart.mp3" preload="auto"></audio>
+
+<script>
+const bgm = document.getElementById('bgm');
+const openSound = document.getElementById('openSound');
+
+// play background immediately on interaction
+window.addEventListener('click', () => {
+  if (bgm.paused) bgm.play().catch(()=>{});
+},{once:true});
+
+// ensure tight loop with no gap
+bgm.addEventListener('ended', ()=>{
+  bgm.currentTime = 0;
+  bgm.play();
+});
+
+document.querySelectorAll('.deck').forEach(deck=>{
+  deck.addEventListener('click', e=>{
+    e.preventDefault();
+    const target = deck.getAttribute('href');
+
+    // stop bgm and play open sound
+    bgm.pause();
+    openSound.currentTime = 0;
+    openSound.play();
+
+    // zoom animation
+    deck.style.animation = 'zoomFull 0.8s forwards ease-in-out';
+    setTimeout(()=>window.location.href = target, 900);
+  });
+});
+</script>
 
 </body>
 </html>
