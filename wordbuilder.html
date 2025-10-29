@@ -16,6 +16,7 @@ body{
   background:var(--bg); color:var(--ink);
   font-family:system-ui,'Noto Sans JP',sans-serif;
   min-height:100vh; display:flex; flex-direction:column; overflow:hidden;
+  user-select:none; -webkit-user-select:none; -ms-user-select:none;
 }
 
 /* Global overlays */
@@ -32,8 +33,8 @@ header h1,header h2,header h3{font-family:'Cinzel',serif}
 header h2{font-size:clamp(2rem,6vw,3rem);margin-top:4px}
 header h3{margin-top:6px;opacity:.9}
 
-/* Play (above header; fizzle behind triangle) */
-.playWrap{position:relative;z-index:10000;display:flex;flex-direction:column;align-items:center;margin-top:10px}
+/* Play (lowered slightly; fizzle behind triangle) */
+.playWrap{position:relative;z-index:10000;display:flex;flex-direction:column;align-items:center;margin-top:28px}
 .playBtn{
   appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:50%;
   display:grid;place-items:center;font-size:6rem;font-weight:900;color:#0b1530;
@@ -67,7 +68,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .dropZone,.bank{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 .slot,.tile{
   width:96px;height:96px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .15s, filter .1s;
+  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .12s, filter .1s;
 }
 .slot{
   border:2px dashed #ffffff3a;
@@ -86,15 +87,39 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 
 .tile{
   background:#1b2046;border:1px solid #8690ff33;box-shadow:0 8px 14px rgba(0,0,0,.28);
-  cursor:grab;color:#fff
+  color:#fff; touch-action:none; /* crucial for mobile pointer events */
 }
-/* extra fun glow while dragging */
-.tile.dragging{box-shadow:0 0 22px #93c5fd80,0 0 44px #a78bfa60}
+/* while dragging: rainbow tint + soft glow */
+.tile.dragging{
+  box-shadow:0 0 26px #93c5fd90,0 0 52px #a78bfa80;
+  filter:hue-rotate(0deg) saturate(1.3) brightness(1.05);
+}
+/* assigned each pickup: random hue stored inline via style.setProperty('--hue') */
+.tile.handled{
+  filter:hue-rotate(var(--hue,0deg)) saturate(1.35) brightness(1.05);
+}
 
-/* Steady gold glow when sitting in a slot (not pulsing) */
+/* Steady gold glow + particle aura when in slot */
 .tile.inSlot{
   box-shadow:0 0 18px var(--gold),0 0 32px var(--goldSoft);
-  filter:saturate(1.05)
+}
+
+/* Particle aura container (positioned within tile) */
+.aura{
+  position:absolute; inset:0; pointer-events:none; overflow:visible;
+}
+.spark{
+  position:absolute; width:6px; height:6px; border-radius:50%;
+  background:radial-gradient(circle,#fff 0%, #ffe49a 50%, transparent 70%);
+  opacity:.9;
+  animation:floatSpark linear infinite;
+}
+@keyframes floatSpark{
+  0%{ transform:translate(var(--x0),var(--y0)) scale(1); opacity:.0}
+  10%{opacity:.85}
+  50%{ transform:translate(var(--x1),var(--y1)) scale(1.1); opacity:.9}
+  90%{opacity:.85}
+  100%{ transform:translate(var(--x0),var(--y0)) scale(1); opacity:.0}
 }
 
 /* Controls + Next + counter under buttons */
@@ -117,7 +142,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes fartCloud{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:translateY(-60px) scale(1.6);opacity:0}}
 .heart,.fart{position:fixed;font-size:36px;pointer-events:none}
 .heart{color:#ff4fa6;animation:floatHeart 1.3s ease-out forwards}
-.fart{color:#8B5A2B;animation:fartCloud 1.2s ease-out forwards} /* brownish */
+.fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards} /* brown */
 
 /* Results (minimal) */
 #page-results{display:none;text-align:center;padding:60px 16px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
@@ -198,7 +223,6 @@ Object.values(sfx).forEach(a=>{a.preload='auto'; a.load();});
 /* Robust SFX play to avoid missed 'ding' */
 function playSfx(audio){
   try{
-    // If it's already playing, clone and play the clone to avoid being cut off
     if(!audio.paused){
       const clone = audio.cloneNode(true);
       clone.preload='auto';
@@ -262,9 +286,7 @@ let glowIdx=0;
 setInterval(()=>{
   const slots=[...drop.children];
   if(!slots.length) return;
-  // remove previous hover cue from unfilled
   slots.forEach(s=>{ if(!s.firstChild) s.classList.remove('hover'); });
-  // march highlight to next unfilled (visual rhythm)
   let i=glowIdx, count=0;
   while(count<slots.length && slots[i%slots.length].firstChild){ i++; count++; }
   const target=slots[i%slots.length];
@@ -275,126 +297,161 @@ setInterval(()=>{
   }
 }, 480);
 
-/* ---------- Drag & Auto-Drop ---------- */
-function attachTileDnD(tile){
-  tile.draggable=true;
+/* ---------- Particle Aura (gentle floating) ---------- */
+function addAura(tile){
+  removeAura(tile);
+  const aura=document.createElement('div');
+  aura.className='aura';
+  // create small number of gently floating sparks
+  const count=10;
+  const w=tile.clientWidth, h=tile.clientHeight;
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    // random start/end offsets around the tile edges
+    const x0=(Math.random()*w - w/2).toFixed(1)+"px";
+    const y0=(Math.random()*h - h/2).toFixed(1)+"px";
+    const x1=(Math.random()*w - w/2).toFixed(1)+"px";
+    const y1=(Math.random()*h - h/2).toFixed(1)+"px";
+    const dur=(3.5+Math.random()*2.5).toFixed(2)+'s';
+    s.style.setProperty('--x0',x0);
+    s.style.setProperty('--y0',y0);
+    s.style.setProperty('--x1',x1);
+    s.style.setProperty('--y1',y1);
+    s.style.left='50%'; s.style.top='50%';
+    s.style.animationDuration=dur;
+    s.style.animationDelay=(Math.random()*2).toFixed(2)+'s';
+    aura.appendChild(s);
+  }
+  tile.style.position='relative';
+  tile.appendChild(aura);
+}
+function removeAura(tile){
+  const old=tile.querySelector('.aura');
+  if(old) old.remove();
+}
 
-  // HTML5 drag (for mouse) – fallback path
-  tile.addEventListener("dragstart",e=>{
-    e.dataTransfer.setData("text/plain",tile.id);
-    requestAnimationFrame(()=>{ tile.style.opacity=".7"; tile.classList.add('dragging'); tile.classList.remove('inSlot'); });
-  });
-  tile.addEventListener("dragend",()=>{
-    tile.style.opacity="1"; tile.classList.remove('dragging');
-    enableCheck();
-  });
+/* ---------- Click-hold drag with release-to-drop ---------- */
+function attachTileControls(tile){
+  tile.draggable=false; // disable native DnD
+  let startX=0,startY=0,offX=0,offY=0,moved=false,wasInSlot=false;
 
-  // Pointer-based smooth drag with auto-snap to slot or bank
-  tile.addEventListener("pointerdown",e=>{
+  function onPointerDown(e){
     tile.setPointerCapture(e.pointerId);
-    tile.classList.remove('inSlot'); // shimmer stops immediately when moving
-    const rect=tile.getBoundingClientRect(), ox=e.clientX-rect.left, oy=e.clientY-rect.top;
+    const rect=tile.getBoundingClientRect();
+    startX=e.clientX; startY=e.clientY;
+    offX=e.clientX-rect.left; offY=e.clientY-rect.top;
+    moved=false;
+    wasInSlot = tile.parentElement?.classList.contains('slot');
 
-    // elevate tile
-    tile.style.position="fixed";
-    tile.style.left=(rect.left)+"px";
-    tile.style.top=(rect.top)+"px";
-    tile.style.zIndex="1000";
+    // new random hue each pickup
+    const hue=Math.floor(Math.random()*360);
+    tile.style.setProperty('--hue',hue+'deg');
+    tile.classList.add('handled');
+
+    // lift
     tile.classList.add('dragging');
+    tile.classList.remove('inSlot');
+    removeAura(tile); // stop particles while moving
 
-    let lastHoverSlot=null;
+    // elevate & fix-position
+    tile.style.position='fixed';
+    tile.style.left=rect.left+'px';
+    tile.style.top=rect.top+'px';
+    tile.style.zIndex='1000';
 
-    const move=ev=>{
-      const x=ev.clientX-ox, y=ev.clientY-oy;
-      tile.style.left=x+"px"; tile.style.top=y+"px";
+    document.addEventListener('pointermove',onPointerMove);
+    document.addEventListener('pointerup',onPointerUp);
+  }
 
-      // hover highlighting for slots
-      const el=document.elementFromPoint(ev.clientX,ev.clientY);
-      const slot=el ? (el.classList?.contains("slot") ? el : el.closest?.(".slot")) : null;
-      if(lastHoverSlot && lastHoverSlot!==slot){ lastHoverSlot.classList.remove('hover'); }
-      if(slot && !slot.firstChild){ slot.classList.add('hover'); lastHoverSlot=slot; }
+  function onPointerMove(e){
+    const nx=e.clientX-offX, ny=e.clientY-offY;
+    if(Math.abs(e.clientX-startX)>3 || Math.abs(e.clientY-startY)>3){ moved=true; }
+    tile.style.left=nx+'px'; tile.style.top=ny+'px';
 
-      // AUTO-DROP into slot when overlapping
-      if(slot){
-        autoPlaceIntoSlot(tile,slot);
-      }else{
-        // AUTO-DROP back to bank if overlapping bank area significantly
-        const brect=bank.getBoundingClientRect();
-        if(ev.clientX>brect.left && ev.clientX<brect.right && ev.clientY>brect.top && ev.clientY<brect.bottom){
-          autoPlaceIntoBank(tile);
-        }
-      }
-    };
+    // hover slot cue
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    const slot=el ? (el.classList?.contains('slot') ? el : el.closest?.('.slot')) : null;
+    [...drop.children].forEach(s=>{ if(s!==slot && !s.firstChild) s.classList.remove('hover'); });
+    if(slot && !slot.firstChild){ slot.classList.add('hover'); }
 
-    const up=()=>{
-      cleanupDrag();
-    };
+    // auto cue for bank when hovering its rect
+    const brect=bank.getBoundingClientRect();
+    if(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom){
+      [...drop.children].forEach(s=>s.classList.remove('hover'));
+    }
+  }
 
-    function cleanupDrag(){
-      document.removeEventListener("pointermove",move);
-      document.removeEventListener("pointerup",up);
-      tile.releasePointerCapture(e.pointerId);
-      tile.style.position=""; tile.style.zIndex=""; tile.style.left=""; tile.style.top="";
-      tile.classList.remove('dragging');
-      if(lastHoverSlot) lastHoverSlot.classList.remove('hover');
-      enableCheck();
+  function onPointerUp(e){
+    cleanupPointer(e);
+
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    const slot=el ? (el.classList?.contains('slot') ? el : el.closest?.('.slot')) : null;
+
+    // If it was a simple click on a chip sitting in a slot → send back to bank
+    if(!moved && wasInSlot){
+      sendToBank(tile);
+      return;
     }
 
-    document.addEventListener("pointermove",move);
-    document.addEventListener("pointerup",up);
-  });
+    const brect=bank.getBoundingClientRect();
+    const overBank=(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom);
+
+    if(slot){
+      placeIntoSlot(tile,slot);
+    }else if(overBank){
+      sendToBank(tile);
+    }else{
+      // return to last home
+      if(wasInSlot){
+        // snap back to its old slot (which is still its parent in DOM if not moved there)
+        const oldSlot=[...drop.children].find(s=>!s.firstChild);
+        if(oldSlot){ placeIntoSlot(tile,oldSlot); }
+        else sendToBank(tile);
+      }else{
+        sendToBank(tile);
+      }
+    }
+    enableCheck();
+  }
+
+  function cleanupPointer(e){
+    try{ tile.releasePointerCapture(e.pointerId); }catch{}
+    document.removeEventListener('pointermove',onPointerMove);
+    document.removeEventListener('pointerup',onPointerUp);
+    tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
+    tile.classList.remove('dragging');
+    [...drop.children].forEach(s=>s.classList.remove('hover'));
+  }
+
+  tile.addEventListener('pointerdown',onPointerDown,{passive:false});
 }
 
-function autoPlaceIntoSlot(tile,slot){
-  // If slot already has a child, swap it back to bank
+function placeIntoSlot(tile,slot){
   if(slot.firstChild && slot.firstChild!==tile){
-    bank.appendChild(slot.firstChild);
-    slot.firstChild.classList.remove('inSlot');
+    // if occupied, swap back to bank
+    sendToBank(slot.firstChild);
   }
-  // Snap in
   slot.appendChild(tile);
-  // Visuals: slot steady gold + tile steady gold (shimmer) only when in slot
   slot.classList.add("filled");
   tile.classList.add("inSlot");
-  // ensure hover class removed once filled
-  slot.classList.remove("hover");
-  enableCheck();
-  // end drag instantly so it "auto-drops"
-  tile.dispatchEvent(new PointerEvent('pointerup')); // harmless if no capture
+  addAura(tile); // gentle particles only in slot
 }
 
-function autoPlaceIntoBank(tile){
+function sendToBank(tile){
   bank.appendChild(tile);
-  tile.classList.remove('inSlot'); // no shimmer in bank
-  // clear any slot 'filled' that lost child
+  tile.classList.remove('inSlot');
+  removeAura(tile);
+  // clear 'filled' on any empty slots
   [...drop.children].forEach(s=>{ if(!s.firstChild) s.classList.remove('filled'); });
-  enableCheck();
-  // end drag instantly so it "auto-drops" to start area
-  tile.dispatchEvent(new PointerEvent('pointerup'));
 }
-
-function attachSlotDnD(slot){
-  slot.addEventListener("dragover",e=>{e.preventDefault(); if(!slot.firstChild) slot.classList.add('hover');});
-  slot.addEventListener("dragleave",()=>slot.classList.remove('hover'));
-  slot.addEventListener("drop",e=>{
-    e.preventDefault();
-    slot.classList.remove('hover');
-    const id=e.dataTransfer.getData("text/plain");
-    const t=document.getElementById(id);
-    if(t) autoPlaceIntoSlot(t,slot);
-  });
-}
-
-function enableCheck(){ check.disabled=!allFilled(); }
-function allFilled(){ return [...drop.children].every(s=>s.firstChild); }
-function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join(""); }
 
 /* Build */
 function buildSlots(w){
   drop.innerHTML="";
   for(let i=0;i<w.length;i++){
     const s=document.createElement("div");
-    s.className="slot"; attachSlotDnD(s); drop.appendChild(s);
+    s.className="slot"; drop.appendChild(s);
   }
 }
 function buildBank(w){
@@ -404,9 +461,15 @@ function buildBank(w){
   scr.forEach((ch,i)=>{
     const t=document.createElement("div");
     t.className="tile"; t.id=`tile-${Date.now()}-${i}`; t.textContent=ch;
-    attachTileDnD(t); bank.appendChild(t);
+    attachTileControls(t);
+    bank.appendChild(t);
   });
 }
+
+/* Helpers */
+function enableCheck(){ check.disabled=!allFilled(); }
+function allFilled(){ return [...drop.children].every(s=>s.firstChild); }
+function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join(""); }
 
 /* Round logic */
 check.addEventListener("click",()=>{
@@ -433,8 +496,7 @@ check.addEventListener("click",()=>{
         // quick red shake + return to bank
         t.style.background="#3b0f0f";
         setTimeout(()=>t.style.background="#1b2046",300);
-        bank.appendChild(t);
-        t.classList.remove('inSlot'); // shimmer off when leaving slot
+        sendToBank(t);
       }
       s.classList.remove("filled","hover");
     });
@@ -450,7 +512,6 @@ nextBtn.addEventListener("click",()=>{
 
 /* Results (minimal screens + local audio) */
 function showResults(){
-  // hide game UI including Play button; show results + Back to Menu
   pageRound.style.display="none";
   playWrap.style.display="none";
   pageResults.style.display="flex";
@@ -503,10 +564,7 @@ function initGame(){
 }
 initGame();
 
-/* Keep script alive */
-function noop(){}
-
-/* Pre-warm all audio by a silent play attempt (won't error if blocked) */
+/* Pre-warm audio (best-effort, safe if blocked) */
 setTimeout(()=>{
   Object.values(sfx).forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
   sage.forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
