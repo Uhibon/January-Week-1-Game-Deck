@@ -31,7 +31,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;paddi
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .playBtn:active{transform:scale(.98)}
 
-/* Sparkle particles (fixed so they rise from the button visibly) */
+/* Sparkle particles (rise from the *front tip* of the play button) */
 .sparkle{position:fixed;width:10px;height:10px;border-radius:50%;background:gold;opacity:.9;pointer-events:none;animation:sparkUp 1.5s ease-out forwards}
 @keyframes sparkUp{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx), -180px) scale(.5);opacity:0}}
 
@@ -108,14 +108,17 @@ MASTER.forEach(w=>{const a=new Audio(`audio/${w}.mp3`);a.preload='auto';sage.set
 function speak(){const a=sage.get(MASTER[index]); if(!a) return; a.currentTime=0; a.play().catch(()=>{}); sparkleBurst();}
 
 // =====================
-// GOLD SPARKLES from Play Button
+// GOLD SPARKLES from Play Button (front tip of ▶)
 // =====================
 function sparkleBurst(){
   const rect=play.getBoundingClientRect();
-  const cx=rect.left+rect.width/2; const cy=rect.top+rect.height/2;
+  // Tip of the triangle: near the right edge center
+  const cx=rect.right - rect.width*0.08;
+  const cy=rect.top + rect.height/2;
   for(let i=0;i<24;i++){
     const sp=document.createElement('div'); sp.className='sparkle';
-    const dx=(Math.random()*2-1)*80+ 'px'; sp.style.setProperty('--dx', dx);
+    const dx=(Math.random()*2-1)*80+ 'px';
+    sp.style.setProperty('--dx', dx);
     sp.style.left=cx+'px'; sp.style.top=cy+'px';
     sp.style.background=['#ffd54a','#ffec99','#fff3b0'][Math.floor(Math.random()*3)];
     document.body.appendChild(sp); setTimeout(()=>sp.remove(),1600);
@@ -150,34 +153,69 @@ function setGoldSteady(){ [...drop.children].forEach(s=>{ s.classList.add('gold'
 function attachSlotDnD(slot){
   // Desktop HTML5 DnD
   slot.addEventListener('dragover',e=>{ e.preventDefault(); });
-  slot.addEventListener('drop',e=>{ e.preventDefault(); const id=e.dataTransfer.getData('text/plain'); const t=document.getElementById(id); if(!t) return; placeTileInSlot(t, slot); });
+  slot.addEventListener('drop',e=>{
+    e.preventDefault();
+    const id=e.dataTransfer.getData('text/plain');
+    const t=document.getElementById(id);
+    if(!t) return;
+    placeTileInSlot(t, slot);
+  });
 }
+
 function attachTileDnD(tile){
   // Desktop
   tile.draggable=true;
-  tile.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain', tile.id); requestAnimationFrame(()=>tile.style.opacity='.7'); });
-  tile.addEventListener('dragend',()=>{ tile.style.opacity='1'; enableCheck(); });
+  tile.addEventListener('dragstart',e=>{
+    e.dataTransfer.setData('text/plain', tile.id);
+    requestAnimationFrame(()=>tile.style.opacity='.7');
+  });
+  tile.addEventListener('dragend',()=>{
+    tile.style.opacity='1';
+    enableCheck();
+  });
+
   // Pointer (mobile)
   tile.addEventListener('pointerdown',e=>{
     tile.setPointerCapture(e.pointerId);
-    const rect=tile.getBoundingClientRect(); const ox=e.clientX-rect.left, oy=e.clientY-rect.top;
-    const move=(ev)=>{ tile.style.position='fixed'; tile.style.left=(ev.clientX-ox)+'px'; tile.style.top=(ev.clientY-oy)+'px'; tile.style.zIndex='1000'; };
+    const rect=tile.getBoundingClientRect();
+    const ox=e.clientX-rect.left, oy=e.clientY-rect.top;
+
+    const move=(ev)=>{
+      tile.style.position='fixed';
+      tile.style.left=(ev.clientX-ox)+'px';
+      tile.style.top=(ev.clientY-oy)+'px';
+      tile.style.zIndex='1000';
+    };
+
     const up=(ev)=>{
       tile.releasePointerCapture(e.pointerId);
-      document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up);
-      const el=document.elementFromPoint(ev.clientX,ev.clientY);
-      // reset style before appending to avoid offset glitches
+      document.removeEventListener('pointermove',move);
+      document.removeEventListener('pointerup',up);
+
+      // Temporarily hide the tile to hit-test the element UNDER it
+      const oldPos = {position:tile.style.position,left:tile.style.left,top:tile.style.top,zIndex:tile.style.zIndex};
+      tile.style.visibility='hidden';
+      const elUnder = document.elementFromPoint(ev.clientX, ev.clientY);
+      tile.style.visibility='';
+
+      // reset absolute positioning before appending anywhere
       tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
-      if(el && el.classList && el.classList.contains('slot')){ placeTileInSlot(tile, el); }
+
+      const slot = elUnder ? (elUnder.classList?.contains('slot') ? elUnder : elUnder.closest?.('.slot')) : null;
+      if(slot){ placeTileInSlot(tile, slot); }
       else { bank.appendChild(tile); enableCheck(); }
     };
-    document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
+
+    document.addEventListener('pointermove',move);
+    document.addEventListener('pointerup',up);
   });
 }
 
 function placeTileInSlot(tile, slot){
   if(slot.firstChild){ bank.appendChild(slot.firstChild); }
-  slot.appendChild(tile); slot.classList.add('filled'); tile.classList.add('lit');
+  slot.appendChild(tile);
+  slot.classList.add('filled');
+  tile.classList.add('lit');
   enableCheck();
   if(allFilled()){ stopGlowSequence(); setGoldSteady(); }
 }
@@ -189,25 +227,65 @@ function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?s.firstC
 // =====================
 // BUILD
 // =====================
-function buildSlots(word){ drop.innerHTML=''; for(let i=0;i<word.length;i++){ const s=document.createElement('div'); s.className='slot'; attachSlotDnD(s); drop.appendChild(s);} }
+function buildSlots(word){
+  drop.innerHTML='';
+  for(let i=0;i<word.length;i++){
+    const s=document.createElement('div');
+    s.className='slot';
+    attachSlotDnD(s);
+    drop.appendChild(s);
+  }
+}
 function buildBank(word){
-  bank.innerHTML=''; const chars=[...word]; let scrambled=[...chars]; if(chars.length>1){ do{ scrambled.sort(()=>Math.random()-.5);} while(scrambled.join('')===word); }
-  scrambled.forEach((ch,i)=>{ const t=document.createElement('div'); t.className='tile'; t.id=`tile-${Date.now()}-${i}`; t.textContent=ch; attachTileDnD(t); bank.appendChild(t); });
+  bank.innerHTML='';
+  const chars=[...word];
+  let scrambled=[...chars];
+  if(chars.length>1){
+    do{ scrambled.sort(()=>Math.random()-.5); }
+    while(scrambled.join('')===word);
+  }
+  scrambled.forEach((ch,i)=>{
+    const t=document.createElement('div');
+    t.className='tile';
+    t.id=`tile-${Date.now()}-${i}`;
+    t.textContent=ch;
+    attachTileDnD(t);
+    bank.appendChild(t);
+  });
 }
 
 // =====================
 // GAME FLOW
 // =====================
-function loadCard(){ const w=MASTER[index]; buildSlots(w); buildBank(w); check.disabled=true; startGlowSequence(); }
+function loadCard(){
+  const w=MASTER[index];
+  buildSlots(w);
+  buildBank(w);
+  check.disabled=true;
+  startGlowSequence();
+}
 
 play.addEventListener('click',()=>speak());
+
 check.addEventListener('click',()=>{
   const ans=currentAnswer(), correct=MASTER[index];
-  if(ans===correct){ try{ sfx.ding.currentTime=0; sfx.ding.play(); }catch{} setTimeout(()=>{ index=(index+1)%MASTER.length; loadCard(); speak(); }, 1000); }
-  else {
-    [...drop.children].forEach(s=>{ if(s.firstChild){ bank.appendChild(s.firstChild);} s.classList.remove('filled'); s.style.boxShadow=''; });
+  if(ans===correct){
+    try{ sfx.ding.currentTime=0; sfx.ding.play(); }catch{}
+    setTimeout(()=>{
+      index=(index+1)%MASTER.length;
+      loadCard();
+      speak();
+    }, 1000);
+  } else {
+    // reset slots
+    [...drop.children].forEach(s=>{
+      if(s.firstChild){ bank.appendChild(s.firstChild); }
+      s.classList.remove('filled');
+      s.style.boxShadow='';
+    });
     try{ sfx.fart.currentTime=0; sfx.fart.play(); }catch{}
-    startGlowSequence(); enableCheck();
+    startGlowSequence();
+    enableCheck();
   }
 });
 
