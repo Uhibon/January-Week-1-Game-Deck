@@ -31,19 +31,19 @@ h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2.5em;}
   align-items:center;
 }
 
-/* Game squares */
+/* Boxes */
 a.deck{
-  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:180px;height:180px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
   font-size:1.1rem;overflow:hidden;cursor:pointer;
-  border:8px solid #000; /* thicker */
-  box-shadow:0 0 8px rgba(255,215,0,0.3), 0 0 16px rgba(255,215,0,0.15);
-  transition:box-shadow .3s ease, transform .3s ease, filter .4s ease;
+  border:8px solid #000;
+  box-shadow:0 0 8px rgba(255,215,0,0.3),0 0 16px rgba(255,215,0,0.15);
+  transition:box-shadow .3s ease,transform .3s ease,filter .4s ease;
 }
 
-/* Border glow on hover or during zoom */
-a.deck.active {
-  box-shadow:0 0 12px rgba(255,215,0,0.8), 0 0 32px rgba(255,215,0,0.5);
+a.deck.active{
+  box-shadow:0 0 14px rgba(255,215,0,0.9),0 0 36px rgba(255,215,0,0.6);
 }
 
 /* Base colors */
@@ -54,7 +54,7 @@ a.deck:nth-child(4){background:var(--purple);}
 a.deck:nth-child(5){background:var(--mint);}
 a.deck:nth-child(6){background:var(--orange);}
 
-/* Spiral */
+/* Spiral animation */
 a.deck::after{
   content:"";position:absolute;top:50%;left:50%;width:170%;height:170%;border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
@@ -86,24 +86,21 @@ a.deck:hover{filter:brightness(1.25);}
 a.deck span{font-size:0.85em;color:#222;position:relative;z-index:1;}
 a.deck b{position:relative;z-index:1;display:block;}
 
-@keyframes spin{
-  0%{transform:translate(-50%,-50%) rotate(0deg);}
-  100%{transform:translate(-50%,-50%) rotate(360deg);}
-}
+@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg);}100%{transform:translate(-50%,-50%) rotate(360deg);}}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
 
 /* Sparkles */
 .sparkle{
-  position:fixed;width:7px;height:7px;border-radius:50%;
+  position:fixed;width:8px;height:8px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #fff, #ffd86d 60%, rgba(255,215,0,0) 70%);
-  box-shadow:0 0 8px rgba(255,215,0,.9),0 0 18px rgba(255,215,0,.6);
+  box-shadow:0 0 8px rgba(255,215,0,.9),0 0 22px rgba(255,215,0,.7);
   pointer-events:none;opacity:0;
-  animation:sparkleFly 1000ms ease-out forwards;
+  animation:sparkleFly 2s ease-out forwards; /* linger longer */
 }
 @keyframes sparkleFly{
   0%{transform:translate(0,0) scale(1);opacity:1;}
-  100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(0.4);opacity:0;}
 }
 </style>
 </head>
@@ -130,20 +127,20 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
 
 <!-- Audio -->
 <audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
-<audio id="openSound"  src="assets/audio/openstart.mp3" preload="auto"></audio>
+<audio id="openSound" src="assets/audio/openstart.mp3" preload="auto"></audio>
 
 <script>
 const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
 
-function sparkleBurst(rect,count=55){
+function sparkleBurst(rect, count=65){
   const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
   for(let i=0;i<count;i++){
     const a=Math.random()*Math.PI*2;
     const x=cx+Math.cos(a)*(rect.width/2);
     const y=cy+Math.sin(a)*(rect.height/2);
-    const dx=(Math.cos(a)*80+Math.random()*40).toFixed(2);
-    const dy=(Math.sin(a)*80+Math.random()*40).toFixed(2);
+    const dx=(Math.cos(a)*(60+Math.random()*60)).toFixed(2);
+    const dy=(Math.sin(a)*(60+Math.random()*60)).toFixed(2);
     const s=document.createElement('div');
     s.className='sparkle';
     s.style.left=(x-3.5)+'px';
@@ -151,7 +148,7 @@ function sparkleBurst(rect,count=55){
     s.style.setProperty('--dx',dx+'px');
     s.style.setProperty('--dy',dy+'px');
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),1000);
+    setTimeout(()=>s.remove(),2000);
   }
 }
 
@@ -163,9 +160,7 @@ document.querySelectorAll('.deck').forEach(deck=>{
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
-    // play intro sound
-    intro.currentTime=0;
-    intro.volume=1;
+    intro.pause();intro.currentTime=0;intro.volume=1;
     intro.play().catch(()=>{});
 
     const r=deck.getBoundingClientRect();
@@ -175,31 +170,34 @@ document.querySelectorAll('.deck').forEach(deck=>{
     deck.style.transform=`translate(${cx}px,${cy}px) scale(2.6)`;
     deck.style.zIndex="9999";
 
-    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),45),200);
+    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),40),220);
 
-    // extend timing (4.5s total before page opens)
+    // fade out intro → play openstart → then open game
     setTimeout(()=>{
       clearInterval(sparkleInt);
       const fade=setInterval(()=>{
-        intro.volume=Math.max(0,intro.volume-0.1);
+        intro.volume=Math.max(0,intro.volume-0.05);
         if(intro.volume<=0){
           clearInterval(fade);
           intro.pause();
           openSound.currentTime=0;
           openSound.play().catch(()=>{});
-          window.location.href=target;
+          // wait briefly so openstart plays first
+          setTimeout(()=>{
+            window.location.href=target;
+          },800);
         }
       },100);
-    },4500);
+    },4000);
 
-    // after 2 more seconds, return to spot (for safety)
+    // reset visuals automatically
     setTimeout(()=>{
       deck.classList.remove('active');
       deck.style.transition="transform 1s ease-in-out";
       deck.style.transform="none";
       deck.style.setProperty('--spinDur','5s');
       deck.style.zIndex="";
-    },6500);
+    },5200);
   });
 });
 </script>
