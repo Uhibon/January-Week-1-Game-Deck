@@ -19,21 +19,32 @@ body{
   user-select:none; -webkit-user-select:none; -ms-user-select:none;
 }
 
-/* Global overlays */
-#overlay{position:fixed; inset:0; pointer-events:none; z-index:9999}
-.flashRed{
-  position:fixed; inset:0; background:rgba(255,0,0,.35);
-  animation:flash .35s ease; pointer-events:none; z-index:9998;
+/* --------------------------------------------------- */
+/* Energetic rainbow pulse animation while dragging    */
+/* --------------------------------------------------- */
+@keyframes rainbowPulse{
+  0%{transform:scale(1);filter:hue-rotate(0deg) brightness(1.1);
+      box-shadow:0 0 22px #ff00ff80,0 0 44px #ff7f0080;}
+  25%{transform:scale(1.05);filter:hue-rotate(90deg) brightness(1.3);
+      box-shadow:0 0 26px #00ffff99,0 0 52px #00ff8080;}
+  50%{transform:scale(1.1);filter:hue-rotate(180deg) brightness(1.4);
+      box-shadow:0 0 30px #00ffcc99,0 0 58px #ff00ff99;}
+  75%{transform:scale(1.05);filter:hue-rotate(270deg) brightness(1.3);
+      box-shadow:0 0 26px #ff007f99,0 0 52px #ffff0080;}
+  100%{transform:scale(1);filter:hue-rotate(360deg) brightness(1.1);
+      box-shadow:0 0 22px #ff00ff80,0 0 44px #ff7f0080;}
 }
+
+#overlay{position:fixed;inset:0;pointer-events:none;z-index:9999}
+.flashRed{position:fixed;inset:0;background:rgba(255,0,0,.35);
+  animation:flash .35s ease;pointer-events:none;z-index:9998;}
 @keyframes flash{0%{opacity:.0}40%{opacity:1}100%{opacity:0}}
 
-/* Header */
 header{text-align:center;padding:18px 16px 8px;position:relative;z-index:5}
 header h1,header h2,header h3{font-family:'Cinzel',serif}
 header h2{font-size:clamp(2rem,6vw,3rem);margin-top:4px}
 header h3{margin-top:6px;opacity:.9}
 
-/* Play (lowered slightly; fizzle behind triangle) */
 .playWrap{position:relative;z-index:10000;display:flex;flex-direction:column;align-items:center;margin-top:28px}
 .playBtn{
   appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:50%;
@@ -43,153 +54,37 @@ header h3{margin-top:6px;opacity:.9}
   animation:rgbSpin 4s linear infinite,pulse 2s ease-in-out infinite;
   position:relative;overflow:hidden;z-index:10001;
 }
-.playBtn::before,.playBtn::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none}
-.playBtn.fizzy::before{
-  background:
-    radial-gradient(circle at 25% 75%,rgba(255,255,255,.6),transparent 60%),
-    radial-gradient(circle at 75% 25%,rgba(255,255,255,.4),transparent 60%),
-    radial-gradient(circle at 50% 50%,rgba(255,255,255,.3),transparent 60%);
-  animation:fizzmove .35s infinite linear; z-index:0; /* behind ▶ */
-}
-.playBtn.fizzy::after{
-  box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #00ffff99;
-  animation:fizzglow .25s ease-in-out infinite alternate; z-index:0; /* behind ▶ */
-}
 .playBtn span{position:relative;z-index:5;transform:translateX(4px)}
 @keyframes rgbSpin{to{filter:hue-rotate(360deg)}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-@keyframes fizzmove{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-4px,-4px) rotate(180deg)}100%{transform:translate(0,0) rotate(360deg)}}
-@keyframes fizzglow{0%{opacity:.4;filter:blur(3px)}100%{opacity:1;filter:blur(7px)}}
-  /* ⚡️ Fast energetic rainbow pulse when chip is being handled */
-@keyframes rainbowPulse{
-  0%{
-    transform:scale(1);
-    filter:hue-rotate(0deg) brightness(1.1);
-    box-shadow:0 0 22px #ff00ff80,0 0 44px #ff7f0080;
-  }
-  25%{
-    transform:scale(1.05);
-    filter:hue-rotate(90deg) brightness(1.3);
-    box-shadow:0 0 26px #00ffff99,0 0 52px #00ff8080;
-  }
-  50%{
-    transform:scale(1.1);
-    filter:hue-rotate(180deg) brightness(1.4);
-    box-shadow:0 0 30px #00ffcc99,0 0 58px #ff00ff99;
-  }
-  75%{
-    transform:scale(1.05);
-    filter:hue-rotate(270deg) brightness(1.3);
-    box-shadow:0 0 26px #ff007f99,0 0 52px #ffff0080;
-  }
-  100%{
-    transform:scale(1);
-    filter:hue-rotate(360deg) brightness(1.1);
-    box-shadow:0 0 22px #ff00ff80,0 0 44px #ff7f0080;
-  }
-}
 
-
-/* Main centered layout */
 main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
-
-/* Drag area (no box), lighter slots */
 .dropZone,.bank{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 .slot,.tile{
   width:96px;height:96px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .12s, filter .1s;
+  font-weight:900;font-size:54px;transition:box-shadow .15s,background .15s,transform .12s,filter .1s;
 }
-.slot{
-  border:2px dashed #ffffff3a;
-  background:#27306b99;
-}
-.slot.filled{
-  background:#2a2f6b;
-  border-color:#fff9;
-  box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66; /* steady gold */
-}
-/* Hover highlight for auto-drop cue */
-.slot.hover{
-  border-color:#fff;
-  box-shadow:0 0 22px #7dd3fc66,0 0 44px #a78bfa55;
-}
-
+.slot{border:2px dashed #ffffff3a;background:#27306b99;}
+.slot.filled{background:#2a2f6b;border-color:#fff9;
+  box-shadow:0 0 12px #facc15,0 0 28px #fde68a66;}
 .tile{
-  background:#1b2046;border:1px solid #8690ff33;box-shadow:0 8px 14px rgba(0,0,0,.28);
-  color:#fff; touch-action:none; /* crucial for mobile pointer events */
+  background:#1b2046;border:1px solid #8690ff33;
+  box-shadow:0 8px 14px rgba(0,0,0,.28);
+  color:#fff;touch-action:none;
 }
-/* Replace the old .tile.dragging rule with this */
-.tile.dragging{
-  animation: rainbowPulse 1.2s linear infinite;
-  filter:saturate(1.3) brightness(1.2);
-}
-/* assigned each pickup: random hue stored inline via style.setProperty('--hue') */
-.tile.handled{
-  filter:hue-rotate(var(--hue,0deg)) saturate(1.35) brightness(1.05);
-}
-
-/* Steady gold glow + particle aura when in slot */
-.tile.inSlot{
-  box-shadow:0 0 18px var(--gold),0 0 32px var(--goldSoft);
-}
-
-/* Particle aura container (positioned within tile) */
-.aura{
-  position:absolute; inset:0; pointer-events:none; overflow:visible;
-}
-.spark{
-  position:absolute; width:6px; height:6px; border-radius:50%;
-  background:radial-gradient(circle,#fff 0%, #ffe49a 50%, transparent 70%);
-  opacity:.9;
-  animation:floatSpark linear infinite;
-}
+.tile:not(.dragging):not(.inSlot){background:#1b2046;}
+.tile.dragging{animation:rainbowPulse 1.2s linear infinite;filter:saturate(1.3) brightness(1.2);}
+.tile.inSlot{box-shadow:0 0 18px var(--gold),0 0 32px var(--goldSoft);}
+.aura{position:absolute;inset:0;pointer-events:none;overflow:visible;}
+.spark{position:absolute;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,#ffe49a 50%,transparent 70%);
+  opacity:.9;animation:floatSpark linear infinite;}
 @keyframes floatSpark{
-  0%{ transform:translate(var(--x0),var(--y0)) scale(1); opacity:.0}
+  0%{transform:translate(var(--x0),var(--y0)) scale(1);opacity:.0}
   10%{opacity:.85}
-  50%{ transform:translate(var(--x1),var(--y1)) scale(1.1); opacity:.9}
+  50%{transform:translate(var(--x1),var(--y1)) scale(1.1);opacity:.9}
   90%{opacity:.85}
-  100%{ transform:translate(var(--x0),var(--y0)) scale(1); opacity:.0}
-}
-
-/* Controls + Next + counter under buttons */
-.controls{display:flex;gap:12px;justify-content:center;margin-top:10px}
-.btn{appearance:none;border:none;cursor:pointer;padding:12px 20px;border-radius:14px;font-weight:800;font-size:16px}
-.btn.primary{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;box-shadow:0 0 20px #7c3aed66}
-#nextWrap{display:none;flex-direction:column;align-items:center;margin-top:14px}
-#nextBtn{
-  appearance:none;border:none;cursor:pointer;
-  padding:12px 24px;border-radius:14px;font-weight:900;font-size:18px;color:#fff;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  box-shadow:0 0 20px #16a34a80,0 0 40px #22c55e55;
-  animation:nextPulse 1.4s ease-in-out infinite;
-}
-@keyframes nextPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-#progressCount{margin-top:10px;font-weight:700;font-size:1.1rem}
-
-/* Hearts / Farts (brown, consistent mid-line of each chip) */
-@keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-140px) scale(1.6);opacity:0}}
-@keyframes fartCloud{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:translateY(-60px) scale(1.6);opacity:0}}
-.heart,.fart{position:fixed;font-size:36px;pointer-events:none}
-.heart{color:#ff4fa6;animation:floatHeart 1.3s ease-out forwards}
-.fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards} /* brown */
-
-/* Results (minimal) */
-#page-results{display:none;text-align:center;padding:60px 16px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
-#resultMsg{font-size:clamp(1.6rem,4vw,2rem);font-weight:900;text-shadow:0 0 10px rgba(255,255,255,.2)}
-#resultScore{font-size:clamp(1.4rem,3.5vw,1.8rem);font-weight:700}
-.redGlow{background:#2b0b0b}
-.orangeGlow{background:#2b1a0b}
-.blueGlow{background:#0b1530}
-.goldGlow{background:#2b210b}
-.confetti{position:fixed;top:-10vh;width:10px;height:16px;border-radius:2px;animation:fall linear both;z-index:9999}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-
-/* Back to Menu (results only) */
-#backMenu{
-  position:fixed;top:14px;left:14px;z-index:10000;
-  padding:8px 12px;border-radius:12px;border:1px solid #ffffff30;
-  background:#0b1530cc;color:#fff;font-weight:800;backdrop-filter:blur(6px);
-  display:none;
+  100%{transform:translate(var(--x0),var(--y0)) scale(1);opacity:.0}
 }
 
 footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95rem;opacity:.85;border-top:1px solid var(--outline)}
@@ -213,391 +108,176 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
   <div class="controls">
     <button class="btn primary" id="checkBtn" disabled>CHECK</button>
   </div>
-  <div id="nextWrap"><button id="nextBtn">Next / つぎへ</button></div>
+  <div id="nextWrap" style="display:none;"><button id="nextBtn">Next / つぎへ</button></div>
   <div id="progressCount">1 / 15</div>
 </main>
 
-<section id="page-results">
+<section id="page-results" style="display:none;text-align:center;padding:60px 16px;min-height:60vh;">
   <h2>RESULTS / リザルト</h2>
   <div id="resultMsg">いいね！あと少しでパーフェクト！</div>
   <div id="resultScore">0/15（0%）</div>
 </section>
 
-<button id="backMenu" onclick="location.href='index.html'">← Back to Menu</button>
+<button id="backMenu" style="display:none;position:fixed;top:14px;left:14px;">← Back to Menu</button>
 
 <footer>BRYAN'S ENGLISH SCHOOL</footer>
 
 <script>
 const $=s=>document.querySelector(s);
-const MASTER=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+let MASTER=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+MASTER.sort(()=>Math.random()-0.5);
+
 let index=0,totalScore=0,firstTry=true;
+const drop=$("#dropZone"),bank=$("#bank"),check=$("#checkBtn"),
+      nextWrap=$("#nextWrap"),nextBtn=$("#nextBtn"),progressCount=$("#progressCount"),
+      pageRound=$("#page-round"),pageResults=$("#page-results"),
+      play=$("#playBtn"),playWrap=$("#playWrap"),backMenu=$("#backMenu"),overlay=$("#overlay");
 
-const drop=$("#dropZone"),bank=$("#bank"),play=$("#playBtn"),check=$("#checkBtn");
-const nextWrap=$("#nextWrap"),nextBtn=$("#nextBtn"),progressCount=$("#progressCount");
-const overlay=$("#overlay"),pageRound=$("#page-round"),pageResults=$("#page-results");
-const playWrap=$("#playWrap");
-const backMenu=$("#backMenu");
+/* Audio */
+const sfx={ding:new Audio('assets/audio/ding.mp3'),fart:new Audio('assets/audio/fart.mp3')};
+Object.values(sfx).forEach(a=>{a.preload='auto';a.load();});
+function playSfx(a){try{a.currentTime=0;a.play().catch(()=>{});}catch{}}
 
-/* ---------- Audio (local) ---------- */
-const sfx={
-  ding:new Audio('assets/audio/ding.mp3'),
-  fart:new Audio('assets/audio/fart.mp3'),
-  r0_5:new Audio('assets/audio/result_0-5.mp3'),
-  r6_10:new Audio('assets/audio/result_6-10.mp3'),
-  r11_14:new Audio('assets/audio/result_11-14.mp3'),
-  r15:new Audio('assets/audio/result_15.mp3'),
-};
-Object.values(sfx).forEach(a=>{a.preload='auto'; a.load();});
-
-/* Robust SFX play to avoid missed 'ding' */
-function playSfx(audio){
-  try{
-    if(!audio.paused){
-      const clone = audio.cloneNode(true);
-      clone.preload='auto';
-      clone.play().catch(()=>{});
-      return;
-    }
-    audio.currentTime=0;
-    audio.play().catch(()=>{
-      const clone = audio.cloneNode(true);
-      clone.preload='auto';
-      clone.play().catch(()=>{});
-    });
-  }catch{}
-}
-
-/* Sage word audio */
+/* Sage */
 const sage=new Map();
-MASTER.forEach(w=>{
-  const a=new Audio(`audio/${w}.mp3`);
-  a.preload='auto'; a.load(); a.loop=false;
-  sage.set(w,a);
-});
+MASTER.forEach(w=>{const a=new Audio(`audio/${w}.mp3`);a.preload='auto';a.load();sage.set(w,a);});
+function speak(){const w=MASTER[index],a=sage.get(w);if(a){a.currentTime=0;a.play().catch(()=>{});}}
+play.addEventListener("click",speak);
 
-/* Speak every click; fizzle behind triangle */
-function speak(){
-  const w=MASTER[index], a=sage.get(w);
-  if(!a) return;
-  a.currentTime=0; play.classList.add("fizzy");
-  a.play().catch(()=>{});
-  a.onended=()=>play.classList.remove("fizzy");
-}
-play.addEventListener("click", speak);
-
-/* ---------- Effects ---------- */
-function spawnHeart(x,y){
-  const h=document.createElement("div");
-  h.className="heart"; h.textContent="❤️";
-  h.style.left=(x-18)+"px"; h.style.top=(y-18)+"px";
-  overlay.appendChild(h); setTimeout(()=>h.remove(),1300);
-}
-function spawnFartAtTileMid(tile){
-  const r=tile.getBoundingClientRect();
-  const midX = r.left + r.width/2;
-  const midY = r.top  + r.height/2; // middle line across all chips
-  const f=document.createElement("div");
-  f.className="fart"; f.textContent="💨";
-  f.style.left=(midX-18)+"px"; f.style.top=(midY-18)+"px";
-  overlay.appendChild(f); setTimeout(()=>f.remove(),1200);
-}
-/* Screen blink red on incorrect */
-function flashRedScreen(){
-  const el=document.createElement('div');
-  el.className='flashRed';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),400);
-}
-
-/* RGB cycle for unfilled slots (continuous single highlight marching) */
-const glowColors=['#a78bfa','#22c55e','#3b82f6','#f59e0b','#ef4444','#f472b6'];
-let glowIdx=0;
-setInterval(()=>{
-  const slots=[...drop.children];
-  if(!slots.length) return;
-  slots.forEach(s=>{ if(!s.firstChild) s.classList.remove('hover'); });
-  let i=glowIdx, count=0;
-  while(count<slots.length && slots[i%slots.length].firstChild){ i++; count++; }
-  const target=slots[i%slots.length];
-  if(target && !target.firstChild){
-    target.classList.add('hover');
-    target.style.setProperty('--c', glowColors[i%glowColors.length]);
-    glowIdx=(i+1)%slots.length;
-  }
-}, 480);
-
-/* ---------- Particle Aura (gentle floating) ---------- */
+/* sparkles */
 function addAura(tile){
   removeAura(tile);
-  const aura=document.createElement('div');
-  aura.className='aura';
-  // create small number of gently floating sparks
-  const count=10;
-  const w=tile.clientWidth, h=tile.clientHeight;
-  for(let i=0;i<count;i++){
-    const s=document.createElement('div');
-    s.className='spark';
-    // random start/end offsets around the tile edges
-    const x0=(Math.random()*w - w/2).toFixed(1)+"px";
-    const y0=(Math.random()*h - h/2).toFixed(1)+"px";
-    const x1=(Math.random()*w - w/2).toFixed(1)+"px";
-    const y1=(Math.random()*h - h/2).toFixed(1)+"px";
-    const dur=(3.5+Math.random()*2.5).toFixed(2)+'s';
-    s.style.setProperty('--x0',x0);
-    s.style.setProperty('--y0',y0);
-    s.style.setProperty('--x1',x1);
-    s.style.setProperty('--y1',y1);
-    s.style.left='50%'; s.style.top='50%';
-    s.style.animationDuration=dur;
-    s.style.animationDelay=(Math.random()*2).toFixed(2)+'s';
+  const aura=document.createElement('div');aura.className='aura';
+  const c=10,w=tile.clientWidth,h=tile.clientHeight;
+  for(let i=0;i<c;i++){
+    const s=document.createElement('div');s.className='spark';
+    const x0=(Math.random()*w - w/2)+"px",y0=(Math.random()*h - h/2)+"px";
+    const x1=(Math.random()*w - w/2)+"px",y1=(Math.random()*h - h/2)+"px";
+    const dur=(3.5+Math.random()*2.5)+'s';
+    s.style.setProperty('--x0',x0);s.style.setProperty('--y0',y0);
+    s.style.setProperty('--x1',x1);s.style.setProperty('--y1',y1);
+    s.style.animationDuration=dur;s.style.animationDelay=(Math.random()*2)+'s';
     aura.appendChild(s);
   }
-  tile.style.position='relative';
-  tile.appendChild(aura);
+  tile.style.position='relative';tile.appendChild(aura);
 }
-function removeAura(tile){
-  const old=tile.querySelector('.aura');
-  if(old) old.remove();
-}
+function removeAura(t){const a=t.querySelector('.aura');if(a)a.remove();}
 
-/* ---------- Click-hold drag with release-to-drop ---------- */
-function attachTileControls(tile){
-  tile.draggable=false; // disable native DnD
-  let startX=0,startY=0,offX=0,offY=0,moved=false,wasInSlot=false;
+/* helpers */
+function allFilled(){return[...drop.children].every(s=>s.firstChild);}
+function currentAnswer(){return[...drop.children].map(s=>s.firstChild?.textContent??"").join("");}
 
-  function onPointerDown(e){
-    tile.setPointerCapture(e.pointerId);
-    const rect=tile.getBoundingClientRect();
-    startX=e.clientX; startY=e.clientY;
-    offX=e.clientX-rect.left; offY=e.clientY-rect.top;
-    moved=false;
-    wasInSlot = tile.parentElement?.classList.contains('slot');
-
-    // new random hue each pickup
-    const hue=Math.floor(Math.random()*360);
-    tile.style.setProperty('--hue',hue+'deg');
-    tile.classList.add('handled');
-
-    // lift
-    tile.classList.add('dragging');
-    tile.classList.remove('inSlot');
-    removeAura(tile); // stop particles while moving
-
-    // elevate & fix-position
-    tile.style.position='fixed';
-    tile.style.left=rect.left+'px';
-    tile.style.top=rect.top+'px';
-    tile.style.zIndex='1000';
-
-    document.addEventListener('pointermove',onPointerMove);
-    document.addEventListener('pointerup',onPointerUp);
-  }
-
-  function onPointerMove(e){
-    const nx=e.clientX-offX, ny=e.clientY-offY;
-    if(Math.abs(e.clientX-startX)>3 || Math.abs(e.clientY-startY)>3){ moved=true; }
-    tile.style.left=nx+'px'; tile.style.top=ny+'px';
-
-    // hover slot cue
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    const slot=el ? (el.classList?.contains('slot') ? el : el.closest?.('.slot')) : null;
-    [...drop.children].forEach(s=>{ if(s!==slot && !s.firstChild) s.classList.remove('hover'); });
-    if(slot && !slot.firstChild){ slot.classList.add('hover'); }
-
-    // auto cue for bank when hovering its rect
-    const brect=bank.getBoundingClientRect();
-    if(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom){
-      [...drop.children].forEach(s=>s.classList.remove('hover'));
-    }
-  }
-
-  function onPointerUp(e){
-    cleanupPointer(e);
-
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    const slot=el ? (el.classList?.contains('slot') ? el : el.closest?.('.slot')) : null;
-
-    // If it was a simple click on a chip sitting in a slot → send back to bank
-    if(!moved && wasInSlot){
-      sendToBank(tile);
-      return;
-    }
-
-    const brect=bank.getBoundingClientRect();
-    const overBank=(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom);
-
-    if(slot){
-      placeIntoSlot(tile,slot);
-    }else if(overBank){
-      sendToBank(tile);
-    }else{
-      // return to last home
-      if(wasInSlot){
-        // snap back to its old slot (which is still its parent in DOM if not moved there)
-        const oldSlot=[...drop.children].find(s=>!s.firstChild);
-        if(oldSlot){ placeIntoSlot(tile,oldSlot); }
-        else sendToBank(tile);
-      }else{
-        sendToBank(tile);
-      }
-    }
-    enableCheck();
-  }
-
-  function cleanupPointer(e){
-    try{ tile.releasePointerCapture(e.pointerId); }catch{}
-    document.removeEventListener('pointermove',onPointerMove);
-    document.removeEventListener('pointerup',onPointerUp);
-    tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
-    tile.classList.remove('dragging');
-    [...drop.children].forEach(s=>s.classList.remove('hover'));
-  }
-
-  tile.addEventListener('pointerdown',onPointerDown,{passive:false});
-}
-
-function placeIntoSlot(tile,slot){
-  if(slot.firstChild && slot.firstChild!==tile){
-    // if occupied, swap back to bank
-    sendToBank(slot.firstChild);
-  }
-  slot.appendChild(tile);
-  slot.classList.add("filled");
-  tile.classList.add("inSlot");
-  addAura(tile); // gentle particles only in slot
-}
-
-function sendToBank(tile){
-  bank.appendChild(tile);
-  tile.classList.remove('inSlot');
-  removeAura(tile);
-  // clear 'filled' on any empty slots
-  [...drop.children].forEach(s=>{ if(!s.firstChild) s.classList.remove('filled'); });
-}
-
-/* Build */
-function buildSlots(w){
-  drop.innerHTML="";
-  for(let i=0;i<w.length;i++){
-    const s=document.createElement("div");
-    s.className="slot"; drop.appendChild(s);
-  }
-}
-function buildBank(w){
-  bank.innerHTML="";
-  const chars=[...w]; let scr=[...chars];
-  if(chars.length>1){ do{ scr.sort(()=>Math.random()-.5); } while(scr.join("")===w); }
-  scr.forEach((ch,i)=>{
-    const t=document.createElement("div");
-    t.className="tile"; t.id=`tile-${Date.now()}-${i}`; t.textContent=ch;
-    attachTileControls(t);
-    bank.appendChild(t);
+/* pointer drag */
+function attachTile(t){
+  let startX=0,startY=0,offX=0,offY=0;
+  t.addEventListener('pointerdown',e=>{
+    t.setPointerCapture(e.pointerId);
+    const r=t.getBoundingClientRect();
+    startX=e.clientX;startY=e.clientY;offX=e.clientX-r.left;offY=e.clientY-r.top;
+    t.classList.add('dragging');t.classList.remove('inSlot');removeAura(t);
+    t.style.position='fixed';t.style.left=r.left+'px';t.style.top=r.top+'px';t.style.zIndex='1000';
+    const move=ev=>{t.style.left=(ev.clientX-offX)+'px';t.style.top=(ev.clientY-offY)+'px';};
+    const up=ev=>{
+      document.removeEventListener('pointermove',move);
+      document.removeEventListener('pointerup',up);
+      t.style.position='';t.style.zIndex='';t.classList.remove('dragging');
+      const el=document.elementFromPoint(ev.clientX,ev.clientY);
+      const slot=el?(el.classList?.contains('slot')?el:el.closest?.('.slot')):null;
+      const brect=bank.getBoundingClientRect();
+      const overBank=(ev.clientX>brect.left&&ev.clientX<brect.right&&ev.clientY>brect.top&&ev.clientY<brect.bottom);
+      if(slot){slot.appendChild(t);slot.classList.add('filled');t.classList.add('inSlot');addAura(t);}
+      else if(overBank){bank.appendChild(t);t.classList.remove('inSlot');removeAura(t);}
+      else{bank.appendChild(t);t.classList.remove('inSlot');removeAura(t);}
+      enableCheck();
+    };
+    document.addEventListener('pointermove',move);
+    document.addEventListener('pointerup',up);
   });
 }
 
-/* Helpers */
-function enableCheck(){ check.disabled=!allFilled(); }
-function allFilled(){ return [...drop.children].every(s=>s.firstChild); }
-function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join(""); }
+function enableCheck(){check.disabled=!allFilled();}
 
-/* Round logic */
-check.addEventListener("click",()=>{
-  const ans=currentAnswer(), correct=MASTER[index];
+function buildSlots(w){drop.innerHTML="";for(let i=0;i<w.length;i++){const s=document.createElement('div');s.className='slot';drop.appendChild(s);}}
+function buildBank(w){
+  bank.innerHTML="";const chars=[...w];let scr=[...chars];
+  if(chars.length>1){do{scr.sort(()=>Math.random()-.5);}while(scr.join("")===w);}
+  scr.forEach(ch=>{
+    const t=document.createElement('div');
+    t.className='tile';t.textContent=ch;attachTile(t);bank.appendChild(t);
+  });
+}
+
+/* --- game logic --- */
+check.addEventListener('click',()=>{
+  const ans=currentAnswer(),correct=MASTER[index];
   if(ans===correct){
-    if(firstTry) totalScore++;
+    if(firstTry)totalScore++;
     playSfx(sfx.ding);
-    // hearts from consistent mid-top of each tile
-    [...drop.querySelectorAll(".tile")].forEach(t=>{
-      const r=t.getBoundingClientRect();
-      spawnHeart(r.left + r.width/2, r.top);
-    });
-    nextWrap.style.display="flex";
-    check.style.display="none";
-  } else {
+    [...drop.querySelectorAll('.tile')].forEach(addAura);
+    nextWrap.style.display="flex";check.style.display="none";
+  }else{
     firstTry=false;
-    flashRedScreen();
+    const el=document.createElement('div');el.className='flashRed';
+    document.body.appendChild(el);setTimeout(()=>el.remove(),400);
     playSfx(sfx.fart);
-    // fart clouds from middle of each chip, aligned in a row
     [...drop.children].forEach(s=>{
-      if(s.firstChild){
-        const t=s.firstChild;
-        spawnFartAtTileMid(t);
-        // quick red shake + return to bank
-        t.style.background="#3b0f0f";
-        setTimeout(()=>t.style.background="#1b2046",300);
-        sendToBank(t);
-      }
-      s.classList.remove("filled","hover");
+      if(s.firstChild){bank.appendChild(s.firstChild);}
+      s.classList.remove('filled');
     });
     enableCheck();
   }
 });
 
-nextBtn.addEventListener("click",()=>{
-  index++; progressCount.textContent=`${Math.min(index+1,15)} / 15`;
-  if(index>=MASTER.length){ showResults(); return; }
+nextBtn.addEventListener('click',()=>{
+  index++;progressCount.textContent=`${Math.min(index+1,15)} / 15`;
+  if(index>=MASTER.length){showResults();return;}
   loadCard();
 });
 
-/* Results (minimal screens + local audio) */
 function showResults(){
-  pageRound.style.display="none";
-  playWrap.style.display="none";
-  pageResults.style.display="flex";
-  backMenu.style.display="inline-block";
-
+  pageRound.style.display="none";playWrap.style.display="none";
+  pageResults.style.display="flex";backMenu.style.display="inline-block";
   const pct=Math.round((totalScore/15)*100);
-  const msg=$("#resultMsg"), score=$("#resultScore");
-  let bg="blueGlow", snd=sfx.r11_14, text="いいね！あと少しでパーフェクト！";
-  if(totalScore<=5){ bg="redGlow"; snd=sfx.r0_5; text="ブーリキュラム見てないでしょ！"; }
-  else if(totalScore<=10){ bg="orangeGlow"; snd=sfx.r6_10; text="YouTube見すぎ！ブーリキュラムもやろう！"; }
-  else if(totalScore===15){ bg="goldGlow"; snd=sfx.r15; text="すごい！あなたは地球で一番頭がいい！"; }
-
-  document.body.className=bg;
-  msg.textContent=text;
-  score.textContent=`${totalScore}/15（${pct}%）`;
-
-  playSfx(snd);
-
+  const msg=$("#resultMsg"),score=$("#resultScore");
+  let bg="blueGlow",file="result_11-14.mp3",text="いいね！あと少しでパーフェクト！";
+  if(totalScore<=5){bg="redGlow";file="result_0-5.mp3";text="ブーリキュラム見てないでしょ！";}
+  else if(totalScore<=10){bg="orangeGlow";file="result_6-10.mp3";text="YouTube見すぎ！ブーリキュラムもやろう！";}
+  else if(totalScore===15){bg="goldGlow";file="result_15.mp3";text="すごい！あなたは地球で一番頭がいい！";}
+  msg.textContent=text;score.textContent=`${totalScore}/15（${pct}%）`;
+  const snd=new Audio(`assets/audio/${file}`);snd.play().catch(()=>{});
   if(totalScore===15){
     for(let i=0;i<160;i++){
       setTimeout(()=>{
-        const c=document.createElement("div");
-        c.className="confetti";
-        c.style.left=(Math.random()*100)+"vw";
+        const c=document.createElement('div');
+        c.className='confetti';
+        c.style.left=(Math.random()*100)+'vw';
         c.style.background=`hsl(${Math.random()*360},100%,60%)`;
-        c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
+        c.style.position='fixed';
+        c.style.top='-10px';c.style.width='10px';c.style.height='16px';
+        c.style.borderRadius='2px';
+        c.style.animation=`fall ${0.9+Math.random()*0.9}s linear forwards`;
         document.body.appendChild(c);
         setTimeout(()=>c.remove(),1900);
-      }, i*10);
+      },i*10);
     }
   }
 }
 
-/* Game init */
 function loadCard(){
-  const w=MASTER[index]; firstTry=true;
-  buildSlots(w); buildBank(w);
-  check.disabled=true; check.style.display="inline-block";
+  const w=MASTER[index];firstTry=true;
+  buildSlots(w);buildBank(w);
+  check.disabled=true;check.style.display="inline-block";
   nextWrap.style.display="none";
 }
-function initGame(){
-  index=0; totalScore=0; firstTry=true;
-  document.body.className="";
-  pageResults.style.display="none";
-  playWrap.style.display="flex";
-  pageRound.style.display="flex";
-  backMenu.style.display="none";
-  progressCount.textContent="1 / 15";
-  loadCard();
-}
-initGame();
 
-/* Pre-warm audio (best-effort, safe if blocked) */
-setTimeout(()=>{
-  Object.values(sfx).forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
-  sage.forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
-}, 300);
+function init(){
+  index=0;totalScore=0;firstTry=true;
+  document.body.className="";
+  pageResults.style.display="none";playWrap.style.display="flex";
+  pageRound.style.display="flex";backMenu.style.display="none";
+  progressCount.textContent="1 / 15";loadCard();
+}
+init();
 </script>
 </body>
 </html>
