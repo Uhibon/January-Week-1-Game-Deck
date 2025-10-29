@@ -74,38 +74,32 @@ a.deck::after{
   pointer-events:none;z-index:0;
 }
 
-/* Tint each spiral */
-a.deck:nth-child(1)::after{filter:hue-rotate(330deg);}
-a.deck:nth-child(2)::after{filter:hue-rotate(190deg);}
-a.deck:nth-child(3)::after{filter:hue-rotate(50deg);}
-a.deck:nth-child(4)::after{filter:hue-rotate(270deg);}
-a.deck:nth-child(5)::after{filter:hue-rotate(130deg);}
-a.deck:nth-child(6)::after{filter:hue-rotate(20deg);}
-
-/* Sequential glow */
-a.deck:nth-child(1){animation:glow 6s infinite;animation-delay:0s;}
-a.deck:nth-child(2){animation:glow 6s infinite;animation-delay:1s;}
-a.deck:nth-child(3){animation:glow 6s infinite;animation-delay:2s;}
-a.deck:nth-child(4){animation:glow 6s infinite;animation-delay:3s;}
-a.deck:nth-child(5){animation:glow 6s infinite;animation-delay:4s;}
-a.deck:nth-child(6){animation:glow 6s infinite;animation-delay:5s;}
-
-@keyframes glow{
-  0%,100%{box-shadow:0 0 10px rgba(255,255,255,.1);}
-  15%{box-shadow:0 0 35px rgba(255,255,255,.9),0 0 70px rgba(255,255,255,.5);}
-  30%{box-shadow:0 0 10px rgba(255,255,255,.1);}
-}
-@keyframes spin{
-  0%{transform:translate(-50%,-50%) rotate(0deg);}
-  100%{transform:translate(-50%,-50%) rotate(360deg);}
-}
-
 a.deck:hover{transform:scale(1.08);filter:brightness(1.25);}
 a.deck span{font-size:0.85em;color:#222;position:relative;z-index:1;}
 a.deck b{position:relative;z-index:1;display:block;}
 
+@keyframes spin{
+  0%{transform:translate(-50%,-50%) rotate(0deg);}
+  100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
+
+/* Sparkles */
+.sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: gold;
+  border-radius: 50%;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: sparkleRise 1s ease-out forwards;
+}
+@keyframes sparkleRise {
+  0% { transform: translateY(0) scale(1); opacity:1; }
+  100% { transform: translateY(-100px) scale(0); opacity:0; }
+}
 </style>
 </head>
 <body>
@@ -116,35 +110,12 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   <h3>January Week 1 Game Deck<br>１月第１週ゲームデッキ</h3>
 
  <div class="deck-links">
-  <a class="deck" href="dragdrop.html">
-    <b>Drag & Drop</b>
-    <span>ドラッグ＆ドロップ</span>
-  </a>
-
-  <a class="deck" href="saytheword.html">
-    <b>Say the Word</b>
-    <span>ワードを言おう</span>
-  </a>
-
-  <a class="deck" href="wordbuilder.html">
-    <b>Word Builder</b>
-    <span>ワードビルダー</span>
-  </a>
-
-  <a class="deck" href="speak.html">
-    <b>Eigo Pera Pera</b>
-    <span>英語ペラペラ</span>
-  </a>
-
-  <a class="deck" href="sentencequiz.html">
-    <b>Make the Sentences</b>
-    <span>文を作ろう</span>
-  </a>
-
-  <a class="deck" href="game4.html">
-    <b>Eigo Adventure</b>
-    <span>英語アドベンチャー</span>
-  </a>
+  <a class="deck" href="dragdrop.html"><b>Drag & Drop</b><span>ドラッグ＆ドロップ</span></a>
+  <a class="deck" href="saytheword.html"><b>Say the Word</b><span>ワードを言おう</span></a>
+  <a class="deck" href="wordbuilder.html"><b>Word Builder</b><span>ワードビルダー</span></a>
+  <a class="deck" href="speak.html"><b>Eigo Pera Pera</b><span>英語ペラペラ</span></a>
+  <a class="deck" href="sentencequiz.html"><b>Make the Sentences</b><span>文を作ろう</span></a>
+  <a class="deck" href="game4.html"><b>Eigo Adventure</b><span>英語アドベンチャー</span></a>
 </div>
 
   <footer>
@@ -153,44 +124,66 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
 </section>
 
 <!-- Audio -->
+<audio id="bgm" src="assets/audio/opening2.mp3" preload="auto" autoplay loop muted></audio>
 <audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
 <audio id="openSound" src="assets/audio/openstart.mp3" preload="auto"></audio>
 
 <script>
+const bgm = document.getElementById('bgm');
 const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
+
+// Unmute BGM on first touch
+window.addEventListener('click',()=>{bgm.muted=false; bgm.play();},{once:true});
+
+// sparkle generator
+function spawnSparkle(x, y){
+  const s=document.createElement('div');
+  s.className='sparkle';
+  s.style.left=x+'px';
+  s.style.top=y+'px';
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),1000);
+}
 
 document.querySelectorAll('.deck').forEach(deck=>{
   deck.addEventListener('click', e=>{
     e.preventDefault();
-    const target = deck.getAttribute('href');
+    const target=deck.getAttribute('href');
 
-    // start intro sound
-    intro.currentTime = 0;
-    intro.volume = 1;
+    // stop bgm
+    bgm.pause();
+    bgm.currentTime=0;
+
+    // play intro
+    intro.currentTime=0;
+    intro.volume=1;
     intro.play();
 
-    // smoothly enlarge box over 3.5s
-    deck.style.transition = "transform 3.5s ease-in-out, border-radius 3.5s ease-in-out";
-    deck.style.transform = "scale(10)";
-    deck.style.borderRadius = "0";
-    deck.style.zIndex = "9999";
+    // center the box
+    const rect=deck.getBoundingClientRect();
+    const centerX=window.innerWidth/2 - (rect.left + rect.width/2);
+    const centerY=window.innerHeight/2 - (rect.top + rect.height/2);
+    deck.style.transition="transform 3s ease-in-out";
+    deck.style.transform=`translate(${centerX}px,${centerY}px) scale(2.5)`;
+    deck.style.zIndex="9999";
 
-    // fade intro, then play open sound
+    // sparkle trail
+    const sparkleInt=setInterval(()=>{
+      const r=deck.getBoundingClientRect();
+      const x=r.left + r.width/2 + (Math.random()*60-30);
+      const y=r.top + r.height/2;
+      spawnSparkle(x,y);
+    },100);
+
+    // fade out intro, play open sound
     setTimeout(()=>{
-      const fade = setInterval(()=>{
-        intro.volume = Math.max(0, intro.volume - 0.05);
-        if(intro.volume <= 0){
-          clearInterval(fade);
-          intro.pause();
-          openSound.currentTime = 0;
-          openSound.play();
-        }
-      },100);
-    },3200);
-
-    // redirect to game
-    setTimeout(()=>window.location.href = target,3500);
+      clearInterval(sparkleInt);
+      intro.pause();
+      openSound.currentTime=0;
+      openSound.play();
+      window.location.href=target;
+    },3000);
   });
 });
 </script>
