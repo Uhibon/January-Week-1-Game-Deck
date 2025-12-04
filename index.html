@@ -248,9 +248,9 @@ document.querySelectorAll('.deck').forEach(deck=>{
     const cx = window.innerWidth / 2 - (r.left + r.width / 2);
     const cy = window.innerHeight / 2 - (r.top + r.height / 2);
 
-    // Move gently to center, NO SCALE
-    deck.style.transition = "transform 2s ease-in-out";
-    deck.style.transform = `translate(${cx}px,${cy}px)`;
+    // Move to center and scale to 3x (box, font, animation all bigger)
+    deck.style.transition = "transform 2.6s ease-in-out";
+    deck.style.transform = `translate(${cx}px,${cy}px) scale(3)`;
     deck.style.zIndex = "9999";
 
     const sparkleInt = setInterval(() => sparkleBurst(deck.getBoundingClientRect(), 40), 200);
