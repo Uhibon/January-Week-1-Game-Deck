@@ -200,13 +200,11 @@ footer{
 
 <div id="fadeScreen"></div>
 
-<!-- Audio -->
+<!-- Audio: ONLY the main intro music -->
 <audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
-<audio id="openSound" src="assets/audio/openstart.mp3" preload="auto"></audio>
 
 <script>
 const intro = document.getElementById('introSound');
-const openSound = document.getElementById('openSound');
 let isTransitioning = false;
 
 function sparkleBurst(rect, count = 65){
@@ -240,6 +238,7 @@ document.querySelectorAll('.deck').forEach(deck=>{
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
+    // start main music
     intro.pause();
     intro.currentTime = 0;
     intro.volume = 1;
@@ -249,23 +248,21 @@ document.querySelectorAll('.deck').forEach(deck=>{
     const cx = window.innerWidth / 2 - (r.left + r.width / 2);
     const cy = window.innerHeight / 2 - (r.top + r.height / 2);
 
-    // Gentle move to center, small scale
-    deck.style.transition = "transform 2.2s ease-in-out";
-    deck.style.transform = `translate(${cx}px,${cy}px) scale(1.15)`;
+    // Move gently to center, NO SCALE
+    deck.style.transition = "transform 2s ease-in-out";
+    deck.style.transform = `translate(${cx}px,${cy}px)`;
     deck.style.zIndex = "9999";
 
     const sparkleInt = setInterval(() => sparkleBurst(deck.getBoundingClientRect(), 40), 200);
 
-    // fade out intro → play openstart → fade to black → open game
+    // fade out music → fade to black → open game
     setTimeout(()=>{
       clearInterval(sparkleInt);
-      const fade = setInterval(()=>{
+      const fadeInterval = setInterval(()=>{
         intro.volume = Math.max(0, intro.volume - 0.05);
         if(intro.volume <= 0){
-          clearInterval(fade);
+          clearInterval(fadeInterval);
           intro.pause();
-          openSound.currentTime = 0;
-          openSound.play().catch(()=>{});
 
           const fadeScreen = document.getElementById('fadeScreen');
           if (fadeScreen) {
@@ -278,7 +275,7 @@ document.querySelectorAll('.deck').forEach(deck=>{
           }
         }
       }, 100);
-    }, 4000);
+    }, 3500); // timing before fade starts
   });
 });
 </script>
