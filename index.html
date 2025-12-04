@@ -16,8 +16,23 @@
 
 /* Reset & layout */
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Cinzel',serif;background:#000;color:#fff;overflow:hidden;}
-#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;animation:fadeIn 1s ease;position:relative;}
+html,body{
+  height:100%;
+  font-family:'Cinzel',serif;
+  background:#000;
+  color:#fff;
+  overflow:hidden;
+}
+#welcome{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  text-align:center;
+  animation:fadeIn 1s ease;
+  position:relative;
+}
 h1{font-size:clamp(32px,5vw,60px);margin-bottom:.4em;font-weight:900;}
 h2{font-size:clamp(22px,3vw,36px);margin-bottom:.3em;font-weight:800;color:#ccc;}
 h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2.5em;}
@@ -34,9 +49,19 @@ h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2.5em;}
 /* Boxes */
 a.deck{
   position:relative;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  width:180px;height:180px;border-radius:20px;text-decoration:none;color:#111;font-weight:900;
-  font-size:1.1rem;overflow:hidden;cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:180px;
+  height:180px;
+  border-radius:20px;
+  text-decoration:none;
+  color:#111;
+  font-weight:900;
+  font-size:1.1rem;
+  overflow:hidden;
+  cursor:pointer;
   border:8px solid #000;
   box-shadow:0 0 8px rgba(255,215,0,0.3),0 0 16px rgba(255,215,0,0.15);
   transition:box-shadow .3s ease,transform .3s ease,filter .4s ease;
@@ -56,7 +81,13 @@ a.deck:nth-child(6){background:var(--orange);}
 
 /* Spiral animation */
 a.deck::after{
-  content:"";position:absolute;top:50%;left:50%;width:170%;height:170%;border-radius:50%;
+  content:"";
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:170%;
+  height:170%;
+  border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
   background:conic-gradient(from 0deg,
     rgba(255,255,255,0.8) 0deg 20deg,
@@ -77,30 +108,72 @@ a.deck::after{
     rgba(255,255,255,0) 300deg 320deg,
     rgba(255,255,255,0.8) 320deg 340deg,
     rgba(255,255,255,0) 340deg 360deg);
-  opacity:.55;mix-blend-mode:overlay;
+  opacity:.55;
+  mix-blend-mode:overlay;
   animation:spin var(--spinDur) linear infinite;
-  pointer-events:none;z-index:0;
+  pointer-events:none;
+  z-index:0;
 }
 
 a.deck:hover{filter:brightness(1.25);}
-a.deck span{font-size:0.85em;color:#222;position:relative;z-index:1;}
-a.deck b{position:relative;z-index:1;display:block;}
+a.deck span{
+  font-size:0.85em;
+  color:#222;
+  position:relative;
+  z-index:1;
+}
+a.deck b{
+  position:relative;
+  z-index:1;
+  display:block;
+}
 
-@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg);}100%{transform:translate(-50%,-50%) rotate(360deg);}}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clamp(14px,2vw,18px);color:#888;}
+@keyframes spin{
+  0%{transform:translate(-50%,-50%) rotate(0deg);}
+  100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+footer{
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  text-align:center;
+  font-size:clamp(14px,2vw,18px);
+  color:#888;
+}
 
 /* Sparkles */
 .sparkle{
-  position:fixed;width:8px;height:8px;border-radius:50%;
+  position:fixed;
+  width:8px;
+  height:8px;
+  border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #fff, #ffd86d 60%, rgba(255,215,0,0) 70%);
   box-shadow:0 0 8px rgba(255,215,0,.9),0 0 22px rgba(255,215,0,.7);
-  pointer-events:none;opacity:0;
-  animation:sparkleFly 2.5s ease-out forwards; /* linger longer */
+  pointer-events:none;
+  opacity:0;
+  animation:sparkleFly 2.5s ease-out forwards;
 }
 @keyframes sparkleFly{
   0%{transform:translate(0,0) scale(1);opacity:1;}
   100%{transform:translate(var(--dx),var(--dy)) scale(0.4);opacity:0;}
+}
+
+/* Fade-to-black screen */
+#fadeScreen{
+  position:fixed;
+  inset:0;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.9s ease;
+  z-index:9000;
+}
+#fadeScreen.show{
+  opacity:1;
 }
 </style>
 </head>
@@ -111,19 +184,21 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
   <h2>ブー・リキュラム</h2>
   <h3>January Week 1 Game Deck<br>１月第１週ゲームデッキ</h3>
 
- <div class="deck-links">
-  <a class="deck" href="dragdrop.html"><b>Drag & Drop</b><span>ドラッグ＆ドロップ</span></a>
-  <a class="deck" href="saytheword.html"><b>Say the Word</b><span>ワードを言おう</span></a>
-  <a class="deck" href="wordbuilder.html"><b>Word Builder</b><span>ワードビルダー</span></a>
-  <a class="deck" href="speak.html"><b>Eigo Pera Pera</b><span>英語ペラペラ</span></a>
-  <a class="deck" href="sentencequiz.html"><b>Make the Sentences</b><span>文を作ろう</span></a>
-  <a class="deck" href="game4.html"><b>Eigo Adventure</b><span>英語アドベンチャー</span></a>
-</div>
+  <div class="deck-links">
+    <a class="deck" href="dragdrop.html"><b>Drag & Drop</b><span>ドラッグ＆ドロップ</span></a>
+    <a class="deck" href="saytheword.html"><b>Say the Word</b><span>ワードを言おう</span></a>
+    <a class="deck" href="wordbuilder.html"><b>Word Builder</b><span>ワードビルダー</span></a>
+    <a class="deck" href="speak.html"><b>Eigo Pera Pera</b><span>英語ペラペラ</span></a>
+    <a class="deck" href="sentencequiz.html"><b>Make the Sentences</b><span>文を作ろう</span></a>
+    <a class="deck" href="game4.html"><b>Eigo Adventure</b><span>英語アドベンチャー</span></a>
+  </div>
 
   <footer>
     Bryan's English School
   </footer>
 </section>
+
+<div id="fadeScreen"></div>
 
 <!-- Audio -->
 <audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
@@ -132,76 +207,78 @@ footer{position:absolute;bottom:20px;width:100%;text-align:center;font-size:clam
 <script>
 const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
+let isTransitioning = false;
 
-function sparkleBurst(rect,count=65){
-  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
-  for(let i=0;i<count;i++){
-    const a=Math.random()*Math.PI*2;
-    const x=cx+Math.cos(a)*(rect.width/2);
-    const y=cy+Math.sin(a)*(rect.height/2);
-    const dx=(Math.cos(a)*(80+Math.random()*60)).toFixed(2);
-    const dy=(Math.sin(a)*(80+Math.random()*60)).toFixed(2);
-    const s=document.createElement('div');
-    s.className='sparkle';
-    s.style.left=(x-3.5)+'px';
-    s.style.top=(y-3.5)+'px';
-    s.style.setProperty('--dx',dx+'px');
-    s.style.setProperty('--dy',dy+'px');
+function sparkleBurst(rect, count = 65){
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  for(let i = 0; i < count; i++){
+    const a = Math.random() * Math.PI * 2;
+    const x = cx + Math.cos(a) * (rect.width / 2);
+    const y = cy + Math.sin(a) * (rect.height / 2);
+    const dx = (Math.cos(a) * (80 + Math.random() * 60)).toFixed(2);
+    const dy = (Math.sin(a) * (80 + Math.random() * 60)).toFixed(2);
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (x - 3.5) + 'px';
+    s.style.top = (y - 3.5) + 'px';
+    s.style.setProperty('--dx', dx + 'px');
+    s.style.setProperty('--dy', dy + 'px');
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),2500);
+    setTimeout(() => s.remove(), 2500);
   }
 }
 
 document.querySelectorAll('.deck').forEach(deck=>{
   deck.addEventListener('click', e=>{
     e.preventDefault();
-    const target=deck.getAttribute('href');
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    const target = deck.getAttribute('href');
 
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
-    intro.pause();intro.currentTime=0;intro.volume=1;
+    intro.pause();
+    intro.currentTime = 0;
+    intro.volume = 1;
     intro.play().catch(()=>{});
 
-    const r=deck.getBoundingClientRect();
-    const cx=window.innerWidth/2-(r.left+r.width/2);
-    const cy=window.innerHeight/2-(r.top+r.height/2);
-    deck.style.transition="transform 3s ease-in-out";
-    deck.style.transform=`translate(${cx}px,${cy}px) scale(2.6)`;
-    deck.style.zIndex="9999";
+    const r = deck.getBoundingClientRect();
+    const cx = window.innerWidth / 2 - (r.left + r.width / 2);
+    const cy = window.innerHeight / 2 - (r.top + r.height / 2);
 
-    const sparkleInt=setInterval(()=>sparkleBurst(deck.getBoundingClientRect(),40),200);
+    // Gentle move to center, small scale
+    deck.style.transition = "transform 2.2s ease-in-out";
+    deck.style.transform = `translate(${cx}px,${cy}px) scale(1.15)`;
+    deck.style.zIndex = "9999";
 
-    // fade out intro → play openstart → jump to fullscreen → open game
+    const sparkleInt = setInterval(() => sparkleBurst(deck.getBoundingClientRect(), 40), 200);
+
+    // fade out intro → play openstart → fade to black → open game
     setTimeout(()=>{
       clearInterval(sparkleInt);
-      const fade=setInterval(()=>{
-        intro.volume=Math.max(0,intro.volume-0.05);
-        if(intro.volume<=0){
+      const fade = setInterval(()=>{
+        intro.volume = Math.max(0, intro.volume - 0.05);
+        if(intro.volume <= 0){
           clearInterval(fade);
           intro.pause();
-          openSound.currentTime=0;
+          openSound.currentTime = 0;
           openSound.play().catch(()=>{});
-          // jump expand to full screen for ultra-wide look
-          deck.style.transition="transform 0.5s ease-out";
-          deck.style.transform="translate(0,0) scale(14)";
-          deck.style.borderRadius="0";
-          deck.style.setProperty('--spinDur','0.6s');
-          deck.style.zIndex="99999";
-          // open game when the jump completes
-          setTimeout(()=>window.location.href=target,500);
-        }
-      },100);
-    },4000);
 
-    // optional reset if user returns
-    setTimeout(()=>{
-      deck.classList.remove('active');
-      deck.style.transition="transform 1s ease-in-out";
-      deck.style.transform="none";
-      deck.style.setProperty('--spinDur','5s');
-      deck.style.zIndex="";
-    },6000);
+          const fadeScreen = document.getElementById('fadeScreen');
+          if (fadeScreen) {
+            fadeScreen.classList.add('show');
+            setTimeout(() => {
+              window.location.href = target;
+            }, 900); // match CSS transition
+          } else {
+            window.location.href = target;
+          }
+        }
+      }, 100);
+    }, 4000);
   });
 });
 </script>
