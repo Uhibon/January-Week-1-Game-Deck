@@ -205,6 +205,7 @@ footer{
 
 <script>
 const intro = document.getElementById('introSound');
+const deckContainer = document.querySelector('.deck-links');
 let isTransitioning = false;
 
 function sparkleBurst(rect, count = 65){
@@ -227,8 +228,10 @@ function sparkleBurst(rect, count = 65){
   }
 }
 
-document.querySelectorAll('.deck').forEach(deck=>{
-  deck.addEventListener('click', e=>{
+if (deckContainer) {
+  deckContainer.addEventListener('click', e => {
+    const deck = e.target.closest('.deck');
+    if (!deck) return;
     e.preventDefault();
     if (isTransitioning) return;
     isTransitioning = true;
@@ -277,7 +280,7 @@ document.querySelectorAll('.deck').forEach(deck=>{
       }, 100);
     }, 3500); // timing before fade starts
   });
-});
+}
 </script>
 
 </body>
