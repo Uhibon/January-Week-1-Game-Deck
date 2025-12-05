@@ -31,7 +31,8 @@ body{
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
-  overscroll-behavior-y:auto;
+  /* Reduce accidental page pull-to-refresh on capable browsers */
+  overscroll-behavior-y: none;
 }
 
 /* Header + footer */
@@ -46,6 +47,7 @@ header h2{
   font-size:clamp(2.0rem,6.2vw,3rem);
   text-shadow:0 0 10px rgba(255,255,255,.12)
 }
+/* Mobile: two lines; Desktop: single line with slash */
 .subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
 .subtitle-stack .en::after{content:" / "; opacity:.8}
 @media (max-width:700px){
@@ -92,45 +94,25 @@ footer{
 }
 .col{flex:1 1 420px;max-width:460px;display:flex;flex-direction:column;gap:14px}
 
-/* ✅ scroll mainly via scrollbar; make it obvious */
-.round-viewport{
-  overflow-y:auto;
-}
+/* ✅ Allow vertical scroll gestures anywhere; lock only during active drag */
+.round-viewport,
+.round-wrap,
+.card,
+.col { touch-action: pan-y; }
+body.draggingTouch .round-wrap{ touch-action: none; }
 
-/* Glowing scrollbar (WebKit – iOS/Chrome/etc.) */
-.round-viewport::-webkit-scrollbar{
-  width:12px;
-}
-.round-viewport::-webkit-scrollbar-track{
-  background:rgba(15,23,42,.9);
-  border-radius:999px;
-}
-.round-viewport::-webkit-scrollbar-thumb{
-  background:linear-gradient(180deg,#60a5fa,#a855f7);
-  border-radius:999px;
-  box-shadow:0 0 12px rgba(96,165,250,.9), 0 0 22px rgba(168,85,247,.8);
-}
-.round-viewport::-webkit-scrollbar-thumb:hover{
-  background:linear-gradient(180deg,#93c5fd,#c4b5fd);
-}
-
-/* Firefox-ish */
-.round-viewport{
-  scrollbar-color:#60a5fa rgba(15,23,42,.9);
-  scrollbar-width:thin;
-}
-
-/* MOBILE layout */
+/* MOBILE layout improvements */
 @media (max-width:700px){
-  :root{ --cardH: 104px; }
+  :root{ --cardH: 104px; }                 /* smaller, uniform mobile cards */
   #page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
   .round-viewport{
     flex:1 1 auto;
     min-height:0;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-y:contain;
-    scrollbar-gutter:stable both-edges;
-    padding-bottom:calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;      /* smooth iOS scroll */
+    overscroll-behavior-y:contain;         /* reduce bounce where supported */
+    scrollbar-gutter: stable both-edges;   /* keeps scroll easier to grab */
+    padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px); /* keep bottom cards clear of CHECK */
   }
   .round-wrap{flex-wrap:nowrap;gap:10px}
   .col{flex:0 0 50%;max-width:50%}
@@ -153,14 +135,14 @@ footer{
   padding:18px 20px;
   display:flex; align-items:center; justify-content:center; text-align:center;
   font-size:clamp(1.4rem,4.6vw,2.4rem); font-weight:700; line-height:1.2;
-  user-select:none;
-  transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s.ease;
+  user-select:none; transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
   word-break:break-word;
 }
 .card.en{
   color:#000; font-weight:1000;
   font-size:clamp(1.8rem,5.8vw,3rem);
-  letter-spacing:-.01em;
+  letter-spacing:-.01em; text-transform:none;
+  /* 🚫 Never split words like "motivation" */
   word-break: keep-all;
   overflow-wrap: normal;
   hyphens: none;
@@ -169,8 +151,8 @@ footer{
   background:transparent; border:3px dashed var(--outline); color:var(--ink);
   white-space:pre-line;
 }
-.card.dragging{opacity:.65; transform:scale(1.04); z-index:1000;}
-.card.locked{pointer-events:none}
+.card.dragging{opacity:.65; transform:scale(1.04)}
+.card.locked{pointer-events:none} /* no dim */
 
 /* Combined before grading */
 .card.combined{ border:0; display:flex; flex-direction:column; gap:8px; }
@@ -182,7 +164,7 @@ footer{
 .card.combined .enTxt{font-size:1.05em; font-weight:1000; letter-spacing:-.01em}
 .card.combined .jpTxt{font-size:.7em; opacity:.98}
 
-/* Grading */
+/* Grading wins over everything */
 .card.correct{background:var(--green) !important; color:#062a12 !important; border:0 !important}
 .card.wrong  {background:var(--red)   !important; color:#fff     !important; border:0 !important; animation:shake .45s}
 @keyframes shake{
@@ -198,7 +180,7 @@ footer{
 .btn{
   border:0; border-radius:28px; padding:12px 34px; font-weight:800; font-size:1.1rem; cursor:pointer;
   transition:transform .08s ease, box-shadow .2s ease, filter .2s ease;
-  touch-action: manipulation;
+  touch-action: manipulation; /* faster taps on mobile */
 }
 .btn:active{transform:translateY(1px)}
 .btn-green{ background:var(--check); color:#062a12; box-shadow:var(--checkGlow) }
@@ -224,7 +206,7 @@ footer{
 .blueGlow{background:#0d2b7a; box-shadow:inset 0 0 60px 30px #2b7bff}
 .goldGlow{background:#725c00; box-shadow:inset 0 0 80px 40px #ffd166}
 
-/* Perfect-run confetti */
+/* Perfect-run confetti rain */
 .confetti{
   position:fixed; width:12px; height:12px; border-radius:50%;
   top:-12px; left:0;
@@ -239,7 +221,7 @@ footer{
 /* Per-card effects */
 .bit{
   position:fixed; width:14px; height:14px; border-radius:3px;
-  pointer-events:none; z-index:20; animation:pop 760ms.ease-out forwards;
+  pointer-events:none; z-index:20; animation:pop 760ms ease-out forwards;
 }
 @keyframes pop{
   0%{opacity:1; transform:translate(0,0) scale(1) rotate(0deg)}
@@ -250,14 +232,14 @@ footer{
   background:radial-gradient(closest-side, rgba(74,222,128,.97) 0%, rgba(34,197,94,.7) 55%, rgba(34,197,94,0) 70%);
   filter:blur(2px);
   pointer-events:none; z-index:19;
-  animation:puff 950ms.ease-out forwards;
+  animation:puff 950ms ease-out forwards;
 }
 @keyframes puff{
   0%{opacity:.98; transform:translate(-50%,-50%) scale(.7)}
   100%{opacity:0; transform:translate(-50%,-50%) scale(7)}
 }
 
-/* English vertical stripes */
+/* English vertical stripes use card height var */
 @keyframes stripesV{ from{background-position:0 0} to{background-position:0 var(--cardH)} }
 .sv{ background-size:100% var(--cardH); animation:stripesV 3.2s linear infinite; }
 .sv1{ background-image:repeating-linear-gradient(0deg, #ff7eb9 0 18px, #5ee6ff 18px 36px, #ffd166 36px 54px); }
@@ -266,27 +248,19 @@ footer{
 .sv4{ background-image:repeating-linear-gradient(0deg, #fca5a5 0 18px, #86efac 18px 36px, #93c5fd 36px 54px); }
 .sv5{ background-image:repeating-linear-gradient(0deg, #f9a8d4 0 18px, #fef08a 18px 36px, #6ee7b7 36px 54px); }
 
-/* Drag ghost */
+/* Touch drag helper visuals */
 .drag-ghost{
-  position:fixed;
-  z-index:9999;
-  pointer-events:none;
-  transform:translate(-50%,-50%);
-  will-change:transform;
+  position:fixed; z-index:9999; pointer-events:none;
+  transform:translate(-50%,-50%); will-change:transform;
   width:46vw; max-width:420px;
   height:var(--cardH);
   display:flex; align-items:center; justify-content:center;
-  border-radius:24px;
-  font-weight:1000;
-  color:#000;
+  border-radius:24px; font-weight:1000; color:#000;
 }
-@media (min-width:701px){
+@media (min-width: 701px){
   .drag-ghost{ width:360px; }
 }
-.hoverTarget{
-  box-shadow:0 0 0 4px rgba(255,255,255,.25), 0 0 20px rgba(255,255,255,.25);
-  border-color:#fff !important;
-}
+.hoverTarget{ box-shadow:0 0 0 4px rgba(255,255,255,.25), 0 0 20px rgba(255,255,255,.25); border-color:#fff !important; }
 
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 
@@ -333,9 +307,6 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   border:1px solid #ffffff55;
   box-shadow:0 0 30px rgba(0,0,0,.8);
   position:relative;
-  max-height:min(560px, 90vh);
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
 }
 .help-title{
   font-family:'Cinzel',serif;
@@ -440,8 +411,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     <div class="help-content">
       <p><strong>English</strong></p>
       <ul>
-        <li>Drag an <strong>English card</strong> to the matching <strong>Japanese card</strong>.</li>
-        <li>You can change your mind: drag a different English card onto the same Japanese card to replace it.</li>
+        <li>Drag each <strong>English card</strong> on the left onto the matching <strong>Japanese card</strong> on the right.</li>
         <li>When all 5 pairs are connected, tap <strong>CHECK</strong>.</li>
         <li>Correct answers turn <strong>green</strong> with a “ding” sound.</li>
         <li>Wrong answers turn <strong>red</strong> with a funny “boo” sound.</li>
@@ -452,8 +422,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 
       <p><strong>日本語</strong></p>
       <ul>
-        <li><strong>英語カードをドラッグして</strong>、同じ意味の<strong>日本語カードの上に置きます。</strong></li>
-        <li>あとで変えたくなったら、別の英語カードをドラッグして上に重ねればOKです。</li>
+        <li>左の<strong>英語カード</strong>を、意味が同じ<strong>日本語カード</strong>の上にドラッグして重ねます。</li>
         <li>5つすべてペアにできたら、<strong>CHECK（チェック）</strong>ボタンを押します。</li>
         <li>正解は<strong>緑色</strong>になり、「ピン！」という音が鳴ります。</li>
         <li>まちがいは<strong>赤色</strong>になり、面白い「ブー」の音が鳴ります。</li>
@@ -498,45 +467,32 @@ let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[], audioUnlo
 const $ = s=>document.querySelector(s);
 function playSfx(id){
   const src=document.getElementById(id); if(!src) return;
-  const a=src.cloneNode(true);
-  a.setAttribute('playsinline','');
-  a.currentTime=0;
-  a.volume=src.volume ?? 1;
-  document.body.appendChild(a);
-  a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
+  const a=src.cloneNode(true); a.setAttribute('playsinline',''); a.currentTime=0; a.volume=src.volume??1;
+  document.body.appendChild(a); a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
 }
-function centerOf(el){
-  const r=el.getBoundingClientRect();
-  return{ x:r.left+r.width/2, y:r.top+r.height/2 };
-}
+function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
 
-/* Shuffle */
+/* Shuffle helper */
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
 /* Effects */
 function burstConfettiAt(el,count=44){
   const {x,y}=centerOf(el);
   for(let i=0;i<count;i++){
-    const b=document.createElement('div');
-    b.className='bit';
-    b.style.left=x+'px';
-    b.style.top=y+'px';
+    const b=document.createElement('div'); b.className='bit';
+    b.style.left=x+'px'; b.style.top=y+'px';
     const ang=Math.random()*2*Math.PI, dist=80+Math.random()*130;
     b.style.setProperty('--dx', Math.cos(ang)*dist+'px');
     b.style.setProperty('--dy', Math.sin(ang)*dist-10+'px');
     b.style.background=`hsl(${Math.random()*360},100%,60%)`;
-    document.body.appendChild(b);
-    setTimeout(()=>b.remove(),820);
+    document.body.appendChild(b); setTimeout(()=>b.remove(),820);
   }
 }
 function fartPoofAt(el){
   const {x,y}=centerOf(el);
-  const p=document.createElement('div');
-  p.className='poof';
-  p.style.left=x+'px';
-  p.style.top=y+'px';
-  document.body.appendChild(p);
-  setTimeout(()=>p.remove(),980);
+  const p=document.createElement('div'); p.className='poof';
+  p.style.left=x+'px'; p.style.top=y+'px';
+  document.body.appendChild(p); setTimeout(()=>p.remove(),980);
 }
 
 /* Mobile audio unlock */
@@ -544,47 +500,60 @@ function unlockAudioOnce(){
   if(audioUnlocked) return;
   ["s_ding","s_fart","s_r05","s_r610","s_r1114","s_r15"].forEach(id=>{
     const el=document.getElementById(id);
-    try{
-      el.volume=1.0; el.currentTime=0;
-      el.play().then(()=>el.pause()).catch(()=>{});
-    }catch(e){}
+    try{ el.volume=1.0; el.currentTime=0; el.play().then(()=>el.pause()).catch(()=>{});}catch(e){}
   });
   audioUnlocked=true;
 }
 window.addEventListener('pointerdown', unlockAudioOnce, {once:true});
 
+/* iOS pull-to-refresh guard just on the scroll container */
+function installPullToRefreshGuard(){
+  const scroller = document.querySelector('.round-viewport');
+  if(!scroller) return;
+
+  let startY=0, startTop=0;
+
+  scroller.addEventListener('touchstart', (e)=>{
+    if(e.touches.length!==1) return;
+    startY = e.touches[0].clientY;
+    startTop = scroller.scrollTop;
+  }, {passive:true});
+
+  scroller.addEventListener('touchmove', (e)=>{
+    if(e.touches.length!==1) return;
+    const y  = e.touches[0].clientY;
+    const dy = y - startY;
+
+    const atTop    = scroller.scrollTop <= 0;
+    const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+
+    if ((atTop && dy > 0) || (atBottom && dy < 0)) {
+      e.preventDefault();
+    }
+  }, {passive:false});
+}
+
 /* Init */
 function initGame(){
-  totalScore=0;
-  roundIndex=0;
-  document.body.className='';
-  $("#page-results").classList.remove('active');
-  $("#page-round").classList.add('active');
+  totalScore=0; roundIndex=0; document.body.className='';
+  $("#page-results").classList.remove('active'); $("#page-round").classList.add('active');
   const shuffled=shuffle([...MASTER]);
   rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
   loadRound();
 }
 
-/* Combine helper */
+/* Combine helper (used by both mouse & touch) */
 function combineIntoJP(jpCard, enText){
   if(!jpCard || !jpCard.dataset) return;
-
-  // free old connection if exists
   if(jpCard.dataset.connected){
-    const old=document.querySelector(`.card.en[data-en="${jpCard.dataset.connected}"]`);
-    if(old){
-      old.style.visibility='visible';
-    }
+    const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
+    if(old) old.style.visibility='visible';
   }
-  const enCard=document.querySelector(`.card.en[data-en="${enText}"]`);
-  if(enCard){
-    enCard.style.visibility='hidden';
-  }
+  const enCard=document.querySelector(`.en[data-en="${enText}"]`);
+  if(enCard) enCard.style.visibility='hidden';
 
-  const jp = jpCard.dataset.jp;
-  const hira = jpCard.dataset.hira;
-  jpCard.classList.add('combined','matchedBlue');
-  jpCard.classList.remove('jp');
+  const jp = jpCard.dataset.jp, hira = jpCard.dataset.hira;
+  jpCard.classList.add('combined','matchedBlue'); jpCard.classList.remove('jp');
   jpCard.innerHTML = `<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
   jpCard.dataset.connected = enText;
   connections[jp] = enText;
@@ -595,49 +564,53 @@ function combineIntoJP(jpCard, enText){
 /* Build a round */
 function loadRound(){
   connections={};
-  const set=rounds[roundIndex];
-  const colEn=$("#col-en");
-  const colJp=$("#col-jp");
-  colEn.innerHTML="";
-  colJp.innerHTML="";
+  const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
+  colEn.innerHTML=""; colJp.innerHTML="";
 
   const stripeClasses=shuffle(['sv1','sv2','sv3','sv4','sv5']);
 
-  // EN cards
   shuffle([...set]).forEach((item,idx)=>{
     const c=document.createElement('div');
     c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
+    c.draggable=true;                    // desktop dnd
     c.textContent=item.en.toLowerCase();
     c.dataset.en=item.en.toLowerCase();
+    c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');});
+    c.addEventListener('dragend',()=>c.classList.remove('dragging'));
     colEn.appendChild(c);
   });
 
-  // JP cards
   shuffle([...set]).forEach(item=>{
     const c=document.createElement('div');
     c.className='card jp';
-    c.dataset.jp=item.jp;
-    c.dataset.hira=item.hira;
-    c.dataset.connected="";
+    c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
+    c.addEventListener('dragover', e=>e.preventDefault());
+    c.addEventListener('drop', e=>{
+      e.preventDefault();
+      const en=e.dataTransfer.getData('text/en'); if(!en) return;
+      combineIntoJP(c, en);
+    });
     colJp.appendChild(c);
   });
 
-  setupPointerDrag();
+  // Touch dragging setup
+  setupTouchDrag();
 
   jpOrder=[...colJp.querySelectorAll('[data-jp]')];
   $("#checkBtn").disabled=true;
 }
 
-/* Unified pointer drag for desktop + mobile */
-function setupPointerDrag(){
+/* Touch drag & drop (mobile) */
+function setupTouchDrag(){
   const enCards = [...document.querySelectorAll('.card.en')];
-  const jpCards = [...document.querySelectorAll('.card[data-jp]')];
 
-  let active=null;
-  let ghost=null;
-  let hoverJP=null;
-  let dragging=false;
+  let ghost=null, active=null, hoverJP=null;
+  let startX=0, startY=0, dragging=false;
+  let pressTimer=null;
+
+  const LONG_PRESS_MS = 220;
+  const MOVE_THRESH  = 12;
 
   function makeGhost(fromCard){
     const g = fromCard.cloneNode(true);
@@ -651,13 +624,50 @@ function setupPointerDrag(){
     return g;
   }
 
+  function beginDrag(e){
+    if (dragging || !active) return;
+    dragging = true;
+    try{ active.setPointerCapture(e.pointerId); }catch(_){}
+    document.body.classList.add('draggingTouch');
+    ghost = makeGhost(active);
+    moveGhost(e);
+  }
+
+  function pointerDown(e){
+    if(e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+    active = e.currentTarget;
+    startX = e.clientX; startY = e.clientY;
+    dragging = false;
+
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(()=> beginDrag(e), LONG_PRESS_MS);
+  }
+
+  function pointerMove(e){
+    if(!active) return;
+
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+
+    if (!dragging && (dy > dx + 8 || dx + dy > MOVE_THRESH)) {
+      clearTimeout(pressTimer);
+    }
+    if (!dragging && (dx > dy + 10) && (dx + dy > MOVE_THRESH)) {
+      beginDrag(e);
+    }
+
+    if (dragging){
+      moveGhost(e);
+      e.preventDefault();
+    }
+  }
+
   function moveGhost(e){
     if(!ghost) return;
     ghost.style.left = e.clientX + 'px';
     ghost.style.top  = e.clientY + 'px';
-
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    const cand = el && el.closest && el.closest('.card[data-jp]');
+    const cand = el && el.closest && el.closest('[data-jp]');
     if(cand !== hoverJP){
       if(hoverJP) hoverJP.classList.remove('hoverTarget');
       hoverJP = cand;
@@ -665,48 +675,31 @@ function setupPointerDrag(){
     }
   }
 
-  function pointerDown(e){
-    const card = e.currentTarget;
-    active = card;
-    dragging = true;
-    card.classList.add('dragging');
-    ghost = makeGhost(card);
-    moveGhost(e);
-    try{ card.setPointerCapture(e.pointerId); }catch(_){}
-  }
-
-  function pointerMove(e){
-    if(!dragging) return;
-    moveGhost(e);
-    e.preventDefault();
-  }
-
-  function pointerUp(e){
+  function endDrag(e){
+    clearTimeout(pressTimer);
     if(!active) return;
 
-    if(hoverJP){
-      combineIntoJP(hoverJP, active.dataset.en);
-      hoverJP.classList.remove('hoverTarget');
+    if(dragging){
+      if(hoverJP) hoverJP.classList.remove('hoverTarget');
+      if(ghost){
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const target = el && el.closest && el.closest('[data-jp]');
+        if(target){ combineIntoJP(target, active.dataset.en); }
+        ghost.remove(); ghost = null;
+      }
+      document.body.classList.remove('draggingTouch');
     }
 
-    if(ghost){
-      ghost.remove();
-      ghost=null;
-    }
-    active.classList.remove('dragging');
     try{ active.releasePointerCapture && active.releasePointerCapture(e.pointerId); }catch(_){}
-    active=null;
-    hoverJP=null;
-    dragging=false;
+    active=null; hoverJP=null; dragging=false;
   }
 
   enCards.forEach(c=>{
-    c.addEventListener('pointerdown', pointerDown);
+    c.addEventListener('pointerdown', pointerDown, {passive:true});
   });
-
-  window.addEventListener('pointermove', pointerMove, {passive:false});
-  window.addEventListener('pointerup', pointerUp, {passive:true});
-  window.addEventListener('pointercancel', pointerUp, {passive:true});
+  window.addEventListener('pointermove',  pointerMove, {passive:false});
+  window.addEventListener('pointerup',    endDrag,     {passive:true});
+  window.addEventListener('pointercancel',endDrag,     {passive:true});
 }
 
 /* Check flow */
@@ -722,8 +715,7 @@ $("#checkBtn").addEventListener('click',()=>{
       },900);
       return;
     }
-    const card=jpOrder[i];
-    const jp=card.dataset.jp;
+    const card=jpOrder[i], jp=card.dataset.jp;
     const chosen=card.dataset.connected||"";
     const correct = rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
 
@@ -751,19 +743,12 @@ function showResults(){
   $("#page-results").classList.add('active');
 
   const pct=Math.round((totalScore/15)*100);
-  const msgEl=$("#resultMsg");
-  const scoreEl=$("#resultScore");
+  const msgEl=$("#resultMsg"), scoreEl=$("#resultScore");
 
-  let bg='blueGlow';
-  let msg='いいね！あと少しでパーフェクト！';
-  let snd=$("#s_r1114");
-  if(totalScore<=5){
-    bg='redGlow'; msg='ブーリキュラム見てないでしょ！'; snd=$("#s_r05");
-  }else if(totalScore<=10){
-    bg='orangeGlow'; msg='YouTube見すぎ！ブーリキュラムもやろう！'; snd=$("#s_r610");
-  }else if(totalScore===15){
-    bg='goldGlow'; msg='すごい！あなたは地球で一番頭がいい！'; snd=$("#s_r15");
-  }
+  let bg='blueGlow', msg='いいね！あと少しでパーフェクト！', snd=$("#s_r1114");
+  if(totalScore<=5){ bg='redGlow'; msg='ブーリキュラム見てないでしょ！'; snd=$("#s_r05"); }
+  else if(totalScore<=10){ bg='orangeGlow'; msg='YouTube見すぎ！ブーリキュラムもやろう！'; snd=$("#s_r610"); }
+  else if(totalScore===15){ bg='goldGlow'; msg='すごい！あなたは地球で一番頭がいい！'; snd=$("#s_r15"); }
 
   document.body.className=bg;
   msgEl.textContent=msg;
@@ -819,6 +804,7 @@ helpOverlay.addEventListener('click', (e) => {
 });
 
 /* Start */
+installPullToRefreshGuard();
 initGame();
 </script>
 </body>
