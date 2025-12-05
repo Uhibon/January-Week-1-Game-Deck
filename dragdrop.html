@@ -33,6 +33,22 @@ body{
   display:flex;flex-direction:column;align-items:center;
   /* Reduce accidental page pull-to-refresh on capable browsers */
   overscroll-behavior-y: none;
+
+  /* 🔔 Glowing vertical scrollbar hint */
+  scrollbar-color: var(--cuteBlue) transparent; /* Firefox */
+  scrollbar-width: thin;
+}
+body::-webkit-scrollbar{
+  width:10px;
+}
+body::-webkit-scrollbar-track{
+  background:transparent;
+}
+body::-webkit-scrollbar-thumb{
+  background:var(--cuteBlue);
+  border-radius:999px;
+  box-shadow:0 0 10px rgba(96,165,250,.9),0 0 26px rgba(96,165,250,.9);
+  animation:scrollGlow 1.4s ease-in-out infinite alternate;
 }
 
 /* Header + footer */
@@ -307,6 +323,11 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   border:1px solid #ffffff55;
   box-shadow:0 0 30px rgba(0,0,0,.8);
   position:relative;
+
+  /* 📜 Make help popup scrollable */
+  max-height:80vh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .help-title{
   font-family:'Cinzel',serif;
@@ -353,6 +374,12 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   text-align:center;
   margin-bottom:10px;
 }
+
+/* ✨ Scrollbar glow animation */
+@keyframes scrollGlow{
+  0%{box-shadow:0 0 6px rgba(96,165,250,.7),0 0 16px rgba(96,165,250,.7);}
+  100%{box-shadow:0 0 14px rgba(96,165,250,1),0 0 34px rgba(96,165,250,1);}
+}
 </style>
 </head>
 <body>
@@ -364,7 +391,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 
 <header>
   <h1>THE BOO-RICULUM</h1>
-  <h2>GAMES &amp; QUIZZES</h2>
+  <h2>DRAG &amp; DROP</h2>
   <div class="subtitle-stack">
     <div class="en">January Week 1 - Vocabulary</div>
     <div class="jp">１月第１週 - 語彙</div>
