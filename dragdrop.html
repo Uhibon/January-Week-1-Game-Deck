@@ -31,7 +31,6 @@ body{
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
-  /* let the browser handle scroll normally */
   overscroll-behavior-y:auto;
 }
 
@@ -93,9 +92,13 @@ footer{
 }
 .col{flex:1 1 420px;max-width:460px;display:flex;flex-direction:column;gap:14px}
 
-/* ✅ Allow vertical scroll gestures mostly on the scroller; lock only during an active touch-drag */
-.round-viewport{ touch-action: pan-y; }
-body.draggingTouch .round-viewport{ touch-action: none; }
+/* ✅ Make scroll feel natural on mobile: you can drag anywhere (even on cards) */
+.round-viewport,
+.round-wrap,
+.col,
+.card{
+  touch-action: pan-y;
+}
 
 /* MOBILE layout improvements */
 @media (max-width:700px){
@@ -233,7 +236,7 @@ body.draggingTouch .round-viewport{ touch-action: none; }
   background:radial-gradient(closest-side, rgba(74,222,128,.97) 0%, rgba(34,197,94,.7) 55%, rgba(34,197,94,0) 70%);
   filter:blur(2px);
   pointer-events:none; z-index:19;
-  animation:puff 950ms.ease-out forwards;
+  animation:puff 950ms ease-out forwards;
 }
 @keyframes puff{
   0%{opacity:.98; transform:translate(-50%,-50%) scale(.7)}
@@ -249,7 +252,7 @@ body.draggingTouch .round-viewport{ touch-action: none; }
 .sv4{ background-image:repeating-linear-gradient(0deg, #fca5a5 0 18px, #86efac 18px 36px, #93c5fd 36px 54px); }
 .sv5{ background-image:repeating-linear-gradient(0deg, #f9a8d4 0 18px, #fef08a 18px 36px, #6ee7b7 36px 54px); }
 
-/* Drag ghost (desktop pointer-drag) */
+/* Drag ghost (used only for desktop HTML5 preview if needed) */
 .drag-ghost{
   position:fixed; z-index:9999; pointer-events:none;
   transform:translate(-50%,-50%); will-change:transform;
@@ -558,11 +561,18 @@ function loadRound(){
   shuffle([...set]).forEach((item,idx)=>{
     const c=document.createElement('div');
     c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
-    c.draggable=true;
+    /* HTML5 drag for desktop browsers */
+    c.draggable = !isTouch;
     c.textContent=item.en.toLowerCase();
     c.dataset.en=item.en.toLowerCase();
-    c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');});
-    c.addEventListener('dragend',()=>c.classList.remove('dragging'));
+    c.addEventListener('dragstart',e=>{
+      if(isTouch) return;
+      e.dataTransfer.setData('text/en',c.dataset.en);
+      c.classList.add('dragging');
+    });
+    c.addEventListener('dragend',()=>{
+      c.classList.remove('dragging');
+    });
     colEn.appendChild(c);
   });
 
@@ -571,19 +581,24 @@ function loadRound(){
     c.className='card jp';
     c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
-    c.addEventListener('dragover', e=>e.preventDefault());
+
+    /* Drop targets for desktop drag */
+    c.addEventListener('dragover', e=>{
+      if(isTouch) return;
+      e.preventDefault();
+    });
     c.addEventListener('drop', e=>{
+      if(isTouch) return;
       e.preventDefault();
       const en=e.dataTransfer.getData('text/en'); if(!en) return;
       combineIntoJP(c, en);
     });
+
     colJp.appendChild(c);
   });
 
   if(isTouch){
-    setupTapMode();
-  }else{
-    setupPointerDrag();
+    setupTapMode();   // phones/tablets → tap EN, then tap JP
   }
 
   jpOrder=[...colJp.querySelectorAll('[data-jp]')];
@@ -622,110 +637,6 @@ function setupTapMode(){
       selectedEnCard = null;
     });
   });
-}
-
-/* Pointer drag (desktop / non-touch) */
-function setupPointerDrag(){
-  const enCards = [...document.querySelectorAll('.card.en')];
-
-  let ghost=null, active=null, hoverJP=null;
-  let startX=0, startY=0, dragging=false;
-  let pressTimer=null;
-
-  const LONG_PRESS_MS = 220;
-  const MOVE_THRESH  = 12;
-
-  function makeGhost(fromCard){
-    const g = fromCard.cloneNode(true);
-    g.className = g.className.replace(/\bcard\b/,'').trim();
-    g.classList.add('drag-ghost');
-    const cs = getComputedStyle(fromCard);
-    g.style.backgroundImage  = cs.backgroundImage;
-    g.style.backgroundSize   = cs.backgroundSize;
-    g.style.backgroundPosition = cs.backgroundPosition;
-    document.body.appendChild(g);
-    return g;
-  }
-
-  function beginDrag(e){
-    if (dragging || !active) return;
-    dragging = true;
-    try{ active.setPointerCapture(e.pointerId); }catch(_){}
-    document.body.classList.add('draggingTouch');
-    ghost = makeGhost(active);
-    moveGhost(e);
-  }
-
-  function pointerDown(e){
-    if(e.pointerType === 'mouse'){
-      return; // standard HTML5 drag already works for mouse
-    }
-    if(e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
-    active = e.currentTarget;
-    startX = e.clientX; startY = e.clientY;
-    dragging = false;
-
-    clearTimeout(pressTimer);
-    pressTimer = setTimeout(()=> beginDrag(e), LONG_PRESS_MS);
-  }
-
-  function pointerMove(e){
-    if(!active) return;
-
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-
-    if (!dragging && (dy > dx + 8 || dx + dy > MOVE_THRESH)) {
-      clearTimeout(pressTimer);
-    }
-    if (!dragging && (dx > dy + 10) && (dx + dy > MOVE_THRESH)) {
-      beginDrag(e);
-    }
-
-    if (dragging){
-      moveGhost(e);
-      e.preventDefault();
-    }
-  }
-
-  function moveGhost(e){
-    if(!ghost) return;
-    ghost.style.left = e.clientX + 'px';
-    ghost.style.top  = e.clientY + 'px';
-    const el = document.elementFromPoint(e.clientX, e.clientY);
-    const cand = el && el.closest && el.closest('[data-jp]');
-    if(cand !== hoverJP){
-      if(hoverJP) hoverJP.classList.remove('hoverTarget');
-      hoverJP = cand;
-      if(hoverJP) hoverJP.classList.add('hoverTarget');
-    }
-  }
-
-  function endDrag(e){
-    clearTimeout(pressTimer);
-    if(!active) return;
-
-    if(dragging){
-      if(hoverJP) hoverJP.classList.remove('hoverTarget');
-      if(ghost){
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        const target = el && el.closest && el.closest('[data-jp]');
-        if(target){ combineIntoJP(target, active.dataset.en); }
-        ghost.remove(); ghost = null;
-      }
-      document.body.classList.remove('draggingTouch');
-    }
-
-    try{ active.releasePointerCapture && active.releasePointerCapture(e.pointerId); }catch(_){}
-    active=null; hoverJP=null; dragging=false;
-  }
-
-  enCards.forEach(c=>{
-    c.addEventListener('pointerdown', pointerDown, {passive:true});
-  });
-  window.addEventListener('pointermove',  pointerMove, {passive:false});
-  window.addEventListener('pointerup',    endDrag,     {passive:true});
-  window.addEventListener('pointercancel',endDrag,     {passive:true});
 }
 
 /* Check flow */
