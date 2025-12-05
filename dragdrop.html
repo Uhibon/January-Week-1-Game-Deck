@@ -60,6 +60,29 @@ footer{
   font-family:'Cinzel',serif;
 }
 
+/* Top-left Quit button */
+.top-nav-btn{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:40;
+  border-radius:999px;
+  padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+.top-nav-btn span.jp{opacity:.9;font-weight:600}
+
 /* Pages */
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 24px}
 .page.active{display:block}
@@ -153,7 +176,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 }
 
 /* Buttons */
-.actions{display:flex;gap:14px;justify-content:center;margin-top:18px}
+.actions{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap}
 .btn{
   border:0; border-radius:28px; padding:12px 34px; font-weight:800; font-size:1.1rem; cursor:pointer;
   transition:transform .08s ease, box-shadow .2s ease, filter .2s ease;
@@ -162,6 +185,13 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .btn:active{transform:translateY(1px)}
 .btn-green{ background:var(--check); color:#062a12; box-shadow:var(--checkGlow) }
 .btn-green:disabled{filter:saturate(.2) brightness(.8); box-shadow:none; cursor:not-allowed}
+.btn-secondary{
+  background:rgba(15,23,42,.9);
+  color:#fff;
+  border:1px solid #ffffff66;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  font-size:1rem;
+}
 
 /* Results */
 #page-results .result-box{
@@ -233,9 +263,104 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .hoverTarget{ box-shadow:0 0 0 4px rgba(255,255,255,.25), 0 0 20px rgba(255,255,255,.25); border-color:#fff !important; }
 
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
+
+/* Help icon bottom-left */
+.help-icon{
+  position:fixed;
+  left:14px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:none;
+  background:var(--cuteBlue);
+  box-shadow:var(--cuteBlueGlow);
+  color:#05101f;
+  font-weight:900;
+  font-size:1.2rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:35;
+}
+
+/* Help overlay */
+.help-overlay{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top, rgba(96,165,250,.42), transparent 55%),
+             radial-gradient(circle at bottom, rgba(34,197,94,.35), transparent 55%),
+             rgba(2,6,23,.88);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
+.help-overlay.show{display:flex;}
+.help-dialog{
+  max-width:520px;
+  width:90%;
+  padding:20px 20px 18px;
+  border-radius:24px;
+  background:rgba(15,23,42,.96);
+  border:1px solid #ffffff55;
+  box-shadow:0 0 30px rgba(0,0,0,.8);
+  position:relative;
+}
+.help-title{
+  font-family:'Cinzel',serif;
+  font-size:1.35rem;
+  margin-bottom:8px;
+  text-align:center;
+}
+.help-sub{
+  font-size:.9rem;
+  opacity:.8;
+  text-align:center;
+  margin-bottom:10px;
+}
+.help-content{
+  font-size:.92rem;
+  line-height:1.6;
+}
+.help-content ul{
+  padding-left:1.1em;
+  margin:4px 0 10px;
+}
+.help-content li{
+  margin-bottom:4px;
+}
+.help-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  border:none;
+  border-radius:999px;
+  width:26px;
+  height:26px;
+  background:rgba(30,64,175,.9);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  font-size:1rem;
+}
+
+/* small helper label under title */
+.help-label{
+  font-size:.78rem;
+  opacity:.72;
+  text-align:center;
+  margin-bottom:10px;
+}
 </style>
 </head>
 <body>
+
+<!-- Quit button (top-left) -->
+<button id="quitBtn" class="top-nav-btn">
+  <span>Quit</span><span class="jp">／ やめる</span>
+</button>
 
 <header>
   <h1>THE BOO-RICULUM</h1>
@@ -267,11 +392,45 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     <div id="resultScore" class="result-score">0/15 (0%)</div>
   </div>
   <div class="actions">
-    <button id="playAgain" class="btn btn-green">もう一度</button>
+    <button id="playAgain" class="btn btn-green">もう一度 ／ Play Again</button>
+    <button id="backToMenu" class="btn btn-secondary">メインメニューへ ／ Main Menu</button>
   </div>
 </section>
 
 <footer>Bryan's English School</footer>
+
+<!-- Help icon -->
+<button id="helpBtn" class="help-icon">?</button>
+
+<!-- Help overlay -->
+<div id="helpOverlay" class="help-overlay">
+  <div class="help-dialog">
+    <button id="helpClose" class="help-close">×</button>
+    <div class="help-title">How to Play ／ 遊び方</div>
+    <div class="help-sub">Booha Drag &amp; Drop Game</div>
+    <div class="help-content">
+      <p><strong>English</strong></p>
+      <ul>
+        <li>Drag each <strong>English card</strong> on the left onto the matching <strong>Japanese card</strong> on the right.</li>
+        <li>When all 5 pairs are connected, tap <strong>CHECK</strong>.</li>
+        <li>Correct answers turn <strong>green</strong> with a “ding” sound.</li>
+        <li>Wrong answers turn <strong>red</strong> with a funny “boo” sound.</li>
+        <li>There are <strong>3 rounds</strong> (15 questions total). Try for a perfect score!</li>
+      </ul>
+
+      <hr class="sep" style="margin:8px 0;">
+
+      <p><strong>日本語</strong></p>
+      <ul>
+        <li>左の<strong>英語カード</strong>を、意味が同じ<strong>日本語カード</strong>の上にドラッグして重ねます。</li>
+        <li>5つすべてペアにできたら、<strong>CHECK（チェック）</strong>ボタンを押します。</li>
+        <li>正解は<strong>緑色</strong>になり、「ピン！」という音が鳴ります。</li>
+        <li>まちがいは<strong>赤色</strong>になり、面白い「ブー」の音が鳴ります。</li>
+        <li><strong>3ラウンド（合計15問）</strong>あります。パーフェクトを目指してね！</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <!-- Audio -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
@@ -306,13 +465,15 @@ let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[], audioUnlo
 
 /* Helpers */
 const $ = s=>document.querySelector(s);
-function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 function playSfx(id){
   const src=document.getElementById(id); if(!src) return;
   const a=src.cloneNode(true); a.setAttribute('playsinline',''); a.currentTime=0; a.volume=src.volume??1;
   document.body.appendChild(a); a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
 }
 function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
+
+/* Shuffle helper */
+function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
 /* Effects */
 function burstConfettiAt(el,count=44){
@@ -352,14 +513,12 @@ function installPullToRefreshGuard(){
 
   let startY=0, startTop=0;
 
-  // Record where the gesture starts
   scroller.addEventListener('touchstart', (e)=>{
     if(e.touches.length!==1) return;
     startY = e.touches[0].clientY;
     startTop = scroller.scrollTop;
   }, {passive:true});
 
-  // If at top and pulling down (or at bottom and pushing up), prevent default to avoid bounce/refresh.
   scroller.addEventListener('touchmove', (e)=>{
     if(e.touches.length!==1) return;
     const y  = e.touches[0].clientY;
@@ -369,7 +528,6 @@ function installPullToRefreshGuard(){
     const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
 
     if ((atTop && dy > 0) || (atBottom && dy < 0)) {
-      // Block the browser rubber-band / pull-to-refresh, but ONLY at the edges
       e.preventDefault();
     }
   }, {passive:false});
@@ -427,7 +585,6 @@ function loadRound(){
     c.className='card jp';
     c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
-    // desktop drop targets
     c.addEventListener('dragover', e=>e.preventDefault());
     c.addEventListener('drop', e=>{
       e.preventDefault();
@@ -444,7 +601,7 @@ function loadRound(){
   $("#checkBtn").disabled=true;
 }
 
-/* Touch drag & drop (mobile): long-press or diagonal move to start; scroll otherwise */
+/* Touch drag & drop (mobile) */
 function setupTouchDrag(){
   const enCards = [...document.querySelectorAll('.card.en')];
 
@@ -452,8 +609,8 @@ function setupTouchDrag(){
   let startX=0, startY=0, dragging=false;
   let pressTimer=null;
 
-  const LONG_PRESS_MS = 220;   // hold to start drag
-  const MOVE_THRESH  = 12;     // px before considering deliberate move
+  const LONG_PRESS_MS = 220;
+  const MOVE_THRESH  = 12;
 
   function makeGhost(fromCard){
     const g = fromCard.cloneNode(true);
@@ -492,18 +649,16 @@ function setupTouchDrag(){
     const dx = Math.abs(e.clientX - startX);
     const dy = Math.abs(e.clientY - startY);
 
-    // Cancel long-press if clearly scrolling vertically or we moved enough
     if (!dragging && (dy > dx + 8 || dx + dy > MOVE_THRESH)) {
       clearTimeout(pressTimer);
     }
-    // Start drag immediately on clear sideways/diagonal motion
     if (!dragging && (dx > dy + 10) && (dx + dy > MOVE_THRESH)) {
       beginDrag(e);
     }
 
     if (dragging){
       moveGhost(e);
-      e.preventDefault(); // actively block scroll only during drag
+      e.preventDefault();
     }
   }
 
@@ -542,13 +697,12 @@ function setupTouchDrag(){
   enCards.forEach(c=>{
     c.addEventListener('pointerdown', pointerDown, {passive:true});
   });
-  // passive:false so preventDefault works while dragging to stop scroll
   window.addEventListener('pointermove',  pointerMove, {passive:false});
   window.addEventListener('pointerup',    endDrag,     {passive:true});
   window.addEventListener('pointercancel',endDrag,     {passive:true});
 }
 
-/* Check flow (top -> bottom) */
+/* Check flow */
 $("#checkBtn").addEventListener('click',()=>{
   $("#checkBtn").disabled=true;
   let i=0;
@@ -617,7 +771,37 @@ function showResults(){
   }
 }
 
+/* Buttons */
 $("#playAgain").addEventListener('click', initGame);
+
+$("#backToMenu").addEventListener('click', () => {
+  window.location.href = "index.html";
+});
+
+$("#quitBtn").addEventListener('click', () => {
+  window.location.href = "index.html";
+});
+
+/* Help overlay logic */
+const helpOverlay = $("#helpOverlay");
+const helpBtn = $("#helpBtn");
+const helpClose = $("#helpClose");
+
+function closeHelp(){
+  helpOverlay.classList.remove('show');
+}
+
+helpBtn.addEventListener('click', () => {
+  helpOverlay.classList.add('show');
+});
+
+helpClose.addEventListener('click', closeHelp);
+
+helpOverlay.addEventListener('click', (e) => {
+  if(e.target === helpOverlay){
+    closeHelp();
+  }
+});
 
 /* Start */
 installPullToRefreshGuard();
