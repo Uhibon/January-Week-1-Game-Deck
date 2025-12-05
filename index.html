@@ -261,54 +261,56 @@ if (deckContainer) {
 
     const target = deck.getAttribute('href');
 
+    // Card glow + faster spiral
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
-    // start main music
-    intro.pause();
-    intro.currentTime = 0;
-    intro.volume = 1;
-    intro.play().catch(()=>{});
+    // Try to play intro sound, but NEVER wait for it
+    if (intro) {
+      try {
+        intro.pause();
+        intro.currentTime = 0;
+        intro.volume = 1;
+        intro.play().catch(() => {});
+      } catch (err) {
+        console.warn('Intro audio issue:', err);
+      }
+    }
 
+    // Center + scale card safely
     const r = deck.getBoundingClientRect();
     const cx = window.innerWidth / 2 - (r.left + r.width / 2);
     const cy = window.innerHeight / 2 - (r.top + r.height / 2);
 
-    // Calculate a safe scale so the card never goes off-screen
     const maxWidthScale  = (window.innerWidth  * 0.9) / r.width;
     const maxHeightScale = (window.innerHeight * 0.9) / r.height;
     const safeScale = Math.min(3, maxWidthScale, maxHeightScale);
 
-    deck.style.transition = "transform 2.6s ease-in-out";
+    deck.style.transition = "transform 1.4s ease-in-out";
     deck.style.transform = `translate(${cx}px,${cy}px) scale(${safeScale})`;
     deck.style.zIndex = "9999";
 
-    const sparkleInt = setInterval(() => sparkleBurst(deck.getBoundingClientRect(), 40), 200);
+    const sparkleInt = setInterval(() => {
+      sparkleBurst(deck.getBoundingClientRect(), 40);
+    }, 180);
 
-    // fade out music → fade to black → open game
-    setTimeout(()=>{
+    // After the zoom animation, fade screen + go to game
+    setTimeout(() => {
       clearInterval(sparkleInt);
-      const fadeInterval = setInterval(()=>{
-        intro.volume = Math.max(0, intro.volume - 0.05);
-        if(intro.volume <= 0){
-          clearInterval(fadeInterval);
-          intro.pause();
 
-          const fadeScreen = document.getElementById('fadeScreen');
-          if (fadeScreen) {
-            fadeScreen.classList.add('show');
-            setTimeout(() => {
-              window.location.href = target;
-            }, 900); // match CSS transition
-          } else {
-            window.location.href = target;
-          }
-        }
-      }, 100);
-    }, 3500); // timing before fade starts
+      const fadeScreen = document.getElementById('fadeScreen');
+      if (fadeScreen) {
+        fadeScreen.classList.add('show');
+        // Short delay so the fade is visible, then navigate
+        setTimeout(() => {
+          window.location.href = target;
+        }, 500);
+      } else {
+        window.location.href = target;
+      }
+    }, 1500); // total wait ~2s instead of 6+ seconds
   });
 }
 </script>
-
 </body>
 </html>
