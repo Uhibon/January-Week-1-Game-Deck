@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Drag & Drop – January Week 1</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
-
+ 
 <style>
 :root{
   --dark:#0b1530;
@@ -21,7 +21,7 @@
   --cardH: 140px;         /* desktop card height */
   --actionsH: 72px;       /* mobile sticky actions height */
 }
-
+ 
 /* base */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -31,9 +31,10 @@ body{
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
-  overscroll-behavior-y:auto;
+  /* Reduce accidental page pull-to-refresh on capable browsers */
+  overscroll-behavior-y: none;
 }
-
+ 
 /* Header + footer */
 header{padding:20px 16px 10px;text-align:center}
 header h1{
@@ -46,18 +47,19 @@ header h2{
   font-size:clamp(2.0rem,6.2vw,3rem);
   text-shadow:0 0 10px rgba(255,255,255,.12)
 }
+/* Mobile: two lines; Desktop: single line with slash */
 .subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
 .subtitle-stack .en::after{content:" / "; opacity:.8}
 @media (max-width:700px){
   .subtitle-stack{flex-direction:column; gap:.1rem}
   .subtitle-stack .en::after{content:""}
 }
-
+ 
 footer{
   margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;
   font-family:'Cinzel',serif;
 }
-
+ 
 /* Top-left Quit button */
 .top-nav-btn{
   position:fixed;
@@ -80,38 +82,37 @@ footer{
   backdrop-filter:blur(4px);
 }
 .top-nav-btn span.jp{opacity:.9;font-weight:600}
-
+ 
 /* Pages */
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 24px}
 .page.active{display:block}
-
+ 
 /* Round viewport + layout */
 .round-viewport{ width:100%; }
 .round-wrap{
   display:flex;gap:26px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin-top:16px;
 }
 .col{flex:1 1 420px;max-width:460px;display:flex;flex-direction:column;gap:14px}
-
-/* ✅ Make scroll feel natural on mobile: you can drag anywhere (even on cards) */
+ 
+/* ✅ Allow vertical scroll gestures anywhere; lock only during active drag */
 .round-viewport,
 .round-wrap,
-.col,
-.card{
-  touch-action: pan-y;
-}
-
+.card,
+.col { touch-action: pan-y; }
+body.draggingTouch .round-wrap{ touch-action: none; }
+ 
 /* MOBILE layout improvements */
 @media (max-width:700px){
-  :root{ --cardH: 104px; }
+  :root{ --cardH: 104px; }                 /* smaller, uniform mobile cards */
   #page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
   .round-viewport{
     flex:1 1 auto;
     min-height:0;
     overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-y:contain;
-    scrollbar-gutter: stable both-edges;
-    padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px);
+    -webkit-overflow-scrolling:touch;      /* smooth iOS scroll */
+    overscroll-behavior-y:contain;         /* reduce bounce where supported */
+    scrollbar-gutter: stable both-edges;   /* keeps scroll easier to grab */
+    padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px); /* keep bottom cards clear of CHECK */
   }
   .round-wrap{flex-wrap:nowrap;gap:10px}
   .col{flex:0 0 50%;max-width:50%}
@@ -126,7 +127,7 @@ footer{
     margin-top: 6px;
   }
 }
-
+ 
 /* Cards */
 .card{
   border-radius:24px; 
@@ -140,7 +141,8 @@ footer{
 .card.en{
   color:#000; font-weight:1000;
   font-size:clamp(1.8rem,5.8vw,3rem);
-  letter-spacing:-.01em;
+  letter-spacing:-.01em; text-transform:none;
+  /* 🚫 Never split words like "motivation" */
   word-break: keep-all;
   overflow-wrap: normal;
   hyphens: none;
@@ -150,14 +152,8 @@ footer{
   white-space:pre-line;
 }
 .card.dragging{opacity:.65; transform:scale(1.04)}
-.card.locked{pointer-events:none}
-
-/* Tap-selected EN for touch mode */
-.card.en.tap-selected{
-  box-shadow:0 0 0 4px rgba(255,255,255,.9), 0 0 18px rgba(96,165,250,.9);
-  transform:scale(1.03);
-}
-
+.card.locked{pointer-events:none} /* no dim */
+ 
 /* Combined before grading */
 .card.combined{ border:0; display:flex; flex-direction:column; gap:8px; }
 .card.matchedBlue{
@@ -167,8 +163,8 @@ footer{
 }
 .card.combined .enTxt{font-size:1.05em; font-weight:1000; letter-spacing:-.01em}
 .card.combined .jpTxt{font-size:.7em; opacity:.98}
-
-/* Grading */
+ 
+/* Grading wins over everything */
 .card.correct{background:var(--green) !important; color:#062a12 !important; border:0 !important}
 .card.wrong  {background:var(--red)   !important; color:#fff     !important; border:0 !important; animation:shake .45s}
 @keyframes shake{
@@ -178,13 +174,13 @@ footer{
   60%{transform:translateX(-6px)}
   80%{transform:translateX(6px)}
 }
-
+ 
 /* Buttons */
 .actions{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap}
 .btn{
   border:0; border-radius:28px; padding:12px 34px; font-weight:800; font-size:1.1rem; cursor:pointer;
   transition:transform .08s ease, box-shadow .2s ease, filter .2s ease;
-  touch-action: manipulation;
+  touch-action: manipulation; /* faster taps on mobile */
 }
 .btn:active{transform:translateY(1px)}
 .btn-green{ background:var(--check); color:#062a12; box-shadow:var(--checkGlow) }
@@ -196,21 +192,21 @@ footer{
   box-shadow:0 0 12px rgba(0,0,0,.6);
   font-size:1rem;
 }
-
+ 
 /* Results */
 #page-results .result-box{
   min-height:62vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
 }
 .result-msg{font-family:'Noto Sans JP',sans-serif;font-size:clamp(2.4rem,6.4vw,3.2rem);margin-bottom:18px}
 .result-score{font-size:clamp(1.8rem,5.4vw,2.4rem);opacity:.95}
-
+ 
 /* Glow backgrounds */
 .redGlow{background:#900; box-shadow:inset 0 0 60px 30px #ff2b2b}
 .orangeGlow{background:#a34f00; box-shadow:inset 0 0 60px 30px #ff9e2b}
 .blueGlow{background:#0d2b7a; box-shadow:inset 0 0 60px 30px #2b7bff}
 .goldGlow{background:#725c00; box-shadow:inset 0 0 80px 40px #ffd166}
-
-/* Perfect-run confetti */
+ 
+/* Perfect-run confetti rain */
 .confetti{
   position:fixed; width:12px; height:12px; border-radius:50%;
   top:-12px; left:0;
@@ -221,7 +217,7 @@ footer{
   0%{transform:translateY(0) rotate(0)}
   100%{transform:translateY(110vh) rotate(720deg)}
 }
-
+ 
 /* Per-card effects */
 .bit{
   position:fixed; width:14px; height:14px; border-radius:3px;
@@ -242,8 +238,8 @@ footer{
   0%{opacity:.98; transform:translate(-50%,-50%) scale(.7)}
   100%{opacity:0; transform:translate(-50%,-50%) scale(7)}
 }
-
-/* English vertical stripes */
+ 
+/* English vertical stripes use card height var */
 @keyframes stripesV{ from{background-position:0 0} to{background-position:0 var(--cardH)} }
 .sv{ background-size:100% var(--cardH); animation:stripesV 3.2s linear infinite; }
 .sv1{ background-image:repeating-linear-gradient(0deg, #ff7eb9 0 18px, #5ee6ff 18px 36px, #ffd166 36px 54px); }
@@ -251,8 +247,8 @@ footer{
 .sv3{ background-image:repeating-linear-gradient(0deg, #34d399 0 18px, #fbbf24 18px 36px, #60a5fa 36px 54px); }
 .sv4{ background-image:repeating-linear-gradient(0deg, #fca5a5 0 18px, #86efac 18px 36px, #93c5fd 36px 54px); }
 .sv5{ background-image:repeating-linear-gradient(0deg, #f9a8d4 0 18px, #fef08a 18px 36px, #6ee7b7 36px 54px); }
-
-/* Drag ghost (used only for desktop HTML5 preview if needed) */
+ 
+/* Touch drag helper visuals */
 .drag-ghost{
   position:fixed; z-index:9999; pointer-events:none;
   transform:translate(-50%,-50%); will-change:transform;
@@ -265,9 +261,9 @@ footer{
   .drag-ghost{ width:360px; }
 }
 .hoverTarget{ box-shadow:0 0 0 4px rgba(255,255,255,.25), 0 0 20px rgba(255,255,255,.25); border-color:#fff !important; }
-
+ 
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
-
+ 
 /* Help icon bottom-left */
 .help-icon{
   position:fixed;
@@ -288,7 +284,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   justify-content:center;
   z-index:35;
 }
-
+ 
 /* Help overlay */
 .help-overlay{
   position:fixed;
@@ -311,10 +307,6 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   border:1px solid #ffffff55;
   box-shadow:0 0 30px rgba(0,0,0,.8);
   position:relative;
-  /* ✅ make the help window finger-scrollable */
-  max-height:min(560px, 90vh);
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
 }
 .help-title{
   font-family:'Cinzel',serif;
@@ -353,7 +345,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   cursor:pointer;
   font-size:1rem;
 }
-
+ 
 /* small helper label under title */
 .help-label{
   font-size:.78rem;
@@ -364,12 +356,12 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 </style>
 </head>
 <body>
-
+ 
 <!-- Quit button (top-left) -->
 <button id="quitBtn" class="top-nav-btn">
   <span>Quit</span><span class="jp">／ やめる</span>
 </button>
-
+ 
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>GAMES &amp; QUIZZES</h2>
@@ -379,7 +371,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   </div>
   <hr class="sep">
 </header>
-
+ 
 <!-- PAGE: Round container -->
 <section id="page-round" class="page active">
   <div class="round-viewport">
@@ -392,7 +384,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     <button id="checkBtn" class="btn btn-green" disabled>CHECK</button>
   </div>
 </section>
-
+ 
 <!-- PAGE: Results -->
 <section id="page-results" class="page">
   <div class="result-box">
@@ -404,12 +396,12 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     <button id="backToMenu" class="btn btn-secondary">メインメニューへ ／ Main Menu</button>
   </div>
 </section>
-
+ 
 <footer>Bryan's English School</footer>
-
+ 
 <!-- Help icon -->
 <button id="helpBtn" class="help-icon">?</button>
-
+ 
 <!-- Help overlay -->
 <div id="helpOverlay" class="help-overlay">
   <div class="help-dialog">
@@ -419,20 +411,18 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     <div class="help-content">
       <p><strong>English</strong></p>
       <ul>
-        <li>On phones and tablets: <strong>tap an English card</strong>, then tap the matching <strong>Japanese card</strong>.</li>
-        <li>On computers: <strong>drag each English card</strong> on the left onto the matching <strong>Japanese card</strong> on the right.</li>
+        <li>Drag each <strong>English card</strong> on the left onto the matching <strong>Japanese card</strong> on the right.</li>
         <li>When all 5 pairs are connected, tap <strong>CHECK</strong>.</li>
         <li>Correct answers turn <strong>green</strong> with a “ding” sound.</li>
         <li>Wrong answers turn <strong>red</strong> with a funny “boo” sound.</li>
         <li>There are <strong>3 rounds</strong> (15 questions total). Try for a perfect score!</li>
       </ul>
-
+ 
       <hr class="sep" style="margin:8px 0;">
-
+ 
       <p><strong>日本語</strong></p>
       <ul>
-        <li>スマホ・タブレットでは、まず<strong>左の英語カードをタップ</strong>し、そのあと<strong>意味が同じ日本語カードをタップ</strong>します。</li>
-        <li>パソコンでは、左の<strong>英語カードをドラッグして</strong>右の<strong>日本語カードの上に重ねます</strong>。</li>
+        <li>左の<strong>英語カード</strong>を、意味が同じ<strong>日本語カード</strong>の上にドラッグして重ねます。</li>
         <li>5つすべてペアにできたら、<strong>CHECK（チェック）</strong>ボタンを押します。</li>
         <li>正解は<strong>緑色</strong>になり、「ピン！」という音が鳴ります。</li>
         <li>まちがいは<strong>赤色</strong>になり、面白い「ブー」の音が鳴ります。</li>
@@ -441,7 +431,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     </div>
   </div>
 </div>
-
+ 
 <!-- Audio -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
@@ -449,7 +439,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 <audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
-
+ 
 <script>
 /* DATA */
 const MASTER = [
@@ -469,14 +459,10 @@ const MASTER = [
   {en:"focus",jp:"集中",hira:"しゅうちゅう"},
   {en:"motivation",jp:"やる気",hira:"やるき"}
 ];
-
+ 
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[], audioUnlocked=false;
-let selectedEnCard = null;
-
-/* Device mode */
-const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
+ 
 /* Helpers */
 const $ = s=>document.querySelector(s);
 function playSfx(id){
@@ -485,10 +471,10 @@ function playSfx(id){
   document.body.appendChild(a); a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
 }
 function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
-
-/* Shuffle */
+ 
+/* Shuffle helper */
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
-
+ 
 /* Effects */
 function burstConfettiAt(el,count=44){
   const {x,y}=centerOf(el);
@@ -508,7 +494,7 @@ function fartPoofAt(el){
   p.style.left=x+'px'; p.style.top=y+'px';
   document.body.appendChild(p); setTimeout(()=>p.remove(),980);
 }
-
+ 
 /* Mobile audio unlock */
 function unlockAudioOnce(){
   if(audioUnlocked) return;
@@ -519,7 +505,34 @@ function unlockAudioOnce(){
   audioUnlocked=true;
 }
 window.addEventListener('pointerdown', unlockAudioOnce, {once:true});
-
+ 
+/* iOS pull-to-refresh guard just on the scroll container */
+function installPullToRefreshGuard(){
+  const scroller = document.querySelector('.round-viewport');
+  if(!scroller) return;
+ 
+  let startY=0, startTop=0;
+ 
+  scroller.addEventListener('touchstart', (e)=>{
+    if(e.touches.length!==1) return;
+    startY = e.touches[0].clientY;
+    startTop = scroller.scrollTop;
+  }, {passive:true});
+ 
+  scroller.addEventListener('touchmove', (e)=>{
+    if(e.touches.length!==1) return;
+    const y  = e.touches[0].clientY;
+    const dy = y - startY;
+ 
+    const atTop    = scroller.scrollTop <= 0;
+    const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+ 
+    if ((atTop && dy > 0) || (atBottom && dy < 0)) {
+      e.preventDefault();
+    }
+  }, {passive:false});
+}
+ 
 /* Init */
 function initGame(){
   totalScore=0; roundIndex=0; document.body.className='';
@@ -528,117 +541,167 @@ function initGame(){
   rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
   loadRound();
 }
-
-/* Combine helper */
+ 
+/* Combine helper (used by both mouse & touch) */
 function combineIntoJP(jpCard, enText){
   if(!jpCard || !jpCard.dataset) return;
-
   if(jpCard.dataset.connected){
     const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
     if(old) old.style.visibility='visible';
   }
   const enCard=document.querySelector(`.en[data-en="${enText}"]`);
   if(enCard) enCard.style.visibility='hidden';
-
+ 
   const jp = jpCard.dataset.jp, hira = jpCard.dataset.hira;
   jpCard.classList.add('combined','matchedBlue'); jpCard.classList.remove('jp');
   jpCard.innerHTML = `<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
   jpCard.dataset.connected = enText;
   connections[jp] = enText;
-
+ 
   $("#checkBtn").disabled = Object.keys(connections).length !== 5;
 }
-
+ 
 /* Build a round */
 function loadRound(){
   connections={};
-  selectedEnCard = null;
   const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
   colEn.innerHTML=""; colJp.innerHTML="";
-
+ 
   const stripeClasses=shuffle(['sv1','sv2','sv3','sv4','sv5']);
-
+ 
   shuffle([...set]).forEach((item,idx)=>{
     const c=document.createElement('div');
     c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
-    /* HTML5 drag for desktop browsers */
-    c.draggable = !isTouch;
+    c.draggable=true;                    // desktop dnd
     c.textContent=item.en.toLowerCase();
     c.dataset.en=item.en.toLowerCase();
-    c.addEventListener('dragstart',e=>{
-      if(isTouch) return;
-      e.dataTransfer.setData('text/en',c.dataset.en);
-      c.classList.add('dragging');
-    });
-    c.addEventListener('dragend',()=>{
-      c.classList.remove('dragging');
-    });
+    c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');});
+    c.addEventListener('dragend',()=>c.classList.remove('dragging'));
     colEn.appendChild(c);
   });
-
+ 
   shuffle([...set]).forEach(item=>{
     const c=document.createElement('div');
     c.className='card jp';
     c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
-
-    /* Drop targets for desktop drag */
-    c.addEventListener('dragover', e=>{
-      if(isTouch) return;
-      e.preventDefault();
-    });
+    c.addEventListener('dragover', e=>e.preventDefault());
     c.addEventListener('drop', e=>{
-      if(isTouch) return;
       e.preventDefault();
       const en=e.dataTransfer.getData('text/en'); if(!en) return;
       combineIntoJP(c, en);
     });
-
     colJp.appendChild(c);
   });
-
-  if(isTouch){
-    setupTapMode();   // phones/tablets → tap EN, then tap JP
-  }
-
+ 
+  // Touch dragging setup
+  setupTouchDrag();
+ 
   jpOrder=[...colJp.querySelectorAll('[data-jp]')];
   $("#checkBtn").disabled=true;
 }
-
-/* Tap mode (touch devices): tap EN → tap JP */
-function setupTapMode(){
-  selectedEnCard = null;
+ 
+/* Touch drag & drop (mobile) */
+function setupTouchDrag(){
   const enCards = [...document.querySelectorAll('.card.en')];
-  const jpCards = [...document.querySelectorAll('[data-jp]')];
-
+ 
+  let ghost=null, active=null, hoverJP=null;
+  let startX=0, startY=0, dragging=false;
+  let pressTimer=null;
+ 
+  const LONG_PRESS_MS = 220;
+  const MOVE_THRESH  = 12;
+ 
+  function makeGhost(fromCard){
+    const g = fromCard.cloneNode(true);
+    g.className = g.className.replace(/\bcard\b/,'').trim();
+    g.classList.add('drag-ghost');
+    const cs = getComputedStyle(fromCard);
+    g.style.backgroundImage  = cs.backgroundImage;
+    g.style.backgroundSize   = cs.backgroundSize;
+    g.style.backgroundPosition = cs.backgroundPosition;
+    document.body.appendChild(g);
+    return g;
+  }
+ 
+  function beginDrag(e){
+    if (dragging || !active) return;
+    dragging = true;
+    try{ active.setPointerCapture(e.pointerId); }catch(_){}
+    document.body.classList.add('draggingTouch');
+    ghost = makeGhost(active);
+    moveGhost(e);
+  }
+ 
+  function pointerDown(e){
+    if(e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+    active = e.currentTarget;
+    startX = e.clientX; startY = e.clientY;
+    dragging = false;
+ 
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(()=> beginDrag(e), LONG_PRESS_MS);
+  }
+ 
+  function pointerMove(e){
+    if(!active) return;
+ 
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+ 
+    if (!dragging && (dy > dx + 8 || dx + dy > MOVE_THRESH)) {
+      clearTimeout(pressTimer);
+    }
+    if (!dragging && (dx > dy + 10) && (dx + dy > MOVE_THRESH)) {
+      beginDrag(e);
+    }
+ 
+    if (dragging){
+      moveGhost(e);
+      e.preventDefault();
+    }
+  }
+ 
+  function moveGhost(e){
+    if(!ghost) return;
+    ghost.style.left = e.clientX + 'px';
+    ghost.style.top  = e.clientY + 'px';
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const cand = el && el.closest && el.closest('[data-jp]');
+    if(cand !== hoverJP){
+      if(hoverJP) hoverJP.classList.remove('hoverTarget');
+      hoverJP = cand;
+      if(hoverJP) hoverJP.classList.add('hoverTarget');
+    }
+  }
+ 
+  function endDrag(e){
+    clearTimeout(pressTimer);
+    if(!active) return;
+ 
+    if(dragging){
+      if(hoverJP) hoverJP.classList.remove('hoverTarget');
+      if(ghost){
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const target = el && el.closest && el.closest('[data-jp]');
+        if(target){ combineIntoJP(target, active.dataset.en); }
+        ghost.remove(); ghost = null;
+      }
+      document.body.classList.remove('draggingTouch');
+    }
+ 
+    try{ active.releasePointerCapture && active.releasePointerCapture(e.pointerId); }catch(_){}
+    active=null; hoverJP=null; dragging=false;
+  }
+ 
   enCards.forEach(c=>{
-    c.addEventListener('click', ()=>{
-      if(c.style.visibility === 'hidden') return;
-
-      if(selectedEnCard === c){
-        c.classList.remove('tap-selected');
-        selectedEnCard = null;
-        return;
-      }
-      if(selectedEnCard){
-        selectedEnCard.classList.remove('tap-selected');
-      }
-      selectedEnCard = c;
-      c.classList.add('tap-selected');
-    });
+    c.addEventListener('pointerdown', pointerDown, {passive:true});
   });
-
-  jpCards.forEach(jpCard=>{
-    jpCard.addEventListener('click', ()=>{
-      if(!selectedEnCard) return;
-      const enText = selectedEnCard.dataset.en;
-      combineIntoJP(jpCard, enText);
-      selectedEnCard.classList.remove('tap-selected');
-      selectedEnCard = null;
-    });
-  });
+  window.addEventListener('pointermove',  pointerMove, {passive:false});
+  window.addEventListener('pointerup',    endDrag,     {passive:true});
+  window.addEventListener('pointercancel',endDrag,     {passive:true});
 }
-
+ 
 /* Check flow */
 $("#checkBtn").addEventListener('click',()=>{
   $("#checkBtn").disabled=true;
@@ -655,9 +718,9 @@ $("#checkBtn").addEventListener('click',()=>{
     const card=jpOrder[i], jp=card.dataset.jp;
     const chosen=card.dataset.connected||"";
     const correct = rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
-
+ 
     card.classList.remove('matchedBlue');
-
+ 
     if(chosen && chosen===correct){
       card.classList.remove('wrong');
       card.classList.add('correct','locked');
@@ -673,26 +736,26 @@ $("#checkBtn").addEventListener('click',()=>{
     i++;
   },850);
 });
-
+ 
 /* Results */
 function showResults(){
   $("#page-round").classList.remove('active');
   $("#page-results").classList.add('active');
-
+ 
   const pct=Math.round((totalScore/15)*100);
   const msgEl=$("#resultMsg"), scoreEl=$("#resultScore");
-
+ 
   let bg='blueGlow', msg='いいね！あと少しでパーフェクト！', snd=$("#s_r1114");
   if(totalScore<=5){ bg='redGlow'; msg='ブーリキュラム見てないでしょ！'; snd=$("#s_r05"); }
   else if(totalScore<=10){ bg='orangeGlow'; msg='YouTube見すぎ！ブーリキュラムもやろう！'; snd=$("#s_r610"); }
   else if(totalScore===15){ bg='goldGlow'; msg='すごい！あなたは地球で一番頭がいい！'; snd=$("#s_r15"); }
-
+ 
   document.body.className=bg;
   msgEl.textContent=msg;
   scoreEl.textContent=`${totalScore}/15（${pct}%）`;
-
+ 
   try{ snd.currentTime=0; snd.play(); }catch(e){}
-
+ 
   if(totalScore===15){
     for(let i=0;i<160;i++){
       setTimeout(()=>{
@@ -707,40 +770,41 @@ function showResults(){
     }
   }
 }
-
+ 
 /* Buttons */
 $("#playAgain").addEventListener('click', initGame);
-
+ 
 $("#backToMenu").addEventListener('click', () => {
   window.location.href = "index.html";
 });
-
+ 
 $("#quitBtn").addEventListener('click', () => {
   window.location.href = "index.html";
 });
-
+ 
 /* Help overlay logic */
 const helpOverlay = $("#helpOverlay");
 const helpBtn = $("#helpBtn");
 const helpClose = $("#helpClose");
-
+ 
 function closeHelp(){
   helpOverlay.classList.remove('show');
 }
-
+ 
 helpBtn.addEventListener('click', () => {
   helpOverlay.classList.add('show');
 });
-
+ 
 helpClose.addEventListener('click', closeHelp);
-
+ 
 helpOverlay.addEventListener('click', (e) => {
   if(e.target === helpOverlay){
     closeHelp();
   }
 });
-
+ 
 /* Start */
+installPullToRefreshGuard();
 initGame();
 </script>
 </body>
