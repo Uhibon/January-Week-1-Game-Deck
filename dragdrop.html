@@ -34,8 +34,8 @@ body{
   /* Reduce accidental page pull-to-refresh on capable browsers */
   overscroll-behavior-y: none;
 
-  /* 🔔 Glowing vertical scrollbar hint */
-  scrollbar-color: var(--cuteBlue) transparent; /* Firefox */
+  /* 🔔 Glowing vertical scrollbar hint (desktop fallback) */
+  scrollbar-color: #f9a8d4 transparent; /* Firefox */
   scrollbar-width: thin;
 }
 body::-webkit-scrollbar{
@@ -45,10 +45,10 @@ body::-webkit-scrollbar-track{
   background:transparent;
 }
 body::-webkit-scrollbar-thumb{
-  background:var(--cuteBlue);
+  background:#f9a8d4;
   border-radius:999px;
-  box-shadow:0 0 10px rgba(96,165,250,.9),0 0 26px rgba(96,165,250,.9);
-  animation:scrollGlow 1.4s ease-in-out infinite alternate;
+  box-shadow:0 0 8px rgba(249,168,212,.9),0 0 24px rgba(249,168,212,1);
+  animation:scrollGlowPink 1.4s ease-in-out infinite alternate;
 }
 
 /* Header + footer */
@@ -104,7 +104,26 @@ footer{
 .page.active{display:block}
 
 /* Round viewport + layout */
-.round-viewport{ width:100%; }
+.round-viewport{ 
+  width:100%; 
+
+  /* 🌸 Pink glowing scrollbar on the main scroll area (mobile) */
+  scrollbar-color:#f9a8d4 transparent;
+  scrollbar-width:thin;
+}
+.round-viewport::-webkit-scrollbar{
+  width:10px;
+}
+.round-viewport::-webkit-scrollbar-track{
+  background:transparent;
+}
+.round-viewport::-webkit-scrollbar-thumb{
+  background:#f9a8d4;
+  border-radius:999px;
+  box-shadow:0 0 8px rgba(249,168,212,.9),0 0 24px rgba(249,168,212,1);
+  animation:scrollGlowPink 1.4s ease-in-out infinite alternate;
+}
+
 .round-wrap{
   display:flex;gap:26px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin-top:16px;
 }
@@ -375,10 +394,14 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   margin-bottom:10px;
 }
 
-/* ✨ Scrollbar glow animation */
-@keyframes scrollGlow{
-  0%{box-shadow:0 0 6px rgba(96,165,250,.7),0 0 16px rgba(96,165,250,.7);}
-  100%{box-shadow:0 0 14px rgba(96,165,250,1),0 0 34px rgba(96,165,250,1);}
+/* ✨ Pink scrollbar glow animation */
+@keyframes scrollGlowPink{
+  0%{
+    box-shadow:0 0 6px rgba(249,168,212,.7),0 0 16px rgba(249,168,212,.7);
+  }
+  100%{
+    box-shadow:0 0 14px rgba(249,168,212,1),0 0 34px rgba(249,168,212,1);
+  }
 }
 </style>
 </head>
