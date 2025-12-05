@@ -166,18 +166,21 @@ footer{
   100%{transform:translate(var(--dx),var(--dy)) scale(0.4);opacity:0;}
 }
 
-/* Fade-to-black screen */
+/* Black swipe screen */
 #fadeScreen{
   position:fixed;
   inset:0;
   background:#000;
-  opacity:0;
+  /* start off-screen at the bottom */
+  transform:translateY(100%);
+  opacity:1;
   pointer-events:none;
-  transition:opacity 0.9s ease;
+  transition:transform 0.7s ease-in-out;
   z-index:9000;
 }
 #fadeScreen.show{
-  opacity:1;
+  /* slide up to cover everything */
+  transform:translateY(0%);
 }
 
 /* ===== Mobile tweaks ===== */
@@ -296,18 +299,16 @@ if (deckContainer) {
       sparkleBurst(deck.getBoundingClientRect(), 40);
     }, 220);
 
-    // After the move finishes, fade + go to game
+    // After the move finishes, swipe black screen + go to game
     setTimeout(() => {
       clearInterval(sparkleInt);
 
       const fadeScreen = document.getElementById('fadeScreen');
       if (fadeScreen) {
-        // start fade to black (games will feel like they're fading in)
-        fadeScreen.classList.add('show');
-        // short pause so fade is visible, then navigate
+        fadeScreen.classList.add('show'); // ← black swipe up
         setTimeout(() => {
           window.location.href = target;
-        }, 700);
+        }, 700); // matches the 0.7s transform transition
       } else {
         window.location.href = target;
       }
@@ -315,5 +316,3 @@ if (deckContainer) {
   });
 }
 </script>
-</body>
-</html>
