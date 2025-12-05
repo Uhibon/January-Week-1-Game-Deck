@@ -37,15 +37,24 @@ body{
   align-items:center;
   gap:4px;
 }
-#quitBtn{top:8px;left:8px;}
+#quitBtn{
+  top:8px;
+  left:8px;
+}
 #helpBtn{
-  bottom:10px;
-  left:10px;
-  width:28px;
-  height:28px;
+  bottom:12px;
+  left:12px;
+  width:44px;
+  height:44px;
   padding:0;
   border-radius:50%;
   justify-content:center;
+  font-size:1.2rem;
+  border:2px solid #ffffffaa;
+  background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 55%,#4c1d95 100%);
+  box-shadow:0 0 10px rgba(168,85,247,0.9),
+             0 0 26px rgba(129,140,248,0.8),
+             0 0 40px rgba(129,140,248,0.6);
 }
 
 /* Header */
@@ -243,10 +252,15 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   padding:16px 18px 18px;
   overflow-y:auto;
 }
-.help-title{
+.help-title-main{
   font-weight:800;
-  margin-bottom:6px;
   font-size:1.05rem;
+  margin-bottom:4px;
+}
+.help-subtitle{
+  font-size:.92rem;
+  opacity:.9;
+  margin-bottom:10px;
 }
 .help-section-title{
   margin-top:10px;
@@ -256,7 +270,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 }
 .help-text{
   font-size:.88rem;
-  line-height:1.5;
+  line-height:1.55;
   opacity:.95;
 }
 .help-close{
@@ -269,7 +283,6 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   top:10px;
   right:12px;
 }
-
 .help-header-wrap{
   position:relative;
   padding-right:26px;
@@ -338,53 +351,35 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <div id="helpOverlay">
   <div class="help-inner">
     <div class="help-header-wrap">
-      <div class="help-title">How to Play / あそびかた</div>
+      <div class="help-title-main">How to Play ／ 遊び方</div>
+      <div class="help-subtitle">Booha Say the Word Game</div>
       <button id="helpClose" class="help-close">×</button>
     </div>
 
-    <div class="help-section-title">🎤 Microphone / マイク</div>
+    <div class="help-section-title">English</div>
     <div class="help-text">
-      • When the browser asks for microphone permission, tap <b>Allow</b>.<br>
-      • Without the mic, the game cannot hear you.
+      Tap the purple mic button when you are ready to speak.<br>
+      If your browser asks for microphone access, tap <b>Allow</b>.<br>
+      When the mic is glowing, say the English word one time, clearly.<br>
+      If you are correct, the answer box turns green and you hear a “ding” sound.<br>
+      Listen to the Sage voice and then tap <b>NEXT / 次へ</b> to go to the next word.<br>
+      Try to get the highest score you can!
     </div>
 
-    <div class="help-text" style="margin-top:6px;">
-      ・ブラウザから「マイクをゆる可しますか？」と聞かれたら、<b>「許可」</b>をタップしてください。<br>
-      ・マイクがないと、ゲームはあなたの声を聞くことができません。
-    </div>
-
-    <div class="help-section-title">🟣 Purple Mic / むらさきのマイク</div>
+    <div class="help-section-title">日本語</div>
     <div class="help-text">
-      • Tap the <b>purple mic button</b> to start.<br>
-      • <b>Only speak when the mic is glowing purple.</b><br>
-      • Say the English word one time, clearly.
+      じゅんびができたら、むらさきのマイクボタンをタップします。<br>
+      ブラウザからマイクの許可を聞かれたら、<b>「許可」</b>をタップしてください。<br>
+      マイクが光っているときだけ、英単語をはっきり1回だけ言います。<br>
+      正解するとボックスがみどり色になり、「ピン！」という音が鳴ります。<br>
+      Sage の声を聞いたあと、<b>「NEXT / 次へ」</b>ボタンを押して次の単語に進みます。<br>
+      できるだけ高いスコアを目指しましょう！
     </div>
 
-    <div class="help-text" style="margin-top:6px;">
-      ・<b>むらさき色のマイクボタン</b>をタップしてスタートします。<br>
-      ・<b>マイクがピカピカ光っているときだけ</b>英語を話してください。<br>
-      ・英単語をはっきりと、1回だけ言いましょう。
-    </div>
-
-    <div class="help-section-title">✅ Answer & NEXT / 答えと「次へ」</div>
+    <div class="help-section-title">Quit / やめる</div>
     <div class="help-text">
-      • If you are correct, the box turns <b>green</b> and you hear a “ding”.<br>
-      • Listen to the Sage voice, then tap <b>“NEXT / 次へ”</b>.<br>
-      • Try to get a high score!
-    </div>
-
-    <div class="help-text" style="margin-top:6px;">
-      ・正解すると、ボックスが<b>みどり色</b>になり、「ピン！」と音が鳴ります。<br>
-      ・Sageの声を聞いてから、<b>「NEXT / 次へ」</b>ボタンを押しましょう。<br>
-      ・高いスコアを目指してがんばろう！
-    </div>
-
-    <div class="help-section-title">🚪 Quit / やめる</div>
-    <div class="help-text">
-      • Tap <b>“Quit / やめる”</b> in the top-left to go back to the main game menu.
-    </div>
-    <div class="help-text" style="margin-top:6px;">
-      ・左上の<b>「Quit / やめる」</b>ボタンでメインメニューにもどれます。
+      To stop playing, tap <b>“Quit / やめる”</b> in the top-left to return to the main menu.<br>
+      やめたいときは、左上の<b>「Quit / やめる」</b>ボタンでメインメニューにもどります。
     </div>
   </div>
 </div>
