@@ -31,7 +31,6 @@ body{
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
-  /* Reduce accidental page pull-to-refresh on capable browsers */
   overscroll-behavior-y: none;
 }
 
@@ -47,7 +46,6 @@ header h2{
   font-size:clamp(2.0rem,6.2vw,3rem);
   text-shadow:0 0 10px rgba(255,255,255,.12)
 }
-/* Mobile: two lines; Desktop: single line with slash */
 .subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
 .subtitle-stack .en::after{content:" / "; opacity:.8}
 @media (max-width:700px){
@@ -103,16 +101,16 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 
 /* MOBILE layout improvements */
 @media (max-width:700px){
-  :root{ --cardH: 104px; }                 /* smaller, uniform mobile cards */
+  :root{ --cardH: 104px; }
   #page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
   .round-viewport{
     flex:1 1 auto;
     min-height:0;
     overflow-y:auto;
-    -webkit-overflow-scrolling:touch;      /* smooth iOS scroll */
-    overscroll-behavior-y:contain;         /* reduce bounce where supported */
-    scrollbar-gutter: stable both-edges;   /* keeps scroll easier to grab */
-    padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px); /* keep bottom cards clear of CHECK */
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    scrollbar-gutter: stable both-edges;
+    padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px);
   }
   .round-wrap{flex-wrap:nowrap;gap:10px}
   .col{flex:0 0 50%;max-width:50%}
@@ -141,8 +139,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .card.en{
   color:#000; font-weight:1000;
   font-size:clamp(1.8rem,5.8vw,3rem);
-  letter-spacing:-.01em; text-transform:none;
-  /* 🚫 Never split words like "motivation" */
+  letter-spacing:-.01em;
   word-break: keep-all;
   overflow-wrap: normal;
   hyphens: none;
@@ -152,7 +149,13 @@ body.draggingTouch .round-wrap{ touch-action: none; }
   white-space:pre-line;
 }
 .card.dragging{opacity:.65; transform:scale(1.04)}
-.card.locked{pointer-events:none} /* no dim */
+.card.locked{pointer-events:none}
+
+/* Tap-selected EN for touch mode */
+.card.en.tap-selected{
+  box-shadow:0 0 0 4px rgba(255,255,255,.9), 0 0 18px rgba(96,165,250,.9);
+  transform:scale(1.03);
+}
 
 /* Combined before grading */
 .card.combined{ border:0; display:flex; flex-direction:column; gap:8px; }
@@ -164,7 +167,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .card.combined .enTxt{font-size:1.05em; font-weight:1000; letter-spacing:-.01em}
 .card.combined .jpTxt{font-size:.7em; opacity:.98}
 
-/* Grading wins over everything */
+/* Grading */
 .card.correct{background:var(--green) !important; color:#062a12 !important; border:0 !important}
 .card.wrong  {background:var(--red)   !important; color:#fff     !important; border:0 !important; animation:shake .45s}
 @keyframes shake{
@@ -180,7 +183,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .btn{
   border:0; border-radius:28px; padding:12px 34px; font-weight:800; font-size:1.1rem; cursor:pointer;
   transition:transform .08s ease, box-shadow .2s ease, filter .2s ease;
-  touch-action: manipulation; /* faster taps on mobile */
+  touch-action: manipulation;
 }
 .btn:active{transform:translateY(1px)}
 .btn-green{ background:var(--check); color:#062a12; box-shadow:var(--checkGlow) }
@@ -206,7 +209,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .blueGlow{background:#0d2b7a; box-shadow:inset 0 0 60px 30px #2b7bff}
 .goldGlow{background:#725c00; box-shadow:inset 0 0 80px 40px #ffd166}
 
-/* Perfect-run confetti rain */
+/* Perfect-run confetti */
 .confetti{
   position:fixed; width:12px; height:12px; border-radius:50%;
   top:-12px; left:0;
@@ -232,14 +235,14 @@ body.draggingTouch .round-wrap{ touch-action: none; }
   background:radial-gradient(closest-side, rgba(74,222,128,.97) 0%, rgba(34,197,94,.7) 55%, rgba(34,197,94,0) 70%);
   filter:blur(2px);
   pointer-events:none; z-index:19;
-  animation:puff 950ms ease-out forwards;
+  animation:puff 950ms.ease-out forwards;
 }
 @keyframes puff{
   0%{opacity:.98; transform:translate(-50%,-50%) scale(.7)}
   100%{opacity:0; transform:translate(-50%,-50%) scale(7)}
 }
 
-/* English vertical stripes use card height var */
+/* English vertical stripes */
 @keyframes stripesV{ from{background-position:0 0} to{background-position:0 var(--cardH)} }
 .sv{ background-size:100% var(--cardH); animation:stripesV 3.2s linear infinite; }
 .sv1{ background-image:repeating-linear-gradient(0deg, #ff7eb9 0 18px, #5ee6ff 18px 36px, #ffd166 36px 54px); }
@@ -248,7 +251,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 .sv4{ background-image:repeating-linear-gradient(0deg, #fca5a5 0 18px, #86efac 18px 36px, #93c5fd 36px 54px); }
 .sv5{ background-image:repeating-linear-gradient(0deg, #f9a8d4 0 18px, #fef08a 18px 36px, #6ee7b7 36px 54px); }
 
-/* Touch drag helper visuals */
+/* Drag ghost (desktop pointer-drag) */
 .drag-ghost{
   position:fixed; z-index:9999; pointer-events:none;
   transform:translate(-50%,-50%); will-change:transform;
@@ -411,7 +414,8 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     <div class="help-content">
       <p><strong>English</strong></p>
       <ul>
-        <li>Drag each <strong>English card</strong> on the left onto the matching <strong>Japanese card</strong> on the right.</li>
+        <li>On phones and tablets: <strong>tap an English card</strong>, then tap the matching <strong>Japanese card</strong>.</li>
+        <li>On computers: <strong>drag each English card</strong> on the left onto the matching <strong>Japanese card</strong> on the right.</li>
         <li>When all 5 pairs are connected, tap <strong>CHECK</strong>.</li>
         <li>Correct answers turn <strong>green</strong> with a “ding” sound.</li>
         <li>Wrong answers turn <strong>red</strong> with a funny “boo” sound.</li>
@@ -422,7 +426,8 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 
       <p><strong>日本語</strong></p>
       <ul>
-        <li>左の<strong>英語カード</strong>を、意味が同じ<strong>日本語カード</strong>の上にドラッグして重ねます。</li>
+        <li>スマホ・タブレットでは、まず<strong>左の英語カードをタップ</strong>し、そのあと<strong>意味が同じ日本語カードをタップ</strong>します。</li>
+        <li>パソコンでは、左の<strong>英語カードをドラッグして</strong>右の<strong>日本語カードの上に重ねます</strong>。</li>
         <li>5つすべてペアにできたら、<strong>CHECK（チェック）</strong>ボタンを押します。</li>
         <li>正解は<strong>緑色</strong>になり、「ピン！」という音が鳴ります。</li>
         <li>まちがいは<strong>赤色</strong>になり、面白い「ブー」の音が鳴ります。</li>
@@ -462,6 +467,10 @@ const MASTER = [
 
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[], audioUnlocked=false;
+let selectedEnCard = null;
+
+/* Device mode */
+const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
 /* Helpers */
 const $ = s=>document.querySelector(s);
@@ -472,7 +481,7 @@ function playSfx(id){
 }
 function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
 
-/* Shuffle helper */
+/* Shuffle */
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
 /* Effects */
@@ -506,17 +515,16 @@ function unlockAudioOnce(){
 }
 window.addEventListener('pointerdown', unlockAudioOnce, {once:true});
 
-/* iOS pull-to-refresh guard just on the scroll container */
+/* iOS pull-to-refresh guard */
 function installPullToRefreshGuard(){
   const scroller = document.querySelector('.round-viewport');
   if(!scroller) return;
 
-  let startY=0, startTop=0;
+  let startY=0;
 
   scroller.addEventListener('touchstart', (e)=>{
     if(e.touches.length!==1) return;
     startY = e.touches[0].clientY;
-    startTop = scroller.scrollTop;
   }, {passive:true});
 
   scroller.addEventListener('touchmove', (e)=>{
@@ -542,9 +550,10 @@ function initGame(){
   loadRound();
 }
 
-/* Combine helper (used by both mouse & touch) */
+/* Combine helper */
 function combineIntoJP(jpCard, enText){
   if(!jpCard || !jpCard.dataset) return;
+
   if(jpCard.dataset.connected){
     const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
     if(old) old.style.visibility='visible';
@@ -564,6 +573,7 @@ function combineIntoJP(jpCard, enText){
 /* Build a round */
 function loadRound(){
   connections={};
+  selectedEnCard = null;
   const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
   colEn.innerHTML=""; colJp.innerHTML="";
 
@@ -572,7 +582,7 @@ function loadRound(){
   shuffle([...set]).forEach((item,idx)=>{
     const c=document.createElement('div');
     c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
-    c.draggable=true;                    // desktop dnd
+    c.draggable=true;
     c.textContent=item.en.toLowerCase();
     c.dataset.en=item.en.toLowerCase();
     c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/en',c.dataset.en); c.classList.add('dragging');});
@@ -594,15 +604,52 @@ function loadRound(){
     colJp.appendChild(c);
   });
 
-  // Touch dragging setup
-  setupTouchDrag();
+  if(isTouch){
+    setupTapMode();
+  }else{
+    setupPointerDrag();
+  }
 
   jpOrder=[...colJp.querySelectorAll('[data-jp]')];
   $("#checkBtn").disabled=true;
 }
 
-/* Touch drag & drop (mobile) */
-function setupTouchDrag(){
+/* Tap mode (touch devices): tap EN → tap JP */
+function setupTapMode(){
+  selectedEnCard = null;
+  const enCards = [...document.querySelectorAll('.card.en')];
+  const jpCards = [...document.querySelectorAll('[data-jp]')];
+
+  enCards.forEach(c=>{
+    c.addEventListener('click', ()=>{
+      if(c.style.visibility === 'hidden') return;
+
+      if(selectedEnCard === c){
+        c.classList.remove('tap-selected');
+        selectedEnCard = null;
+        return;
+      }
+      if(selectedEnCard){
+        selectedEnCard.classList.remove('tap-selected');
+      }
+      selectedEnCard = c;
+      c.classList.add('tap-selected');
+    });
+  });
+
+  jpCards.forEach(jpCard=>{
+    jpCard.addEventListener('click', ()=>{
+      if(!selectedEnCard) return;
+      const enText = selectedEnCard.dataset.en;
+      combineIntoJP(jpCard, enText);
+      selectedEnCard.classList.remove('tap-selected');
+      selectedEnCard = null;
+    });
+  });
+}
+
+/* Pointer drag (desktop / non-touch) */
+function setupPointerDrag(){
   const enCards = [...document.querySelectorAll('.card.en')];
 
   let ghost=null, active=null, hoverJP=null;
@@ -634,6 +681,9 @@ function setupTouchDrag(){
   }
 
   function pointerDown(e){
+    if(e.pointerType === 'mouse'){
+      return; // standard HTML5 drag already works for mouse
+    }
     if(e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
     active = e.currentTarget;
     startX = e.clientX; startY = e.clientY;
