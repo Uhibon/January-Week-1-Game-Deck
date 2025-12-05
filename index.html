@@ -261,11 +261,11 @@ if (deckContainer) {
 
     const target = deck.getAttribute('href');
 
-    // Card glow + faster spiral
+    // Glow + faster spiral to show it's "alive"
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
-    // Try to play intro sound, but NEVER wait for it
+    // Try to play intro music, but NEVER wait on it
     if (intro) {
       try {
         intro.pause();
@@ -277,7 +277,7 @@ if (deckContainer) {
       }
     }
 
-    // Center + scale card safely
+    // Center + slow, dramatic move to the middle
     const r = deck.getBoundingClientRect();
     const cx = window.innerWidth / 2 - (r.left + r.width / 2);
     const cy = window.innerHeight / 2 - (r.top + r.height / 2);
@@ -286,29 +286,32 @@ if (deckContainer) {
     const maxHeightScale = (window.innerHeight * 0.9) / r.height;
     const safeScale = Math.min(3, maxWidthScale, maxHeightScale);
 
-    deck.style.transition = "transform 1.4s ease-in-out";
+    // Slower animation so it feels magical, not jumpy
+    deck.style.transition = "transform 3s ease-in-out";
     deck.style.transform = `translate(${cx}px,${cy}px) scale(${safeScale})`;
     deck.style.zIndex = "9999";
 
+    // Keep sparks flying while it moves to center
     const sparkleInt = setInterval(() => {
       sparkleBurst(deck.getBoundingClientRect(), 40);
-    }, 180);
+    }, 220);
 
-    // After the zoom animation, fade screen + go to game
+    // After the move finishes, fade + go to game
     setTimeout(() => {
       clearInterval(sparkleInt);
 
       const fadeScreen = document.getElementById('fadeScreen');
       if (fadeScreen) {
+        // start fade to black (games will feel like they're fading in)
         fadeScreen.classList.add('show');
-        // Short delay so the fade is visible, then navigate
+        // short pause so fade is visible, then navigate
         setTimeout(() => {
           window.location.href = target;
-        }, 500);
+        }, 700);
       } else {
         window.location.href = target;
       }
-    }, 1500); // total wait ~2s instead of 6+ seconds
+    }, 3100); // slightly longer than the 3s move
   });
 }
 </script>
