@@ -34,7 +34,7 @@ body{
   /* Reduce accidental page pull-to-refresh on capable browsers */
   overscroll-behavior-y: none;
 
-  /* 🔔 Glowing vertical scrollbar hint (desktop fallback) */
+  /* 🔔 Glowing vertical scrollbar hint (desktop / general fallback) */
   scrollbar-color: #f9a8d4 transparent; /* Firefox */
   scrollbar-width: thin;
 }
@@ -107,7 +107,7 @@ footer{
 .round-viewport{ 
   width:100%; 
 
-  /* 🌸 Pink glowing scrollbar on the main scroll area (mobile) */
+  /* 🌸 Pink glowing scrollbar on the main scroll area */
   scrollbar-color:#f9a8d4 transparent;
   scrollbar-width:thin;
 }
@@ -394,6 +394,79 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   margin-bottom:10px;
 }
 
+/* 🌸 Mobile-only fake scroll rail + hint */
+.scroll-rail,
+.scroll-hint{
+  display:none; /* default hidden on desktop */
+}
+
+@media (max-width:700px){
+  .scroll-rail{
+    position:fixed;
+    right:6px;
+    top:18%;
+    bottom:18%;
+    width:12px;
+    border-radius:999px;
+    background:rgba(248,187,208,.16);
+    box-shadow:0 0 10px rgba(249,168,212,.8),0 0 26px rgba(249,168,212,1);
+    z-index:30;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .scroll-rail-inner{
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    font-size:.65rem;
+    font-weight:800;
+    color:#ffe4f1;
+    letter-spacing:.1em;
+    text-shadow:0 0 8px rgba(249,168,212,1);
+    animation:scrollGlowPink 1.4s ease-in-out infinite alternate;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .scroll-rail-arrow{
+    font-size:.8rem;
+  }
+
+  .scroll-hint{
+    position:fixed;
+    right:20px;
+    bottom:calc(80px + env(safe-area-inset-bottom));
+    z-index:40;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    animation:hintFloat 2.2s ease-in-out infinite alternate;
+  }
+  .scroll-hint-bubble{
+    background:rgba(15,23,42,.95);
+    border-radius:18px;
+    padding:10px 12px;
+    border:1px solid rgba(249,168,212,.9);
+    box-shadow:0 0 16px rgba(249,168,212,.6);
+    font-size:.78rem;
+    line-height:1.4;
+    text-align:left;
+  }
+  .scroll-hint-arrow{
+    font-weight:900;
+    margin-right:6px;
+    color:#f9a8d4;
+  }
+  .scroll-hint-text{
+    font-size:.78rem;
+  }
+  .scroll-hint.hide{
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .5s ease;
+  }
+}
+
 /* ✨ Pink scrollbar glow animation */
 @keyframes scrollGlowPink{
   0%{
@@ -402,6 +475,11 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   100%{
     box-shadow:0 0 14px rgba(249,168,212,1),0 0 34px rgba(249,168,212,1);
   }
+}
+
+@keyframes hintFloat{
+  0%{ transform:translateY(0); }
+  100%{ transform:translateY(-6px); }
 }
 </style>
 </head>
@@ -479,6 +557,22 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
         <li><strong>3ラウンド（合計15問）</strong>あります。パーフェクトを目指してね！</li>
       </ul>
     </div>
+  </div>
+</div>
+
+<!-- 🌸 Mobile scroll rail + hint -->
+<div id="scrollRail" class="scroll-rail">
+  <div class="scroll-rail-inner">
+    <span class="scroll-rail-arrow">↑</span>
+    <span class="scroll-rail-text">スクロール</span>
+    <span class="scroll-rail-arrow">↓</span>
+  </div>
+</div>
+
+<div id="scrollHint" class="scroll-hint">
+  <div class="scroll-hint-bubble">
+    <span class="scroll-hint-arrow">↑↓</span>
+    <span class="scroll-hint-text">上や下に動かして<br>全部のカードを見てね</span>
   </div>
 </div>
 
@@ -852,6 +946,29 @@ helpOverlay.addEventListener('click', (e) => {
     closeHelp();
   }
 });
+
+/* Mobile scroll hint logic */
+const scrollHint = $("#scrollHint");
+let hintDismissed = false;
+
+function hideScrollHint(){
+  if(hintDismissed || !scrollHint) return;
+  hintDismissed = true;
+  scrollHint.classList.add('hide');
+}
+
+if(scrollHint){
+  // Hide when they scroll the window or the game area
+  window.addEventListener('scroll', hideScrollHint, {passive:true});
+  const scroller = document.querySelector('.round-viewport');
+  if(scroller){
+    scroller.addEventListener('scroll', hideScrollHint, {passive:true});
+  }
+  // Or on first touch
+  window.addEventListener('touchstart', hideScrollHint, {passive:true});
+  // Or after a few seconds
+  setTimeout(hideScrollHint, 6500);
+}
 
 /* Start */
 installPullToRefreshGuard();
