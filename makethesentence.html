@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Booha Sentence Builder – January Week 1</title>
+<title>Booha Make the Sentences – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 <style>
@@ -99,12 +99,148 @@ filter:blur(0.6px);animation:smokeRise 1.8s ease-out forwards;}
 .end .msg{font-weight:900;font-size:clamp(26px,6vw,42px);}
 .end .score{font-weight:900;font-size:clamp(22px,5vw,30px);margin:10px auto 20px;}
 footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:700;padding:40px 10px}
+
+/* 🔘 Standard Booha QUIT button (small version) */
+.top-nav-btn{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:12001;
+  border-radius:999px;
+  padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+.top-nav-btn .jp{font-size:.72em;}
+.top-nav-btn .en{font-size:.8em;}
+
+/* ❓ Glowing help button */
+.help-btn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:12001;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  border:1px solid #ffffff88;
+  background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
+  color:#fff;
+  font-weight:900;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 0 12px rgba(125,211,252,.9),
+    0 0 28px rgba(59,130,246,.9),
+    0 0 52px rgba(56,189,248,.9);
+  backdrop-filter:blur(4px);
+}
+
+/* 🪟 Help modal */
+.help-modal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.help-modal.show{display:flex;}
+.help-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.8);
+  backdrop-filter:blur(6px);
+}
+.help-dialog{
+  position:relative;
+  z-index:1;
+  max-width:720px;
+  width:calc(100% - 32px);
+  max-height:80vh;
+  border-radius:20px;
+  border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 55%);
+  box-shadow:0 22px 70px rgba(0,0,0,.9);
+  padding:18px 18px 20px;
+  display:flex;
+  flex-direction:column;
+}
+.help-dialog h2{
+  font-family:'Cinzel',serif;
+  font-size:1.2rem;
+  text-align:center;
+  margin-bottom:6px;
+}
+.help-sub{
+  font-size:.85rem;
+  text-align:center;
+  color:#c7d2fe;
+  margin-bottom:10px;
+}
+.help-body{
+  margin-top:6px;
+  padding-right:4px;
+  font-size:.9rem;
+  line-height:1.6;
+  color:#e5e7f5;
+  overflow-y:auto;
+}
+.help-body h3{
+  font-size:.9rem;
+  margin:10px 0 4px;
+  color:#bfdbfe;
+}
+.help-body ul{
+  padding-left:1.1rem;
+  margin:4px 0 10px;
+}
+.help-body li{
+  margin-bottom:4px;
+}
+.help-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  border:none;
+  background:transparent;
+  color:#e5e7f5;
+  font-size:22px;
+  cursor:pointer;
+}
+@media (max-width:480px){
+  .help-dialog{
+    max-height:82vh;
+    padding:16px 14px 18px;
+  }
+}
 </style>
 </head>
 <body>
+
+<!-- 🔘 Quit + ❓ Help -->
+<button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
+  <span class="jp">やめる</span>
+  <span class="en">QUIT</span>
+</button>
+<button id="helpBtn" type="button" class="help-btn">?</button>
+
 <header>
   <div class="h1">THE BOO-RICULUM</div>
-  <div class="h2">GAMES & QUIZZES</div>
+  <div class="h2">MAKE THE SENTENCES</div>
   <div class="h3">January Week 1 – Sentences</div>
   <div class="h4">１月第１週 – 文の練習</div>
 </header>
@@ -133,6 +269,41 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   <button id="checkBtn" class="btn green" disabled>Check</button>
   <div id="progress">1 / 15</div>
 </div>
+</div>
+
+<!-- ❓ Help popup -->
+<div id="helpModal" class="help-modal" aria-hidden="true">
+  <div class="help-backdrop" data-close-help></div>
+  <div class="help-dialog">
+    <button class="help-close" type="button" data-close-help>×</button>
+    <h2>How to Play ／ 遊び方</h2>
+    <div class="help-sub">Booha Make the Sentences Game</div>
+    <div class="help-body">
+      <h3>English</h3>
+      <ul>
+        <li>Look at the big <strong>Japanese sentence</strong> and the hiragana hint under it.</li>
+        <li>Use the <strong>white word chips</strong> from the word bank to build the correct English sentence.</li>
+        <li>Drag the words into the gray sentence area and put them in the order you think is correct.</li>
+        <li>When you finish, tap <strong>Check</strong>.</li>
+        <li>If the order is <strong>perfect</strong> on the first try, you get 1 point and hearts + sound.</li>
+        <li>If it’s not correct, you’ll see smoke and enter <strong>retry mode</strong>. Listen with the gold ▶ button and fix the order.</li>
+        <li>In retry mode, you can still learn and move on, but only the <strong>first perfect try</strong> counts toward your final score.</li>
+        <li>There are <strong>15 sentences</strong>. Your final result screen and sound depend on how many first-try perfects you get.</li>
+      </ul>
+
+      <h3>日本語</h3>
+      <ul>
+        <li>上の大きな<strong>日本語の文</strong>と、その下のひらがなヒントをよく見ます。</li>
+        <li>下の<strong>白い単語カード</strong>（word chips）を使って、正しい英語の文を作ります。</li>
+        <li>単語カードをドラッグして、グレーの文エリアに入れ、正しい順番に並べます。</li>
+        <li>できたと思ったら、<strong>Check</strong>ボタンを押します。</li>
+        <li><strong>一回目のチャレンジ</strong>で完ぺきな順番にできると、ハートと音が出て、ポイントが1入ります。</li>
+        <li>まちがえた場合は、もくもくの煙が出て<strong>やり直しモード</strong>になります。金色の▶ボタンで正しい英語を聞いてから、順番を直しましょう。</li>
+        <li>やり直しモードでも学べますが、最終スコアにカウントされるのは<strong>最初のパーフェクト</strong>だけです。</li>
+        <li>文は全部で<strong>15個</strong>あります。最終画面の色と音は、パーフェクトの回数で決まります。</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div id="page-results" class="end">
@@ -284,6 +455,19 @@ function showResults(){
       },i*10);
     }
   }
+}
+
+/* ---------- HELP MODAL ---------- */
+const helpBtn=document.querySelector('#helpBtn');
+const helpModal=document.querySelector('#helpModal');
+if(helpBtn && helpModal){
+  const closeEls=helpModal.querySelectorAll('[data-close-help]');
+  const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
+  const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
+  helpBtn.addEventListener('click',openHelp);
+  closeEls.forEach(el=>el.addEventListener('click',closeHelp));
+  helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 }
 </script>
 </body>
