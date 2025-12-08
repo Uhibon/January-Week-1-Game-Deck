@@ -467,10 +467,10 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     100%{opacity:.55;}
   }
 
-  /* Smaller, white hint bubble */
+  /* Smaller, white hint bubble — moved higher on screen */
   .scroll-hint{
     position:fixed;
-    bottom:18px;
+    bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 40px);
     left:50%;
     transform:translateX(-50%);
     z-index:40;
@@ -729,6 +729,28 @@ function installPullToRefreshGuard(){
   }, {passive:false});
 }
 
+/* 🔄 Allow clearing a JP slot to "take back" an English chip */
+function clearJPCard(jpCard){
+  const enText = jpCard.dataset.connected;
+  if(!enText) return;
+
+  // Show the original English card again
+  const enCard = document.querySelector(`.en[data-en="${enText}"]`);
+  if(enCard) enCard.style.visibility = 'visible';
+
+  // Restore JP card visuals/text
+  jpCard.classList.remove('combined','matchedBlue');
+  jpCard.classList.add('jp');
+  jpCard.innerHTML = `${jpCard.dataset.jp}\n(${jpCard.dataset.hira})`;
+
+  // Clear connection from data + map
+  jpCard.dataset.connected = "";
+  delete connections[jpCard.dataset.jp];
+
+  // Re-check if all 5 are linked
+  $("#checkBtn").disabled = Object.keys(connections).length !== 5;
+}
+
 /* Init */
 function initGame(){
   totalScore=0; roundIndex=0; document.body.className='';
@@ -741,10 +763,13 @@ function initGame(){
 /* Combine helper (used by both mouse & touch) */
 function combineIntoJP(jpCard, enText){
   if(!jpCard || !jpCard.dataset) return;
+
+  // If this JP card already had an EN, give that EN back
   if(jpCard.dataset.connected){
     const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
     if(old) old.style.visibility='visible';
   }
+
   const enCard=document.querySelector(`.en[data-en="${enText}"]`);
   if(enCard) enCard.style.visibility='hidden';
 
@@ -781,12 +806,22 @@ function loadRound(){
     c.className='card jp';
     c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
     c.textContent=`${item.jp}\n(${item.hira})`;
+
+    // Desktop drop
     c.addEventListener('dragover', e=>e.preventDefault());
     c.addEventListener('drop', e=>{
       e.preventDefault();
       const en=e.dataTransfer.getData('text/en'); if(!en) return;
       combineIntoJP(c, en);
     });
+
+    // Tap to clear connection before CHECK
+    c.addEventListener('click', ()=>{
+      if(c.classList.contains('correct') || c.classList.contains('wrong')) return;
+      if(!c.dataset.connected) return;
+      clearJPCard(c);
+    });
+
     colJp.appendChild(c);
   });
 
