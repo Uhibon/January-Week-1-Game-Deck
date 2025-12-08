@@ -69,24 +69,32 @@ footer{
   left:8px;
   z-index:40;
   border-radius:999px;
-  padding:3px 8px;          /* smaller padding */
+  padding:3px 8px;
   border:1px solid #ffffff66;
   background:rgba(15,23,42,.95);
   color:#fff;
-  font-size:.55rem;         /* smaller text */
+
+  font-size:0.55rem;          /* Base size for English */
   font-weight:700;
   letter-spacing:.04em;
+
   cursor:pointer;
   display:flex;
   align-items:center;
-  gap:3px;                  /* tighter gap */
+  gap:3px;
   box-shadow:0 0 8px rgba(0,0,0,.6);
   backdrop-filter:blur(4px);
 }
-.top-nav-btn span.jp{
+
+/* Japanese text adjusted to match English height */
+.top-nav-btn .jp{
+  font-size:0.48rem;          /* slightly smaller to visually match */
+  line-height:1;              /* prevents vertical stretching */
+  font-weight:700;
   opacity:.9;
-  font-weight:600;
+  transform:translateY(1px);  /* tiny alignment fix */
 }
+
 
 
 /* Pages */
