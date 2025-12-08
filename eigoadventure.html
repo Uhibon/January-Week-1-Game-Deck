@@ -12,52 +12,406 @@
  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;--purpleGlow:0 0 20px #c084fc,0 0 40px #c084fc;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans JP',sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+}
 header{text-align:center;padding:26px 12px 12px}
-.h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6.2vw,56px);}
-.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px);color:#fdd86d;text-shadow:var(--goldGlow);}
+.h1{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(34px,6.2vw,56px);
+}
+.h2{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(22px,4.5vw,36px);
+}
+.h3{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(16px,3.6vw,22px);
+}
+.h4{
+  font-weight:800;
+  font-size:clamp(14px,3.4vw,20px);
+  color:#cfe1ff;
+}
+
 main{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px;text-align:center;padding:0 1rem;}
 .sageWrapper{position:relative;width:100%;margin-top:1rem;}
-#sageBox,#studentBox{width:100%;min-height:100px;border:1px solid var(--outline);border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.4);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));}
-#sageBox::before{content:'';position:absolute;inset:0;z-index:0;animation:stripeSlide 18s linear infinite;background:repeating-linear-gradient(to bottom,#ff6ec7 0 28px,#5ee6ff 28px 56px,#ffd166 56px 84px,#8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);background-size:100% 600px;}
+#sageBox,#studentBox{
+  width:100%;
+  min-height:100px;
+  border:1px solid var(--outline);
+  border-radius:var(--radius);
+  overflow:hidden;
+  position:relative;
+  margin-bottom:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+}
+#sageBox::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:0;
+  animation:stripeSlide 18s linear infinite;
+  background:repeating-linear-gradient(
+    to bottom,
+    #ff6ec7 0 28px,
+    #5ee6ff 28px 56px,
+    #ffd166 56px 84px,
+    #8aff80 84px 112px,
+    #c77dff 112px 140px,
+    #fff680 140px 168px
+  );
+  background-size:100% 600px;
+}
 @keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
-#sageText{position:relative;z-index:1;font-weight:900;font-size:clamp(1.4rem,5vw,2rem);color:#0b1530;text-shadow:0 1px 0 rgba(255,255,255,.6);padding:0 1rem;}
+#sageText{
+  position:relative;
+  z-index:1;
+  font-weight:900;
+  font-size:clamp(1.4rem,5vw,2rem);
+  color:#0b1530;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  padding:0 1rem;
+}
 .word{opacity:0;margin:0 .4rem;transition:opacity .25s ease;}
-.playBtn{position:absolute;left:-18px;top:50%;transform:translateY(-50%);width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:shimmer 2s infinite;z-index:10;}
+
+.playBtn{
+  position:absolute;
+  left:-18px;
+  top:50%;
+  transform:translateY(-50%);
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  box-shadow:0 0 12px rgba(255,255,255,.5),0 0 24px rgba(255,255,255,.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  animation:shimmer 2s infinite;
+  z-index:10;
+}
 .playBtn::after{content:"▶";color:#000;font-size:1.4rem;font-weight:900;}
-@keyframes shimmer{0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}}
+@keyframes shimmer{
+  0%,100%{box-shadow:0 0 10px #fff,0 0 20px #fff;}
+  50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}
+}
+
 .studentWrapper{position:relative;width:100%;}
-#studentBox{color:#000;font-size:1.3rem;background:#fff;transition:box-shadow .3s,background .3s;}
+#studentBox{
+  color:#000;
+  font-size:1.3rem;
+  background:#fff;
+  transition:box-shadow .3s,background .3s;
+}
 #studentBox.glow{box-shadow:var(--purpleGlow);}
 #studentBox.shake{animation:shake .3s;}
-@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
-.micBtn{position:absolute;right:-18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#b388ff,#9d4edd);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:micPulse 2s infinite ease-in-out;}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-5px);}
+  75%{transform:translateX(5px);}
+}
+
+.micBtn{
+  position:absolute;
+  right:-18px;
+  top:50%;
+  transform:translateY(-50%);
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#b388ff,#9d4edd);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  animation:micPulse 2s infinite ease-in-out;
+}
 .micBtn::after{content:"🎤";font-size:1.3rem;}
-@keyframes micPulse{0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1);}50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}}
-#options .option{border:2px solid var(--outline);border-radius:var(--radius);padding:1rem;margin:0.5rem 0;width:100%;font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;background:#00000020;color:#fff;cursor:pointer;transition:opacity .2s,background .3s;}
-#hintBox{margin-top:.8rem;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);line-height:1.4;}
+@keyframes micPulse{
+  0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1);}
+  50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}
+}
+
+#options .option{
+  border:2px solid var(--outline);
+  border-radius:var(--radius);
+  padding:1rem;
+  margin:0.5rem 0;
+  width:100%;
+  font-size:clamp(1.1rem,4vw,1.4rem);
+  font-weight:700;
+  background:#00000020;
+  color:#fff;
+  cursor:pointer;
+  transition:opacity .2s,background .3s;
+}
+#hintBox{
+  margin-top:.8rem;
+  font-size:1rem;
+  color:#fdd86d;
+  text-shadow:var(--goldGlow);
+  line-height:1.4;
+}
 #hintBox small{display:block;color:#ffe27a;margin-top:4px;}
-.btnRow{display:flex;gap:1rem;justify-content:center;margin-top:1rem;flex-direction:column;align-items:center;}
-.nextBtn,.pointsBtn{padding:.7rem 1.8rem;border-radius:var(--radius);color:#000;font-weight:900;font-family:'Cinzel',serif;font-size:1.1rem;border:none;cursor:pointer;display:none;}
-.pointsBtn{background:linear-gradient(135deg,#93c5fd,#3b82f6);animation:blueShimmer 2s infinite;}
-.nextBtn{background:linear-gradient(135deg,#f9a8d4,#ec4899);animation:pinkShimmer 2s infinite;}
-@keyframes blueShimmer{0%,100%{box-shadow:0 0 10px #93c5fd,0 0 20px #3b82f6;}50%{box-shadow:0 0 20px #60a5fa,0 0 40px #2563eb;}}
-@keyframes pinkShimmer{0%,100%{box-shadow:0 0 10px #f9a8d4,0 0 20px #ec4899;}50%{box-shadow:0 0 20px #f472b6,0 0 40px #db2777;}}
-#pointsContainer{display:flex;flex-direction:column;align-items:center;margin-top:0.8rem;}
-#pointsCircle{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold1),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:2rem;font-weight:900;box-shadow:var(--goldGlow);position:relative;overflow:hidden;text-shadow:0 0 10px #fff,0 0 20px #fff;z-index:1;}
+
+.btnRow{
+  display:flex;
+  gap:1rem;
+  justify-content:center;
+  margin-top:1rem;
+  flex-direction:column;
+  align-items:center;
+}
+.nextBtn,.pointsBtn{
+  padding:.7rem 1.8rem;
+  border-radius:var(--radius);
+  color:#000;
+  font-weight:900;
+  font-family:'Cinzel',serif;
+  font-size:1.1rem;
+  border:none;
+  cursor:pointer;
+  display:none;
+}
+.pointsBtn{
+  background:linear-gradient(135deg,#93c5fd,#3b82f6);
+  animation:blueShimmer 2s infinite;
+}
+.nextBtn{
+  background:linear-gradient(135deg,#f9a8d4,#ec4899);
+  animation:pinkShimmer 2s infinite;
+}
+@keyframes blueShimmer{
+  0%,100%{box-shadow:0 0 10px #93c5fd,0 0 20px #3b82f6;}
+  50%{box-shadow:0 0 20px #60a5fa,0 0 40px #2563eb;}
+}
+@keyframes pinkShimmer{
+  0%,100%{box-shadow:0 0 10px #f9a8d4,0 0 20px #ec4899;}
+  50%{box-shadow:0 0 20px #f472b6,0 0 40px #db2777;}
+}
+
+#pointsContainer{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:0.8rem;
+}
+#pointsCircle{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Cinzel',serif;
+  font-size:2rem;
+  font-weight:900;
+  box-shadow:var(--goldGlow);
+  position:relative;
+  overflow:hidden;
+  text-shadow:0 0 10px #fff,0 0 20px #fff;
+  z-index:1;
+}
 #pointsCircle span{position:relative;z-index:2;color:#000;}
-#pointsCircle::after{content:'';position:absolute;width:140%;height:140%;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 70%);animation:pulse 2.5s infinite ease-in-out;z-index:0;}
+#pointsCircle::after{
+  content:'';
+  position:absolute;
+  width:140%;
+  height:140%;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 70%);
+  animation:pulse 2.5s infinite ease-in-out;
+  z-index:0;
+}
 @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);opacity:0.6;}}
-#scoreLabel{margin-top:8px;font-family:'Cinzel',serif;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);animation:goldShimmer 2s infinite;}
-@keyframes goldShimmer{0%,100%{text-shadow:0 0 8px #facc15,0 0 20px #fde68a;}50%{text-shadow:0 0 14px #ffef9f,0 0 30px #fde68a;}}
-#counter{margin-top:4px;font-family:'Cinzel',serif;color:#fff;font-size:1rem;text-shadow:0 0 6px rgba(255,255,255,.4);}
-footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',serif;font-weight:900;font-size:clamp(14px,2.8vw,20px);}
+#scoreLabel{
+  margin-top:8px;
+  font-family:'Cinzel',serif;
+  font-size:1rem;
+  color:#fdd86d;
+  text-shadow:var(--goldGlow);
+  animation:goldShimmer 2s infinite;
+}
+@keyframes goldShimmer{
+  0%,100%{text-shadow:0 0 8px #facc15,0 0 20px #fde68a;}
+  50%{text-shadow:0 0 14px #ffef9f,0 0 30px #fde68a;}
+}
+#counter{
+  margin-top:4px;
+  font-family:'Cinzel',serif;
+  color:#fff;
+  font-size:1rem;
+  text-shadow:0 0 6px rgba(255,255,255,.4);
+}
+footer{
+  text-align:center;
+  color:#fff;
+  padding:16px 0 22px;
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(14px,2.8vw,20px);
+}
+
+/* 🔘 Standard Booha QUIT button (small version) */
+.top-nav-btn{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:12001;
+  border-radius:999px;
+  padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+.top-nav-btn .jp{font-size:.72em;}
+.top-nav-btn .en{font-size:.8em;}
+
+/* ❓ Glowing help button */
+.help-btn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:12001;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  border:1px solid #ffffff88;
+  background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
+  color:#fff;
+  font-weight:900;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 0 12px rgba(125,211,252,.9),
+    0 0 28px rgba(59,130,246,.9),
+    0 0 52px rgba(56,189,248,.9);
+  backdrop-filter:blur(4px);
+}
+
+/* 🪟 Help modal */
+.help-modal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.help-modal.show{display:flex;}
+.help-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.8);
+  backdrop-filter:blur(6px);
+}
+.help-dialog{
+  position:relative;
+  z-index:1;
+  max-width:720px;
+  width:calc(100% - 32px);
+  max-height:80vh;
+  border-radius:20px;
+  border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 55%);
+  box-shadow:0 22px 70px rgba(0,0,0,.9);
+  padding:18px 18px 20px;
+  display:flex;
+  flex-direction:column;
+}
+.help-dialog h2{
+  font-family:'Cinzel',serif;
+  font-size:1.2rem;
+  text-align:center;
+  margin-bottom:6px;
+}
+.help-sub{
+  font-size:.85rem;
+  text-align:center;
+  color:#c7d2fe;
+  margin-bottom:10px;
+}
+.help-body{
+  margin-top:6px;
+  padding-right:4px;
+  font-size:.9rem;
+  line-height:1.6;
+  color:#e5e7f5;
+  overflow-y:auto;
+}
+.help-body h3{
+  font-size:.9rem;
+  margin:10px 0 4px;
+  color:#bfdbfe;
+}
+.help-body ul{
+  padding-left:1.1rem;
+  margin:4px 0 10px;
+}
+.help-body li{
+  margin-bottom:4px;
+}
+.help-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  border:none;
+  background:transparent;
+  color:#e5e7f5;
+  font-size:22px;
+  cursor:pointer;
+}
+@media (max-width:480px){
+  .help-dialog{
+    max-height:82vh;
+    padding:16px 14px 18px;
+  }
+}
 </style>
 </head>
 <body>
+
+<!-- 🔘 Quit + ❓ Help -->
+<button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
+  <span class="jp">やめる</span>
+  <span class="en">QUIT</span>
+</button>
+<button id="helpBtn" type="button" class="help-btn">?</button>
+
 <header>
- <div class="h1">THE BOO-RICULUM</div>
- <div class="h2">EIGO ADVENTURE – January Week 1</div>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">GAMES &amp; QUIZZES</div>
+  <div class="h3">Eigo Adventure – January Week 1</div>
+  <div class="h4">１月第１週 – 英語アドベンチャー</div>
 </header>
 
 <main>
@@ -84,6 +438,45 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 </main>
 
 <footer>Bryan’s English School</footer>
+
+<!-- ❓ Help popup -->
+<div id="helpModal" class="help-modal" aria-hidden="true">
+  <div class="help-backdrop" data-close-help></div>
+  <div class="help-dialog">
+    <button class="help-close" type="button" data-close-help>×</button>
+    <h2>How to Play ／ 遊び方</h2>
+    <div class="help-sub">Booha Eigo Adventure Game</div>
+    <div class="help-body">
+      <h3>English</h3>
+      <ul>
+        <li>Tap the <strong>gold ▶ button</strong> to hear Sage ask a question in English.</li>
+        <li>Look at the four answer sentences on the screen.</li>
+        <li>When you’re ready, tap the <strong>mic button 🎤</strong> and <strong>say the correct answer sentence</strong> in English.</li>
+        <li>The white box shows what the computer hears. Try to match the sentence as closely as you can.</li>
+        <li>If you say the <strong>correct answer</strong>, you get points, confetti, and a reaction sound.</li>
+        <li>After the first correct answer, it switches to <strong>Points Mode</strong>. Say the other funny sentences to get extra points.</li>
+        <li>When you finish all sentences for that question, tap <strong>Next</strong> to go to the next adventure.</li>
+      </ul>
+
+      <h3>日本語</h3>
+      <ul>
+        <li><strong>金色の ▶ ボタン</strong>を押すと、Sage が英語で質問をしてくれます。</li>
+        <li>画面にある４つの英文をよく見て、正しい答えを選びます。</li>
+        <li>準備ができたら、<strong>マイクボタン 🎤</strong>を押して、<strong>正しい英文を声に出して読みます</strong>。</li>
+        <li>白いボックスに、コンピューターが聞き取った英語が表示されます。できるだけ同じ英文になるように話してみてください。</li>
+        <li><strong>正しい文</strong>が言えたら、ポイントと紙ふぶき、リアクション音がもらえます。</li>
+        <li>最初の正解のあと、<strong>ポイントモード</strong>になります。ほかのおもしろい文を言って、追加ポイントをねらいましょう。</li>
+        <li>その問題の文を全部チャレンジしたら、<strong>Next（つぎへ）</strong>ボタンを押して次の冒険に進みます。</li>
+      </ul>
+
+      <h3>Mic &amp; Browser ／ マイクとブラウザ</h3>
+      <ul>
+        <li>マイクのアクセスを<strong>許可</strong>しないと、音声認識は動きません。</li>
+        <li>できれば <strong>Chrome または Edge の最新バージョン</strong>でプレイしてください。</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <script>
 const DING="assets/audio/ding.mp3";
@@ -160,8 +553,26 @@ function normalize(s){
     .trim();
 }
 
-function confetti(n=80){for(let i=0;i<n;i++){const c=document.createElement('div');c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;`;document.body.appendChild(c);const d=900+Math.random()*1200;c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});setTimeout(()=>c.remove(),d);}}
-async function shakeRedErase(){studentBox.classList.add('shake');studentBox.style.background='#ef4444';await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);setTimeout(()=>{studentBox.classList.remove('shake');studentBox.style.background='#fff';studentBox.textContent='';},650);}
+function confetti(n=80){
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;`;
+    document.body.appendChild(c);
+    const d=900+Math.random()*1200;
+    c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
+    setTimeout(()=>c.remove(),d);
+  }
+}
+async function shakeRedErase(){
+  studentBox.classList.add('shake');
+  studentBox.style.background='#ef4444';
+  await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
+  setTimeout(()=>{
+    studentBox.classList.remove('shake');
+    studentBox.style.background='#fff';
+    studentBox.textContent='';
+  },650);
+}
 function strictMatch(s,a){
   const ns=normalize(s),na=normalize(a);
   if(!ns||!na)return false;
@@ -170,48 +581,137 @@ function strictMatch(s,a){
   const extra=sa.filter(w=>!aa.includes(w));
   return overlap/aa.length>=0.9&&extra.length<=2;
 }
-function initRecog(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert('Speech Recognition not supported');return;}recog=new R();recog.lang='en-US';recog.interimResults=true;recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};recog.onresult=e=>{let t='';for(const r of e.results){t+=r[0].transcript+' ';if(r.isFinal)checkSpeech(t.trim());}studentBox.textContent=t.trim();};}
+function initRecog(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){alert('Speech Recognition not supported');return;}
+  recog=new R();
+  recog.lang='en-US';
+  recog.interimResults=true;
+  recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};
+  recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};
+  recog.onresult=e=>{
+    let t='';
+    for(const r of e.results){
+      t+=r[0].transcript+' ';
+      if(r.isFinal)checkSpeech(t.trim());
+    }
+    studentBox.textContent=t.trim();
+  };
+}
 function startMic(){if(!recog)initRecog();if(!listening)try{recog.start();}catch{}}
-async function playQuestion(){const q=questions[current];animateWords(q.q);await playAudio('audio/'+q.audio);firstAttempt=true;startMic();}
-function renderAnswers(){optionsBox.innerHTML='';const q=questions[current];q.answers.forEach((a,i)=>{const d=document.createElement('div');d.className='option';d.dataset.index=i;d.textContent=a;optionsBox.appendChild(d);});}
+async function playQuestion(){
+  const q=questions[current];
+  animateWords(q.q);
+  await playAudio('audio/'+q.audio);
+  firstAttempt=true;
+  startMic();
+}
+function renderAnswers(){
+  optionsBox.innerHTML='';
+  const q=questions[current];
+  q.answers.forEach((a,i)=>{
+    const d=document.createElement('div');
+    d.className='option';
+    d.dataset.index=i;
+    d.textContent=a;
+    optionsBox.appendChild(d);
+  });
+}
 
 async function checkSpeech(spoken){
  const q=questions[current];
  let matchIndex=q.answers.findIndex(ans=>strictMatch(spoken,ans));
- if(matchIndex===-1){firstAttempt=false;await shakeRedErase();return;}
+ if(matchIndex===-1){
+   firstAttempt=false;
+   await shakeRedErase();
+   return;
+ }
  const matchedText=q.answers[matchIndex];
  const optEl=document.querySelector(`.option[data-index="${matchIndex}"]`);
 
  // ✅ Correct answer check by text (now tolerant to dog's / dogs etc.)
  if(!pointsMode && !gotCorrect && strictMatch(spoken,q.correct)){
-   gotCorrect=true;await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
-   confetti(60);await playAudio(DING);
-   points+=firstAttempt?5:1;pulsePoints();updateUI();
-   optEl?.remove();studentBox.textContent='';
+   gotCorrect=true;
+   await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+   confetti(60);
+   await playAudio(DING);
+   points+=firstAttempt?5:1;
+   pulsePoints();
+   updateUI();
+   optEl?.remove();
+   studentBox.textContent='';
    remainingIncorrect=new Set(q.answers.filter(a=>a!==q.correct));
-   pointsMode=true;pointsBtn.style.display='inline-block';
+   pointsMode=true;
+   pointsBtn.style.display='inline-block';
    hintBox.innerHTML='Points mode – say the other 3 sentences!<small>ポイントモードです。のこり３つのぶんをいってみよう！</small>';
    return;
  }
- if(!pointsMode){firstAttempt=false;await shakeRedErase();return;}
+ if(!pointsMode){
+   firstAttempt=false;
+   await shakeRedErase();
+   return;
+ }
  if(pointsMode){
    if(remainingIncorrect.has(matchedText)){
      remainingIncorrect.delete(matchedText);
      await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
-     confetti(90);await playAudio(EIGO);
-     points+=1;pulsePoints();updateUI();
-     optEl?.remove();studentBox.textContent='';
-     if(remainingIncorrect.size===0){pointsBtn.style.display='none';nextBtn.style.display='inline-block';hintBox.textContent='Great job! Tap Next.';}
-   } else await shakeRedErase();
+     confetti(90);
+     await playAudio(EIGO);
+     points+=1;
+     pulsePoints();
+     updateUI();
+     optEl?.remove();
+     studentBox.textContent='';
+     if(remainingIncorrect.size===0){
+       pointsBtn.style.display='none';
+       nextBtn.style.display='inline-block';
+       hintBox.textContent='Great job! Tap Next.';
+     }
+   } else {
+     await shakeRedErase();
+   }
  }
  studentBox.textContent='';
 }
 
-function loadQuestion(){gotCorrect=false;pointsMode=false;firstAttempt=true;remainingIncorrect.clear?.();pointsBtn.style.display='none';nextBtn.style.display='none';hintBox.textContent='';sageText.textContent='';studentBox.textContent='';renderAnswers();updateUI();}
+function loadQuestion(){
+  gotCorrect=false;
+  pointsMode=false;
+  firstAttempt=true;
+  remainingIncorrect.clear?.();
+  pointsBtn.style.display='none';
+  nextBtn.style.display='none';
+  hintBox.textContent='';
+  sageText.textContent='';
+  studentBox.textContent='';
+  renderAnswers();
+  updateUI();
+}
 playBtn.onclick=()=>playQuestion();
-micBtn.onclick=()=>{if(!recog)initRecog();if(listening)recog.stop();else startMic();};
-nextBtn.onclick=()=>{current++;if(current>=questions.length)current=0;loadQuestion();};
+micBtn.onclick=()=>{
+  if(!recog)initRecog();
+  if(listening)recog.stop();
+  else startMic();
+};
+nextBtn.onclick=()=>{
+  current++;
+  if(current>=questions.length)current=0;
+  loadQuestion();
+};
 window.onload=loadQuestion;
+
+/* ---------- HELP MODAL ---------- */
+const helpBtn=$('#helpBtn');
+const helpModal=$('#helpModal');
+if(helpBtn && helpModal){
+  const closeEls=helpModal.querySelectorAll('[data-close-help]');
+  const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
+  const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
+  helpBtn.addEventListener('click',openHelp);
+  closeEls.forEach(el=>el.addEventListener('click',closeHelp));
+  helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+}
 </script>
 </body>
 </html>
