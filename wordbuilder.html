@@ -191,7 +191,7 @@ header h3{margin-top:6px;opacity:.9}
   }
   25%{
     transform:scale(1.05);
-    filter:hue-rotate(90deg) brightness(1.25) satur5ate(1.15);
+    filter:hue-rotate(90deg) brightness(1.25) saturate(1.15);
     box-shadow:0 0 26px #b2faff99,0 0 52px #a0ff8080;
   }
   50%{
@@ -229,29 +229,17 @@ main{
   padding:0 10px 18px;
 }
 
-/* Drag area – single row, scrollable if long */
+/* Drag area – allow wrapping into 2 lines */
 .dropZone,
 .bank{
   display:flex;
-  flex-wrap:nowrap;          /* keep in one row */
+  flex-wrap:wrap;                 /* ← key change: allow wrap */
   gap:18px;
   justify-content:center;
   align-items:center;
-  max-width:100vw;
-  overflow-x:auto;
-  overflow-y:visible;
+  max-width:100%;
+  overflow:visible;               /* no horizontal scroll */
   padding:8px 4px;
-  -webkit-overflow-scrolling:touch;
-}
-
-/* hide scrollbars (visual only) */
-.dropZone::-webkit-scrollbar,
-.bank::-webkit-scrollbar{
-  height:6px;
-}
-.dropZone::-webkit-scrollbar-thumb,
-.bank::-webkit-scrollbar-thumb{
-  background:transparent;
 }
 
 /* Slots & tiles */
@@ -264,7 +252,7 @@ main{
   font-weight:900;
   font-size:54px;
   transition:box-shadow .15s, background .15s, transform .12s, filter .1s, color .1s;
-  flex:0 0 auto;          /* prevent flex-grow / shrink */
+  flex:0 0 auto;
 }
 
 .slot{
@@ -272,7 +260,6 @@ main{
   height:96px;
   border:2px dashed #ffffff3a;
   background:#27306b99;
-  overflow:visible;
 }
 .slot.filled{
   background:#2a2f6b;
@@ -299,7 +286,7 @@ main{
   touch-action:none;
 }
 
-/* when a tile is inside a slot, force it to fit the slot exactly */
+/* tile inside slot = exactly fill slot */
 .slot .tile{
   width:100%;
   height:100%;
@@ -368,7 +355,7 @@ main{
 @keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-140px) scale(1.6);opacity:0}}
 @keyframes fartCloud{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:translateY(-60px) scale(1.6);opacity:0}}
 .heart,.fart{position:fixed;font-size:36px;pointer-events:none}
-.heart{color:#ff4fa6;animation:floatHeart 1.3s ease-out forwards}
+.heart{color:#ff4fa6;animation:floatHeart 1.3s.ease-out forwards}
 .fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards}
 
 /* Results */
@@ -392,24 +379,6 @@ main{
 .goldGlow{background:#2b210b}
 .confetti{position:fixed;top:-10vh;width:10px;height:16px;border-radius:2px;animation:fall linear both;z-index:9999}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-
-/* Rotate-phone hint */
-.rotate-hint{
-  position:fixed;
-  bottom:18px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:8px 16px;
-  border-radius:999px;
-  border:1px solid rgba(249,115,22,.8);
-  background:rgba(15,23,42,.96);
-  color:#fff7ed;
-  font-size:.8rem;
-  font-family:'Noto Sans JP',sans-serif;
-  box-shadow:0 0 16px rgba(249,115,22,.9),0 0 34px rgba(251,191,36,.7);
-  display:none;
-  z-index:70;
-}
 
 /* Footer */
 footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95rem;opacity:.85;border-top:1px solid var(--outline)}
@@ -471,11 +440,6 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
   </div>
 </div>
 
-<!-- Rotate hint -->
-<div id="rotateHint" class="rotate-hint">
-  ながい単語だよ！スマホを横向きにしてね。
-</div>
-
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>WORD BUILDER</h2>
@@ -522,7 +486,6 @@ const quitBtn=$("#quitBtn");
 const helpBtn=$("#helpBtn");
 const helpModal=$("#helpModal");
 const helpClose=$("#helpClose");
-const rotateHint=$("#rotateHint");
 
 /* Quit = back to menu */
 quitBtn.addEventListener("click",()=>{ location.href="index.html"; });
@@ -802,20 +765,6 @@ function buildBank(w){
   });
 }
 
-/* ====== Rotate-hint check (mobile only) ====== */
-let rotateShownOnce=false;
-function checkRowWidth(){
-  if(window.innerWidth>768) return;
-  if(!bank.children.length) return;
-  const tooWide = bank.scrollWidth > bank.clientWidth * 1.15;
-  if(tooWide && !rotateShownOnce){
-    rotateShownOnce=true;
-    rotateHint.style.display="block";
-    clearTimeout(rotateHint._hideTimer);
-    rotateHint._hideTimer = setTimeout(()=>{ rotateHint.style.display="none"; }, 6000);
-  }
-}
-
 /* ====== Round / Check ====== */
 function enableCheck(){ check.disabled=!allFilled(); }
 function allFilled(){ return [...drop.children].every(s=>s.firstChild); }
@@ -905,7 +854,6 @@ function loadCard(){
   buildSlots(w); buildBank(w);
   check.disabled=true; check.style.display="inline-block";
   nextWrap.style.display="none";
-  checkRowWidth();
 }
 function initGame(){
   WORDS = shuffle([...MASTER_BASE]);
@@ -915,14 +863,9 @@ function initGame(){
   playWrap.style.display="flex";
   pageRound.style.display="flex";
   progressCount.textContent=`1 / ${WORDS.length}`;
-  rotateShownOnce=false;
   loadCard();
 }
 initGame();
-
-/* Rotate hint also re-check on resize/orientation change */
-window.addEventListener("resize",checkRowWidth);
-window.addEventListener("orientationchange",checkRowWidth);
 
 /* Pre-warm audio (best-effort) */
 setTimeout(()=>{
