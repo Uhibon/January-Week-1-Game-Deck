@@ -23,27 +23,32 @@ body{
   display:flex;flex-direction:column;align-items:center;
 }
 
-/* 🔘 Quit button – standard Booha */
+/* 🔘 Quit button – smaller Booha version */
 .top-nav-btn{
   position:fixed;
-  top:10px;
-  left:10px;
+  top:8px;
+  left:8px;
   z-index:40;
   border-radius:999px;
-  padding:6px 14px;
+  padding:3px 8px;          /* smaller padding */
   border:1px solid #ffffff66;
   background:rgba(15,23,42,.95);
   color:#fff;
-  font-size:.78rem;
+  font-size:.55rem;         /* smaller text */
   font-weight:700;
   letter-spacing:.04em;
   cursor:pointer;
   display:flex;
   align-items:center;
-  gap:4px;
-  box-shadow:0 0 12px rgba(0,0,0,.6);
+  gap:3px;                  /* tighter gap */
+  box-shadow:0 0 8px rgba(0,0,0,.6);
   backdrop-filter:blur(4px);
 }
+.top-nav-btn span.jp{
+  opacity:.9;
+  font-weight:600;
+}
+
 .top-nav-btn span.jp{opacity:.9;font-weight:600}
 
 /* ❓ Help button – standard Booha */
