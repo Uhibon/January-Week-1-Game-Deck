@@ -95,9 +95,145 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 /* Confetti */
 .confetti{position:fixed;top:-12px;width:10px;height:14px;opacity:.9;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:1}}
+
+/* 🔘 Standard Booha QUIT button (small version) */
+.top-nav-btn{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:12001;
+  border-radius:999px;
+  padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+.top-nav-btn .jp{font-size:.72em;}
+.top-nav-btn .en{font-size:.8em;}
+
+/* ❓ Glowing help button */
+.help-btn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:12001;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  border:1px solid #ffffff88;
+  background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
+  color:#fff;
+  font-weight:900;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 0 12px rgba(125,211,252,.9),
+    0 0 28px rgba(59,130,246,.9),
+    0 0 52px rgba(56,189,248,.9);
+  backdrop-filter:blur(4px);
+}
+
+/* 🪟 Help modal */
+.help-modal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.help-modal.show{display:flex;}
+.help-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.8);
+  backdrop-filter:blur(6px);
+}
+.help-dialog{
+  position:relative;
+  z-index:1;
+  max-width:720px;
+  width:calc(100% - 32px);
+  max-height:80vh;
+  border-radius:20px;
+  border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 55%);
+  box-shadow:0 22px 70px rgba(0,0,0,.9);
+  padding:18px 18px 20px;
+  display:flex;
+  flex-direction:column;
+}
+.help-dialog h2{
+  font-family:'Cinzel',serif;
+  font-size:1.2rem;
+  text-align:center;
+  margin-bottom:6px;
+}
+.help-sub{
+  font-size:.85rem;
+  text-align:center;
+  color:#c7d2fe;
+  margin-bottom:10px;
+}
+.help-body{
+  margin-top:6px;
+  padding-right:4px;
+  font-size:.9rem;
+  line-height:1.6;
+  color:#e5e7f5;
+  overflow-y:auto;
+}
+.help-body h3{
+  font-size:.9rem;
+  margin:10px 0 4px;
+  color:#bfdbfe;
+}
+.help-body ul{
+  padding-left:1.1rem;
+  margin:4px 0 10px;
+}
+.help-body li{
+  margin-bottom:4px;
+}
+.help-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  border:none;
+  background:transparent;
+  color:#e5e7f5;
+  font-size:22px;
+  cursor:pointer;
+}
+@media (max-width:480px){
+  .help-dialog{
+    max-height:82vh;
+    padding:16px 14px 18px;
+  }
+}
 </style>
 </head>
 <body>
+
+<!-- 🔘 Quit + ❓ Help -->
+<button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
+  <span class="jp">やめる</span>
+  <span class="en">QUIT</span>
+</button>
+<button id="helpBtn" type="button" class="help-btn">?</button>
+
 <header>
   <div class="h1">THE BOO-RICULUM</div>
   <div class="h2">SPEAK & REPEAT</div>
@@ -129,6 +265,45 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
       <button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
     </div>
     <div id="scoreBox" class="scoreBox" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ❓ Help popup (same style family as Drag & Drop / Say the Word / Word Builder) -->
+<div id="helpModal" class="help-modal" aria-hidden="true">
+  <div class="help-backdrop" data-close-help></div>
+  <div class="help-dialog">
+    <button class="help-close" type="button" data-close-help>×</button>
+    <h2>How to Play ／ 遊び方</h2>
+    <div class="help-sub">Booha Speak & Repeat Game</div>
+    <div class="help-body">
+      <h3>English</h3>
+      <ul>
+        <li>Tap <strong>Start</strong> to show the first speaking question.</li>
+        <li>Tap the <strong>gold ▶ button</strong> to hear Sage read the question.</li>
+        <li>Watch the circle in the middle. When it says <strong>Listening</strong>, answer aloud in English the whole time.</li>
+        <li>Important keywords you say correctly turn <strong>blue</strong> with hearts. Missed words turn <strong>red</strong> after the timer.</li>
+        <li>You get a score from <strong>0–100%</strong> for each question (first try only).</li>
+        <li>If you get <strong>100%</strong>, tap <strong>Next</strong>. If not, tap <strong>Retry</strong> and try again.</li>
+        <li>After all <strong>15 questions</strong>, your average score and number of perfect answers decide your final result color and sound.</li>
+      </ul>
+
+      <h3>日本語</h3>
+      <ul>
+        <li><strong>スタート</strong>ボタンを押すと、最初のスピーキング質問が出ます。</li>
+        <li><strong>金色の ▶ ボタン</strong>を押すと、Sage が英語の質問を読んでくれます。</li>
+        <li>まんなかの丸いメーターが<strong>Listening</strong>（聞き取り中）になったら、そのあいだずっと英語で答えを話します。</li>
+        <li>言えた大事なキーワードは<strong>青色</strong>になり、ハートが出ます。言えなかった単語は、タイマーの後に<strong>赤色</strong>になります。</li>
+        <li>各質問は、<strong>最初のチャレンジだけ</strong>スコア（0〜100％）がつきます。</li>
+        <li><strong>100％</strong>を取ったら <strong>Next（つぎへ）</strong> を押します。100％でなければ <strong>Retry（もう一回）</strong> を押してチャレンジできます。</li>
+        <li><strong>15問</strong>ぜんぶ終わると、平均パーセントと「パーフェクトの回数」で、最後の結果画面（色と音）が決まります。</li>
+      </ul>
+
+      <h3>Mic & Browser ／ マイクとブラウザ</h3>
+      <ul>
+        <li>マイクのアクセスを<strong>許可</strong>しないと、ゲームは動きません。</li>
+        <li>Chrome か Edge の<strong>最新バージョン</strong>でのプレイをおすすめします。</li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -227,6 +402,8 @@ const DUR_MS=7500; // sweep/mic window
 let idx=0, SR=null, listening=false, streamAllowed=false, isBusy=false;
 const firstScores=new Array(15).fill(null); let firstPerfectCount=0;
 
+function $(sel){return document.querySelector(sel)}
+
 const enEl=$('#en'), jpEl=$('#jp'), hiraEl=$('#hira');
 const beginBtn=$('#beginBtn'), retryBtn=$('#retryBtn'), nextBtn=$('#nextBtn');
 const scoreBox=$('#scoreBox'), meterText=$('#meterText'), sweep=$('#sweep'), counter=$('#counter');
@@ -263,7 +440,6 @@ const ITEMS=[
 ].sort(()=>Math.random()-0.5);
 
 /* ---------- UTIL ---------- */
-function $(sel){return document.querySelector(sel)}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim()}
 function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean))}
@@ -288,12 +464,10 @@ function makeRecognizer(){const R=window.SpeechRecognition||window.webkitSpeechR
 
 function playAudioWithWait(a){return new Promise(resolve=>{try{a.pause();a.currentTime=0;}catch(_){}
   const done=()=>{a.onended=null;resolve()};
-  a.onended=done;
-  const tryPlay=()=>{const p=a.play(); if(p&&p.then){p.then(()=>{}).catch(()=>{setTimeout(tryPlay,120)});} else { /* immediate */ }
-  };
-  // If duration unknown, give small buffer before timeout backup
+  const tryPlay=()=>{const p=a.play(); if(p&&p.then){p.then(()=>{}).catch(()=>{setTimeout(tryPlay,120)});} };
   const safety=setTimeout(()=>{a.onended=null;resolve()}, Math.max(3000, (a.duration||3)*1000 + 200));
   a.addEventListener('ended', ()=>clearTimeout(safety), {once:true});
+  a.onended=done;
   tryPlay();
 });}
 
@@ -393,6 +567,19 @@ Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventLis
 
 /* ---------- INIT ---------- */
 showItem();
+
+/* ---------- HELP MODAL ---------- */
+const helpBtn=$('#helpBtn');
+const helpModal=$('#helpModal');
+if(helpBtn && helpModal){
+  const closeEls=helpModal.querySelectorAll('[data-close-help]');
+  const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
+  const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
+  helpBtn.addEventListener('click',openHelp);
+  closeEls.forEach(el=>el.addEventListener('click',closeHelp));
+  helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+}
 </script>
 </body>
 </html>
