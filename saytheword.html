@@ -11,6 +11,8 @@
   --outline:#ffffff26; --radius:26px; --micSize:56px; --barH:96px;
   --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
 }
+
+/* base */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -21,46 +23,76 @@ body{
   display:flex;flex-direction:column;align-items:center;
 }
 
-/* Corner buttons */
-.corner-btn{
+/* 🔘 Quit button – standard Booha */
+.top-nav-btn{
   position:fixed;
-  z-index:50;
-  font-size:.7rem;
-  padding:4px 10px;
+  top:10px;
+  left:10px;
+  z-index:40;
   border-radius:999px;
-  border:1px solid #ffffff33;
-  background:rgba(11,21,48,.85);
+  padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
   color:#fff;
-  backdrop-filter:blur(6px);
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
   cursor:pointer;
   display:flex;
   align-items:center;
   gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
 }
-#quitBtn{
-  top:8px;
-  left:8px;
-}
-#helpBtn{
+.top-nav-btn span.jp{opacity:.9;font-weight:600}
+
+/* ❓ Help button – standard Booha */
+.help-icon{
+  position:fixed;
   bottom:12px;
   left:12px;
+  z-index:50;
+
   width:44px;
   height:44px;
   padding:0;
-  border-radius:50%;
+
+  display:flex;
+  align-items:center;
   justify-content:center;
+
   font-size:1.2rem;
+  font-weight:900;
+  color:#fff;
+
+  border-radius:50%;
   border:2px solid #ffffffaa;
+
   background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 55%,#4c1d95 100%);
-  box-shadow:0 0 10px rgba(168,85,247,0.9),
-             0 0 26px rgba(129,140,248,0.8),
-             0 0 40px rgba(129,140,248,0.6);
+  cursor:pointer;
+
+  box-shadow:
+    0 0 10px rgba(168,85,247,0.9),
+    0 0 26px rgba(129,140,248,0.8),
+    0 0 40px rgba(129,140,248,0.6);
+
+  transition:transform .15s ease;
 }
+.help-icon:active{transform:scale(.92);}
 
 /* Header */
 header{text-align:center;padding:28px 16px 10px}
-header h1{font-family:'Cinzel',serif;letter-spacing:.5px;font-size:clamp(1.8rem,5.2vw,2.6rem);}
-header h2{font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;font-size:clamp(2.0rem,6.2vw,3rem);}
+header h1{
+  font-family:'Cinzel',serif;
+  letter-spacing:.5px;
+  font-size:clamp(1.8rem,5.2vw,2.6rem);
+}
+header h2{
+  font-family:'Cinzel',serif;
+  letter-spacing:1px;
+  margin-top:6px;
+  font-size:clamp(2.0rem,6.2vw,3rem);
+}
 .subtitle-stack{
   display:flex;
   justify-content:center;
@@ -75,7 +107,7 @@ header h2{font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;font-size
 }
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 
-/* Pages */
+/* Pages + footer */
 footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif}
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 28px}
 .page.active{display:block}
@@ -209,9 +241,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 }
 
 /* Results page */
-#page-results{
-  text-align:center;
-}
+#page-results{text-align:center;}
 .result-box{
   margin-top:40px;
   margin-bottom:24px;
@@ -230,62 +260,75 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   opacity:.9;
 }
 
-/* Help overlay */
-#helpOverlay{
+/* 🌌 Help overlay – standard Booha popup */
+.help-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.78);
+  background:radial-gradient(circle at top, rgba(96,165,250,.42), transparent 55%),
+             radial-gradient(circle at bottom, rgba(34,197,94,.35), transparent 55%),
+             rgba(2,6,23,.88);
+  z-index:100;
   display:none;
   align-items:center;
   justify-content:center;
-  z-index:100;
 }
-#helpOverlay.show{display:flex;}
-.help-inner{
+.help-overlay.show{display:flex;}
+
+.help-dialog{
+  max-width:520px;
   width:90%;
-  max-width:420px;
   max-height:80vh;
   background:rgba(15,23,42,.96);
-  border-radius:18px;
-  border:1px solid #ffffff33;
-  box-shadow:0 18px 50px rgba(0,0,0,.7);
-  padding:16px 18px 18px;
+  border:1px solid #ffffff55;
+  border-radius:24px;
+  padding:20px 20px 18px;
+  position:relative;
+  box-shadow:0 0 30px rgba(0,0,0,.8);
   overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
-.help-title-main{
-  font-weight:800;
-  font-size:1.05rem;
-  margin-bottom:4px;
+
+.help-title{
+  font-family:'Cinzel',serif;
+  text-align:center;
+  font-size:1.35rem;
+  margin-bottom:8px;
+  color:#fff;
 }
-.help-subtitle{
-  font-size:.92rem;
-  opacity:.9;
-  margin-bottom:10px;
-}
-.help-section-title{
-  margin-top:10px;
-  margin-bottom:4px;
-  font-weight:700;
-  font-size:.95rem;
-}
-.help-text{
-  font-size:.88rem;
-  line-height:1.55;
-  opacity:.95;
+.help-label{
+  text-align:center;
+  opacity:.75;
+  margin-bottom:12px;
+  font-size:.82rem;
 }
 .help-close{
-  border:none;
-  background:transparent;
-  color:#fff;
-  font-size:1.2rem;
-  cursor:pointer;
   position:absolute;
-  top:10px;
-  right:12px;
+  top:8px;
+  right:10px;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(30,64,175,.9);
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  font-size:1rem;
 }
-.help-header-wrap{
-  position:relative;
-  padding-right:26px;
+.help-content{
+  font-size:.95rem;
+  line-height:1.6;
+  color:#f1f5f9;
+}
+.help-content ul{
+  padding-left:1.1em;
+  margin-bottom:12px;
+}
+.help-content li{
+  margin-bottom:4px;
 }
 
 @media(max-width:700px){
@@ -394,9 +437,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   </div>
 </div>
 
-</body>
-
-
+<!-- audio (inside body) -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
@@ -422,6 +463,7 @@ const MASTER=[
   {en:"focus",jp:"集中",hira:"しゅうちゅう"},
   {en:"motivation",jp:"やる気",hira:"やるき"}
 ];
+
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 function playSound(id){const s=$("#"+id);if(!s)return; s.currentTime=0; s.play().catch(()=>{});}
