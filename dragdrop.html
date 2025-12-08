@@ -30,25 +30,11 @@ body{
   background:var(--dark);
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  display:flex;flex-direction:column;align-items:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
   /* Reduce accidental page pull-to-refresh on capable browsers */
   overscroll-behavior-y: none;
-
-  /* 🔔 Glowing vertical scrollbar hint (desktop / general fallback) */
-  scrollbar-color: #f9a8d4 transparent; /* Firefox */
-  scrollbar-width: thin;
-}
-body::-webkit-scrollbar{
-  width:10px;
-}
-body::-webkit-scrollbar-track{
-  background:transparent;
-}
-body::-webkit-scrollbar-thumb{
-  background:#f9a8d4;
-  border-radius:999px;
-  box-shadow:0 0 8px rgba(249,168,212,.9),0 0 24px rgba(249,168,212,1);
-  animation:scrollGlowPink 1.4s ease-in-out infinite alternate;
 }
 
 /* Header + footer */
@@ -105,23 +91,7 @@ footer{
 
 /* Round viewport + layout */
 .round-viewport{ 
-  width:100%; 
-
-  /* 🌸 Pink glowing scrollbar on the main scroll area */
-  scrollbar-color:#f9a8d4 transparent;
-  scrollbar-width:thin;
-}
-.round-viewport::-webkit-scrollbar{
-  width:10px;
-}
-.round-viewport::-webkit-scrollbar-track{
-  background:transparent;
-}
-.round-viewport::-webkit-scrollbar-thumb{
-  background:#f9a8d4;
-  border-radius:999px;
-  box-shadow:0 0 8px rgba(249,168,212,.9),0 0 24px rgba(249,168,212,1);
-  animation:scrollGlowPink 1.4s ease-in-out infinite alternate;
+  width:100%;
 }
 
 .round-wrap{
@@ -394,80 +364,141 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   margin-bottom:10px;
 }
 
-/* 🌸 Mobile-only fake scroll rail + hint */
+/* 🌸 Mobile-only fake scroll rail + big centered hint */
 .scroll-rail,
 .scroll-hint{
   display:none; /* default hidden on desktop */
 }
 
 @media (max-width:700px){
+  /* container that controls both rails */
   .scroll-rail{
     position:fixed;
-    right:6px;
-    top:18%;
-    bottom:18%;
-    width:12px;
-    border-radius:999px;
-    background:rgba(248,187,208,.16);
-    box-shadow:0 0 10px rgba(249,168,212,.8),0 0 26px rgba(249,168,212,1);
+    top:0;
+    bottom:0;
+    right:0;
+    width:14px;
+    pointer-events:none;
     z-index:30;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .scroll-rail-inner{
-    writing-mode:vertical-rl;
-    text-orientation:mixed;
-    font-size:.65rem;
-    font-weight:800;
-    color:#ffe4f1;
-    letter-spacing:.1em;
-    text-shadow:0 0 8px rgba(249,168,212,1);
-    animation:scrollGlowPink 1.4s ease-in-out infinite alternate;
-    display:flex;
-    align-items:center;
-    gap:4px;
-  }
-  .scroll-rail-arrow{
-    font-size:.8rem;
+    display:block;
   }
 
+  /* LEFT rail */
+  .scroll-rail::before{
+    content:"";
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    width:14px;
+    background:linear-gradient(#ffb7df,#ff7acb,#ffb7df);
+    opacity:0.7;
+    border-radius:999px;
+    box-shadow:
+      0 0 12px #ff9ad7,
+      0 0 24px #ff7acb,
+      0 0 38px #ffb7df;
+    animation:railGlow 2.2s infinite alternate;
+  }
+
+  /* RIGHT rail bar */
+  .scroll-rail-inner{
+    position:absolute;
+    top:0;
+    bottom:0;
+    right:0;
+    width:14px;
+    background:linear-gradient(#ffb7df,#ff7acb,#ffb7df);
+    opacity:0.7;
+    border-radius:999px;
+    box-shadow:
+      0 0 12px #ff9ad7,
+      0 0 24px #ff7acb,
+      0 0 38px #ffb7df;
+    animation:railGlow 2.2s infinite alternate;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+
+  .scroll-rail-arrow{
+    width:6px;
+    height:10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 0 8px rgba(255,255,255,.9);
+  }
+
+  .scroll-rail-text{
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    font-size:.7rem;
+    font-weight:900;
+    letter-spacing:.12em;
+    color:#fff;
+    text-shadow:0 0 8px rgba(255,255,255,.9);
+  }
+
+  @keyframes railGlow{
+    0%{opacity:.4;}
+    100%{opacity:1;}
+  }
+
+  /* BIG centered hint bubble */
   .scroll-hint{
     position:fixed;
-    right:20px;
-    bottom:calc(80px + env(safe-area-inset-bottom));
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
     z-index:40;
     display:flex;
     align-items:center;
     justify-content:center;
-    animation:hintFloat 2.2s ease-in-out infinite alternate;
   }
+
   .scroll-hint-bubble{
-    background:rgba(15,23,42,.95);
-    border-radius:18px;
-    padding:10px 12px;
-    border:1px solid rgba(249,168,212,.9);
-    box-shadow:0 0 16px rgba(249,168,212,.6);
-    font-size:.78rem;
-    line-height:1.4;
-    text-align:left;
+    background:rgba(255,170,215,0.9);
+    padding:18px 30px;
+    border-radius:24px;
+    text-align:center;
+    box-shadow:
+      0 0 8px #ff9ad7,
+      0 0 14px #ff7acb,
+      0 0 26px #ffb7df;
+    animation:bubblePulse 2.4s infinite ease-in-out;
   }
+
   .scroll-hint-arrow{
+    font-size:3rem;          /* big arrows ↑↓ */
+    display:block;
+    margin-bottom:6px;
+    color:#ffffff;
     font-weight:900;
-    margin-right:6px;
-    color:#f9a8d4;
   }
+
   .scroll-hint-text{
-    font-size:.78rem;
+    font-size:2.2rem;        /* ~3× previous size */
+    font-weight:700;
+    line-height:1.3;
+    color:#ffffff;
   }
+
   .scroll-hint.hide{
     opacity:0;
     pointer-events:none;
     transition:opacity .5s ease;
   }
+
+  @keyframes bubblePulse{
+    0%{transform:scale(1); opacity:.85;}
+    100%{transform:scale(1.12); opacity:1;}
+  }
 }
 
-/* ✨ Pink scrollbar glow animation */
+/* ✨ Pink scrollbar glow animation (still used for some effects) */
 @keyframes scrollGlowPink{
   0%{
     box-shadow:0 0 6px rgba(249,168,212,.7),0 0 16px rgba(249,168,212,.7);
