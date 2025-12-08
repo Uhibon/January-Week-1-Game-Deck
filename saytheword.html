@@ -297,9 +297,13 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 </head>
 <body>
 
-<!-- Quit + Help buttons -->
-<button id="quitBtn" class="corner-btn">Quit / やめる</button>
-<button id="helpBtn" class="corner-btn">?</button>
+<!-- Quit + Help buttons (standard Booha UI) -->
+<button id="quitBtn" class="top-nav-btn">
+  <span>Quit</span>
+  <span class="jp">／ やめる</span>
+</button>
+
+<button id="helpBtn" class="help-icon">?</button>
 
 <header>
   <h1>THE BOO-RICULUM</h1>
@@ -313,11 +317,16 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <section id="page-game" class="page active">
   <div class="stripeBar">
     <div id="stripeInner" class="stripeInner sv1"></div>
-    <div class="jpLabel"><span id="jpTxt" class="jp"></span><span id="hiraTxt" class="hira"></span></div>
+    <div class="jpLabel">
+      <span id="jpTxt" class="jp"></span>
+      <span id="hiraTxt" class="hira"></span>
+    </div>
   </div>
 
   <div class="answerRow">
-    <div class="answerBox" id="answerBox"><div id="answerText">&nbsp;</div></div>
+    <div class="answerBox" id="answerBox">
+      <div id="answerText">&nbsp;</div>
+    </div>
     <button id="micBtn" class="micBtn idle" aria-label="Speak">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
@@ -347,42 +356,46 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 
 <footer>Bryan's English School</footer>
 
-<!-- Help overlay -->
-<div id="helpOverlay">
-  <div class="help-inner">
-    <div class="help-header-wrap">
-      <div class="help-title-main">How to Play ／ 遊び方</div>
-      <div class="help-subtitle">Booha Say the Word Game</div>
-      <button id="helpClose" class="help-close">×</button>
-    </div>
+<!-- Help overlay (standard Booha popup) -->
+<div id="helpOverlay" class="help-overlay">
+  <div class="help-dialog">
+    <button id="helpClose" class="help-close">×</button>
 
-    <div class="help-section-title">English</div>
-    <div class="help-text">
-      Tap the purple mic button when you are ready to speak.<br>
-      If your browser asks for microphone access, tap <b>Allow</b>.<br>
-      When the mic is glowing, say the English word one time, clearly.<br>
-      If you are correct, the answer box turns green and you hear a “ding” sound.<br>
-      Listen to the Sage voice and then tap <b>NEXT / 次へ</b> to go to the next word.<br>
-      Try to get the highest score you can!
-    </div>
+    <div class="help-title">HOW TO PLAY ／ 遊び方</div>
+    <div class="help-label">Booha Say the Word Game</div>
 
-    <div class="help-section-title">日本語</div>
-    <div class="help-text">
-      じゅんびができたら、むらさきのマイクボタンをタップします。<br>
-      ブラウザからマイクの許可を聞かれたら、<b>「許可」</b>をタップしてください。<br>
-      マイクが光っているときだけ、英単語をはっきり1回だけ言います。<br>
-      正解するとボックスがみどり色になり、「ピン！」という音が鳴ります。<br>
-      Sage の声を聞いたあと、<b>「NEXT / 次へ」</b>ボタンを押して次の単語に進みます。<br>
-      できるだけ高いスコアを目指しましょう！
-    </div>
+    <div class="help-content">
+      <p><strong>English</strong></p>
+      <ul>
+        <li>Tap the purple mic button when you are ready to speak.</li>
+        <li>If your browser asks for microphone access, tap <b>Allow</b>.</li>
+        <li>When the mic is glowing, say the English word one time, clearly.</li>
+        <li>If you are correct, the answer box turns green and you hear a “ding” sound.</li>
+        <li>Listen to the Sage voice and then tap <b>NEXT / 次へ</b> to go to the next word.</li>
+        <li>Try to get the highest score you can!</li>
+      </ul>
 
-    <div class="help-section-title">Quit / やめる</div>
-    <div class="help-text">
-      To stop playing, tap <b>“Quit / やめる”</b> in the top-left to return to the main menu.<br>
-      やめたいときは、左上の<b>「Quit / やめる」</b>ボタンでメインメニューにもどります。
+      <p><strong>日本語</strong></p>
+      <ul>
+        <li>じゅんびができたら、むらさきのマイクボタンをタップします。</li>
+        <li>ブラウザからマイクの許可を聞かれたら、<b>「許可」</b>をタップしてください。</li>
+        <li>マイクが光っているときだけ、英単語をはっきり1回だけ言います。</li>
+        <li>正解するとボックスがみどり色になり、「ピン！」という音が鳴ります。</li>
+        <li>Sage の声を聞いたあと、<b>「NEXT / 次へ」</b>ボタンを押して次の単語に進みます。</li>
+        <li>できるだけ高いスコアを目指しましょう！</li>
+      </ul>
+
+      <p><strong>Quit / やめる</strong></p>
+      <p>
+        To stop playing, tap <b>“Quit / やめる”</b> in the top-left to return to the main menu。<br>
+        やめたいときは、左上の<b>「Quit / やめる」</b>ボタンでメインメニューにもどります。
+      </p>
     </div>
   </div>
 </div>
+
+</body>
+
 
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
