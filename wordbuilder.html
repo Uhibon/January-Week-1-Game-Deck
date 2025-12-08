@@ -11,12 +11,120 @@
   --green:#22c55e; --red:#ef4444; --purple:#7c3aed;
   --gold:#ffd54a; --goldSoft:#ffe59966;
 }
+
+/* Reset */
 *{box-sizing:border-box;margin:0;padding:0}
+
+/* Body */
 body{
   background:var(--bg); color:var(--ink);
   font-family:system-ui,'Noto Sans JP',sans-serif;
-  min-height:100vh; display:flex; flex-direction:column; overflow:hidden;
+  min-height:100vh; display:flex; flex-direction:column;
+  overflow:hidden;
   user-select:none; -webkit-user-select:none; -ms-user-select:none;
+}
+
+/* Top nav buttons (standard Booha) */
+.top-nav-btn{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:60;
+  border-radius:999px;
+  padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+.top-nav-btn span.jp{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:.74em;
+}
+
+/* Help "?" button */
+.icon-btn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid #ffffff66;
+  background:radial-gradient(circle at 30% 30%,#ffffffee,#38bdf8cc,#4f46e5ff);
+  color:#0b1530;
+  font-weight:900;
+  font-size:1.15rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 0 16px rgba(96,165,250,.9),0 0 32px rgba(129,140,248,.75);
+  backdrop-filter:blur(6px);
+  z-index:60;
+  animation:helpPulse 1.9s ease-in-out infinite;
+}
+@keyframes helpPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+}
+
+/* Help modal */
+.help-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.86);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:80;
+}
+.help-panel{
+  width:min(520px,92vw);
+  max-height:80vh;
+  background:#020617;
+  border-radius:24px;
+  border:1px solid #ffffff33;
+  box-shadow:0 18px 60px rgba(0,0,0,.85);
+  padding:18px 18px 22px;
+  overflow-y:auto;
+  font-size:.9rem;
+  line-height:1.6;
+}
+.help-panel h2{
+  font-family:'Cinzel',serif;
+  font-size:1.3rem;
+  margin-bottom:4px;
+}
+.help-panel h3{
+  font-size:.95rem;
+  opacity:.9;
+  margin-bottom:12px;
+}
+.help-panel p{
+  margin-bottom:8px;
+}
+.help-panel p.jp{
+  font-family:'Noto Sans JP',sans-serif;
+}
+.help-close{
+  position:absolute;
+  top:10px;
+  right:14px;
+  border:none;
+  background:transparent;
+  color:#e5e7eb;
+  font-size:1.2rem;
+  cursor:pointer;
 }
 
 /* Global overlays */
@@ -28,20 +136,32 @@ body{
 @keyframes flash{0%{opacity:.0}40%{opacity:1}100%{opacity:0}}
 
 /* Header */
-header{text-align:center;padding:18px 16px 8px;position:relative;z-index:5}
+header{
+  text-align:center;
+  padding:48px 16px 8px; /* extra top space for nav buttons */
+  position:relative;
+  z-index:5;
+}
 header h1,header h2,header h3{font-family:'Cinzel',serif}
 header h2{font-size:clamp(2rem,6vw,3rem);margin-top:4px}
 header h3{margin-top:6px;opacity:.9}
 
 /* Play (fizzle behind triangle) */
-.playWrap{position:relative;z-index:10000;display:flex;flex-direction:column;align-items:center;margin-top:28px}
+.playWrap{
+  position:relative;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:28px;
+}
 .playBtn{
   appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:50%;
   display:grid;place-items:center;font-size:6rem;font-weight:900;color:#0b1530;
   background:conic-gradient(from 0deg,#ff007f,#ff7f00,#ffff00,#00ff00,#00ffff,#007fff,#ff00ff,#ff007f);
   box-shadow:0 0 80px #ff00ff88,0 0 150px #00ffff66;
   animation:rgbSpin 4s linear infinite,pulse 2s ease-in-out infinite;
-  position:relative;overflow:hidden;z-index:10001;
+  position:relative;overflow:hidden;z-index:11;
 }
 .playBtn::before,.playBtn::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none}
 .playBtn.fizzy::before{
@@ -49,11 +169,11 @@ header h3{margin-top:6px;opacity:.9}
     radial-gradient(circle at 25% 75%,rgba(255,255,255,.6),transparent 60%),
     radial-gradient(circle at 75% 25%,rgba(255,255,255,.4),transparent 60%),
     radial-gradient(circle at 50% 50%,rgba(255,255,255,.3),transparent 60%);
-  animation:fizzmove .35s infinite linear; z-index:0; /* behind ▶ */
+  animation:fizzmove .35s infinite linear; z-index:0;
 }
 .playBtn.fizzy::after{
   box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #00ffff99;
-  animation:fizzglow .25s ease-in-out infinite alternate; z-index:0; /* behind ▶ */
+  animation:fizzglow .25s ease-in-out infinite alternate; z-index:0;
 }
 .playBtn span{position:relative;z-index:5;transform:translateX(4px)}
 @keyframes rgbSpin{to{filter:hue-rotate(360deg)}}
@@ -98,10 +218,42 @@ header h3{margin-top:6px;opacity:.9}
 }
 
 /* Main centered layout */
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:0 10px 18px;
+}
 
-/* Drag area */
-.dropZone,.bank{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+/* Drag area – single row, scrollable if long */
+.dropZone,
+.bank{
+  display:flex;
+  flex-wrap:nowrap;          /* keep in one row */
+  gap:18px;
+  justify-content:center;
+  align-items:center;
+  max-width:100vw;
+  overflow-x:auto;
+  overflow-y:visible;
+  padding:8px 4px;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* hide scrollbars (visual only) */
+.dropZone::-webkit-scrollbar,
+.bank::-webkit-scrollbar{
+  height:6px;
+}
+.dropZone::-webkit-scrollbar-thumb,
+.bank::-webkit-scrollbar-thumb{
+  background:transparent;
+}
+
+/* Slots & tiles */
 .slot,.tile{
   width:96px;height:96px;border-radius:18px;display:flex;align-items:center;justify-content:center;
   font-weight:900;font-size:54px;transition:box-shadow .15s, background .15s, transform .12s, filter .1s, color .1s;
@@ -113,14 +265,12 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .slot.filled{
   background:#2a2f6b;
   border-color:#fff9;
-  box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66; /* steady gold */
+  box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66;
 }
-/* marching highlight for unfilled */
 .slot.hover{
   border-color:#fff;
   box-shadow:0 0 22px #7dd3fc66,0 0 44px #a78bfa55;
 }
-/* GOLD overlap cue while hovering a slot */
 .slot.preDrop{
   border-color:#fffbe8;
   box-shadow:0 0 18px #facc15,0 0 34px #fde68ab3;
@@ -128,7 +278,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 
 .tile{
   background:#1b2046;border:1px solid #8690ff33;box-shadow:0 8px 14px rgba(0,0,0,.28);
-  color:#fff; touch-action:none; /* crucial for mobile pointer events */
+  color:#fff; touch-action:none;
 }
 .tile.dragging{
   animation: rainbowPulse .9s linear infinite;
@@ -137,27 +287,24 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .tile.preDropTile{
   box-shadow:0 0 18px var(--gold),0 0 34px var(--goldSoft);
 }
-/* random hue per pickup if needed */
 .tile.handled{
   filter:hue-rotate(var(--hue,0deg)) saturate(1.15) brightness(1.05);
 }
-
-/* In-slot = unified lighter + pulsing gold glow + black text */
 .tile.inSlot{
-  background:#fff4c2; /* uniform light-gold */
-  color:#000; /* black text */
+  background:#fff4c2;
+  color:#000;
   animation:glowPulse 1.6s ease-in-out infinite;
 }
 
 /* Sparkles rising from tile top (overlay-based) */
 .auraTop{
   position:fixed; pointer-events:none;
-  transform:translateX(-50%); /* left is set to tile center; this centers container */
+  transform:translateX(-50%);
   z-index:9998;
 }
 .spark{
   position:absolute; width:6px; height:6px; border-radius:50%;
-  color:#ffd54a; /* start gold */
+  color:#ffd54a;
   background:currentColor;
   box-shadow:0 0 6px currentColor, 0 0 12px currentColor;
   animation: riseSpark 3.8s ease-in-out infinite, sparkleColor 3.8s linear infinite;
@@ -165,15 +312,15 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   opacity:.75;
 }
 @keyframes sparkleColor{
-  0%   { color:#ffd54a; }      /* gold */
-  50%  { color:#ffc58a; }      /* peach */
-  100% { color:#ffc0cb; }      /* pale pink */
+  0%   { color:#ffd54a; }
+  50%  { color:#ffc58a; }
+  100% { color:#ffc0cb; }
 }
 @keyframes riseSpark{
   0%   { transform:translate(var(--sx, 0px), 0) scale(.85); opacity:0; }
   10%  { opacity:.55; }
   35%  { transform:translate(var(--sx, 0px), -18px) scale(.95); opacity:.8; }
-  70%  { transform:translate(var(--sx, 0px), -44px) scale(1.05); opacity:.82; } /* linger visible */
+  70%  { transform:translate(var(--sx, 0px), -44px) scale(1.05); opacity:.82; }
   100% { transform:translate(var(--sx, 0px), -70px) scale(1.18); opacity:0; }
 }
 
@@ -192,15 +339,26 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes nextPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 #progressCount{margin-top:10px;font-weight:700;font-size:1.1rem}
 
-/* Hearts / Farts (brown) */
+/* Hearts / Farts */
 @keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-140px) scale(1.6);opacity:0}}
 @keyframes fartCloud{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:translateY(-60px) scale(1.6);opacity:0}}
 .heart,.fart{position:fixed;font-size:36px;pointer-events:none}
-.heart{color:#ff4fa6;animation:floatHeart 1.3s ease-out forwards}
-.fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards} /* brown */
+.heart{color:#ff4fa6;animation:floatHeart 1.3s.ease-out forwards}
+.fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards}
 
 /* Results */
-#page-results{display:none;text-align:center;padding:60px 16px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+#page-results{
+  display:none;
+  text-align:center;
+  padding:60px 16px;
+  min-height:60vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+}
+#page-results h2{font-family:'Cinzel',serif;}
 #resultMsg{font-size:clamp(1.6rem,4vw,2rem);font-weight:900;text-shadow:0 0 10px rgba(255,255,255,.2)}
 #resultScore{font-size:clamp(1.4rem,3.5vw,1.8rem);font-weight:700}
 .redGlow{background:#2b0b0b}
@@ -210,19 +368,80 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .confetti{position:fixed;top:-10vh;width:10px;height:16px;border-radius:2px;animation:fall linear both;z-index:9999}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
-/* Back to Menu */
-#backMenu{
-  position:fixed;top:14px;left:14px;z-index:10000;
-  padding:8px 12px;border-radius:12px;border:1px solid #ffffff30;
-  background:#0b1530cc;color:#fff;font-weight:800;backdrop-filter:blur(6px);
+/* Rotate-phone hint */
+.rotate-hint{
+  position:fixed;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:8px 16px;
+  border-radius:999px;
+  border:1px solid rgba(249,115,22,.8);
+  background:rgba(15,23,42,.96);
+  color:#fff7ed;
+  font-size:.8rem;
+  font-family:'Noto Sans JP',sans-serif;
+  box-shadow:0 0 16px rgba(249,115,22,.9),0 0 34px rgba(251,191,36,.7);
   display:none;
+  z-index:70;
 }
 
+/* Footer */
 footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95rem;opacity:.85;border-top:1px solid var(--outline)}
+
+/* Mobile tuning */
+@media (max-width:600px){
+  .slot,.tile{
+    width:68px;
+    height:68px;
+    border-radius:14px;
+    font-size:38px;
+  }
+  .dropZone,
+  .bank{
+    gap:10px;
+  }
+  header{
+    padding-top:56px;
+  }
+}
 </style>
 </head>
 <body>
 <div id="overlay"></div>
+
+<!-- Quit + Help buttons -->
+<button class="top-nav-btn" id="quitBtn">
+  <span>Quit</span><span class="jp">やめる</span>
+</button>
+<button class="icon-btn" id="helpBtn">?</button>
+
+<!-- Help popup -->
+<div class="help-modal" id="helpModal">
+  <div class="help-panel">
+    <button class="help-close" id="helpClose">×</button>
+    <h2>How to Play ／ 遊び方</h2>
+    <h3>Word Builder Game</h3>
+
+    <p>1. Tap the rainbow circle ▶ to hear the English word.</p>
+    <p>2. Drag the letter tiles from the bank into the empty slots to spell the word.</p>
+    <p>3. When all slots are filled, tap CHECK.</p>
+    <p>4. Correct on the first try = 1 point. If you miss, the letters fly back and you can try again (no point).</p>
+    <p>5. There are 15 words. Try to get a perfect score!</p>
+
+    <p class="jp">１．レインボーの丸いボタン（▶）をタップして、英単語を聞きます。</p>
+    <p class="jp">２．下のアルファベットタイルをドラッグして、上のマスに動かし、単語をつくります。</p>
+    <p class="jp">３．すべてのマスがうまったら「CHECK」を押します。</p>
+    <p class="jp">４．１回目で正解すると１ポイント！まちがえたらタイルがもどるので、もう一度チャレンジできます（その単語のポイントは０点）。</p>
+    <p class="jp">５．全部で１５問あります。パーフェクトスコアを目指してね！</p>
+  </div>
+</div>
+
+<!-- Rotate hint -->
+<div id="rotateHint" class="rotate-hint">
+  ながい単語だよ！スマホを横向きにしてね。
+</div>
+
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>WORD BUILDER</h2>
@@ -249,8 +468,6 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
   <div id="resultScore">0/15（0%）</div>
 </section>
 
-<button id="backMenu" onclick="location.href='index.html'">← Back to Menu</button>
-
 <footer>BRYAN'S ENGLISH SCHOOL</footer>
 
 <script>
@@ -266,7 +483,28 @@ let index=0,totalScore=0,firstTry=true;
 const drop=$("#dropZone"),bank=$("#bank"),play=$("#playBtn"),check=$("#checkBtn");
 const nextWrap=$("#nextWrap"),nextBtn=$("#nextBtn"),progressCount=$("#progressCount");
 const overlay=$("#overlay"),pageRound=$("#page-round"),pageResults=$("#page-results");
-const playWrap=$("#playWrap"), backMenu=$("#backMenu");
+const playWrap=$("#playWrap");
+const quitBtn=$("#quitBtn");
+const helpBtn=$("#helpBtn");
+const helpModal=$("#helpModal");
+const helpClose=$("#helpClose");
+const rotateHint=$("#rotateHint");
+
+/* Quit = back to menu */
+quitBtn.addEventListener("click",()=>{ location.href="index.html"; });
+
+/* Help popup logic */
+function openHelp(){
+  helpModal.style.display="flex";
+}
+function closeHelp(){
+  helpModal.style.display="none";
+}
+helpBtn.addEventListener("click",openHelp);
+helpClose.addEventListener("click",closeHelp);
+helpModal.addEventListener("click",e=>{
+  if(e.target===helpModal) closeHelp();
+});
 
 /* ====== Audio ====== */
 const sfx={
@@ -320,10 +558,10 @@ function spawnHeart(x,y){
   overlay.appendChild(h); setTimeout(()=>h.remove(),1300);
 }
 function spawnFartAtTileMid(tile){
-  requestAnimationFrame(() => {  // wait one frame for layout to settle
+  requestAnimationFrame(() => {
     const r = tile.getBoundingClientRect();
     const midX = r.left + r.width / 2;
-    const midY = r.top - 6; // top-aligned puff
+    const midY = r.top - 6;
     const f = document.createElement("div");
     f.className = "fart";
     f.textContent = "💨";
@@ -363,7 +601,6 @@ function addAura(tile){
   removeAura(tile);
   const c=document.createElement('div');
   c.className='auraTop';
-  // keep container positioned over tile top center
   let running=true;
   function raf(){
     if(!running) return;
@@ -378,7 +615,7 @@ function addAura(tile){
   for(let i=0;i<10;i++){
     const s=document.createElement('div');
     s.className='spark';
-    s.style.setProperty('--sx', (Math.random()*28 - 14).toFixed(1)+'px'); // -14..14px drift
+    s.style.setProperty('--sx', (Math.random()*28 - 14).toFixed(1)+'px');
     s.style.left='0px'; s.style.top='0px';
     s.style.animationDelay=(Math.random()*1.6).toFixed(2)+'s';
     c.appendChild(s);
@@ -416,15 +653,13 @@ function attachTileControls(tile){
     moved=false;
     wasInSlot = tile.parentElement?.classList.contains('slot');
 
-    // pastel rainbow while handled
     const hue=Math.floor(Math.random()*360);
     tile.style.setProperty('--hue',hue+'deg');
     tile.classList.add('handled','dragging');
     tile.classList.remove('inSlot');
-    tile.style.background="#2a2f6b"; // bright during drag for visibility
+    tile.style.background="#2a2f6b";
     removeAura(tile);
 
-    // elevate & fix-position
     tile.style.position='fixed';
     tile.style.left=rect.left+'px'; tile.style.top=rect.top+'px';
     tile.style.zIndex='1000';
@@ -446,7 +681,6 @@ function attachTileControls(tile){
       tile.classList.add('preDropTile');
     }
 
-    // remove preDrop cue when hovering bank
     const brect=bank.getBoundingClientRect();
     if(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom){
       [...drop.children].forEach(s=>s.classList.remove('hover','preDrop'));
@@ -494,7 +728,6 @@ function attachTileControls(tile){
 function placeIntoSlot(tile,slot){
   if(slot.firstChild && slot.firstChild!==tile){ sendToBank(slot.firstChild); }
 
-  // reset fixed positioning before appending
   tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
   tile.style.background='#fff4c2';
   tile.style.color='#000';
@@ -503,12 +736,12 @@ function placeIntoSlot(tile,slot){
   slot.appendChild(tile);
   slot.classList.add("filled");
   tile.classList.add("inSlot");
-  addAura(tile); // overlay sparkles rising from top
+  addAura(tile);
 }
 function sendToBank(tile){
   bank.appendChild(tile);
   tile.classList.remove('inSlot','preDropTile','dragging');
-  tile.style.background = '#1b2046'; // NORMAL in bank
+  tile.style.background = '#1b2046';
   tile.style.color = '#fff';
   tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
   removeAura(tile);
@@ -533,6 +766,20 @@ function buildBank(w){
     attachTileControls(t);
     bank.appendChild(t);
   });
+}
+
+/* ====== Rotate-hint check (mobile only) ====== */
+let rotateShownOnce=false;
+function checkRowWidth(){
+  if(window.innerWidth>768) return;
+  if(!bank.children.length) return;
+  const tooWide = bank.scrollWidth > bank.clientWidth * 1.15;
+  if(tooWide && !rotateShownOnce){
+    rotateShownOnce=true;
+    rotateHint.style.display="block";
+    clearTimeout(rotateHint._hideTimer);
+    rotateHint._hideTimer = setTimeout(()=>{ rotateHint.style.display="none"; }, 6000);
+  }
 }
 
 /* ====== Round / Check ====== */
@@ -580,7 +827,6 @@ function showResults(){
   pageRound.style.display="none";
   playWrap.style.display="none";
   pageResults.style.display="flex";
-  backMenu.style.display="inline-block";
 
   const pct=Math.round((totalScore/WORDS.length)*100);
   const msg=$("#resultMsg"), score=$("#resultScore");
@@ -625,19 +871,24 @@ function loadCard(){
   buildSlots(w); buildBank(w);
   check.disabled=true; check.style.display="inline-block";
   nextWrap.style.display="none";
+  checkRowWidth();
 }
 function initGame(){
-  WORDS = shuffle([...MASTER_BASE]); // shuffle 15 words each reload
+  WORDS = shuffle([...MASTER_BASE]);
   index=0; totalScore=0; firstTry=true;
   document.body.className="";
   pageResults.style.display="none";
   playWrap.style.display="flex";
   pageRound.style.display="flex";
-  backMenu.style.display="none";
   progressCount.textContent=`1 / ${WORDS.length}`;
+  rotateShownOnce=false;
   loadCard();
 }
 initGame();
+
+/* Rotate hint also re-check on resize/orientation change */
+window.addEventListener("resize",checkRowWidth);
+window.addEventListener("orientationchange",checkRowWidth);
 
 /* Pre-warm audio (best-effort) */
 setTimeout(()=>{
