@@ -95,8 +95,6 @@ footer{
   transform:translateY(1px);  /* tiny alignment fix */
 }
 
-
-
 /* Pages */
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 24px}
 .page.active{display:block}
@@ -120,7 +118,7 @@ body.draggingTouch .round-wrap{ touch-action: none; }
 
 /* MOBILE layout improvements */
 @media (max-width:700px){
-  :root{ --cardH: 104px; }                 /* smaller, uniform mobile cards */
+  :root{ --cardH: 92px; }                 /* smaller, uniform mobile cards */
   #page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
   .round-viewport{
     flex:1 1 auto;
@@ -133,7 +131,21 @@ body.draggingTouch .round-wrap{ touch-action: none; }
   }
   .round-wrap{flex-wrap:nowrap;gap:10px}
   .col{flex:0 0 50%;max-width:50%}
-  .card{ padding:14px 16px; }
+
+  /* 📏 smaller cards & text on mobile */
+  .card{
+    height:var(--cardH);
+    padding:10px 12px;
+    font-size:1.1rem;
+  }
+  .card.en{
+    font-size:1.4rem;
+  }
+  .card.jp{
+    font-size:.9rem;
+    line-height:1.35;
+  }
+
   .actions{
     position:sticky; bottom:0; z-index:5;
     height: var(--actionsH);
@@ -376,7 +388,7 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   margin-bottom:10px;
 }
 
-/* 🌸 Mobile-only fake scroll rail + big centered hint */
+/* 🌸 Mobile-only fake scroll rail + hint */
 .scroll-rail,
 .scroll-hint{
   display:none; /* default hidden on desktop */
@@ -389,45 +401,41 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
     top:0;
     bottom:0;
     right:0;
-    width:14px;
+    width:10px;
     pointer-events:none;
     z-index:30;
     display:block;
   }
 
-  /* LEFT rail */
+  /* LEFT rail (very subtle) */
   .scroll-rail::before{
     content:"";
     position:fixed;
-    top:0;
-    bottom:0;
+    top:10px;
+    bottom:10px;
     left:0;
-    width:14px;
+    width:8px;
     background:linear-gradient(#ffb7df,#ff7acb,#ffb7df);
-    opacity:0.3;
+    opacity:0.16;
     border-radius:999px;
     box-shadow:
-      0 0 12px #ff9ad7,
-      0 0 24px #ff7acb,
-      0 0 38px #ffb7df;
-    animation:railGlow 2.2s infinite alternate;
+      0 0 6px #ff9ad7;
+    animation:railGlow 2.4s infinite alternate;
   }
 
-  /* RIGHT rail bar */
+  /* RIGHT rail bar (subtle) */
   .scroll-rail-inner{
     position:absolute;
-    top:0;
-    bottom:0;
+    top:10px;
+    bottom:10px;
     right:0;
-    width:14px;
+    width:10px;
     background:linear-gradient(#ffb7df,#ff7acb,#ffb7df);
-    opacity:0.3;
+    opacity:0.18;
     border-radius:999px;
     box-shadow:
-      0 0 12px #ff9ad7,
-      0 0 24px #ff7acb,
-      0 0 38px #ffb7df;
-    animation:railGlow 2.2s infinite alternate;
+      0 0 6px #ff9ad7;
+    animation:railGlow 2.4s infinite alternate;
 
     display:flex;
     flex-direction:column;
@@ -437,32 +445,32 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   }
 
   .scroll-rail-arrow{
-    width:6px;
-    height:10px;
+    width:4px;
+    height:8px;
     border-radius:999px;
-    background:rgba(255,255,255,.9);
-    box-shadow:0 0 8px rgba(255,255,255,.9);
+    background:rgba(255,255,255,.85);
+    box-shadow:0 0 4px rgba(255,255,255,.8);
   }
 
   .scroll-rail-text{
     writing-mode:vertical-rl;
     text-orientation:mixed;
-    font-size:.7rem;
-    font-weight:900;
+    font-size:.6rem;
+    font-weight:800;
     letter-spacing:.12em;
     color:#fff;
-    text-shadow:0 0 8px rgba(255,255,255,.9);
+    text-shadow:0 0 4px rgba(255,255,255,.8);
   }
 
   @keyframes railGlow{
-    0%{opacity:.4;}
-    100%{opacity:1;}
+    0%{opacity:.25;}
+    100%{opacity:.55;}
   }
 
-  /* BIG centered hint bubble */
+  /* Smaller, white hint bubble */
   .scroll-hint{
     position:fixed;
-    bottom:24px;
+    bottom:18px;
     left:50%;
     transform:translateX(-50%);
     z-index:40;
@@ -472,30 +480,27 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   }
 
   .scroll-hint-bubble{
-    background:rgba(255,170,215,0.9);
-    padding:18px 30px;
-    border-radius:24px;
+    background:#ffffff;
+    padding:10px 18px;
+    border-radius:999px;
     text-align:center;
-    box-shadow:
-      0 0 8px #ff9ad7,
-      0 0 14px #ff7acb,
-      0 0 26px #ffb7df;
+    box-shadow:0 4px 14px rgba(15,23,42,.35);
     animation:bubblePulse 2.4s infinite ease-in-out;
   }
 
   .scroll-hint-arrow{
-    font-size:3rem;          /* big arrows ↑↓ */
+    font-size:1.4rem;
     display:block;
-    margin-bottom:6px;
-    color:#ffffff;
+    margin-bottom:2px;
+    color:#7c3aed;
     font-weight:900;
   }
 
   .scroll-hint-text{
-    font-size:2.2rem;        /* ~3× previous size */
-    font-weight:700;
-    line-height:1.3;
-    color:#ffffff;
+    font-size:.9rem;
+    font-weight:600;
+    line-height:1.5;
+    color:#111827;
   }
 
   .scroll-hint.hide{
@@ -505,8 +510,8 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
   }
 
   @keyframes bubblePulse{
-    0%{transform:scale(1); opacity:.85;}
-    100%{transform:scale(1.12); opacity:1;}
+    0%{transform:scale(1); opacity:.9;}
+    100%{transform:scale(1.04); opacity:1;}
   }
 }
 
@@ -615,7 +620,11 @@ hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff3
 <div id="scrollHint" class="scroll-hint">
   <div class="scroll-hint-bubble">
     <span class="scroll-hint-arrow">↑↓</span>
-    <span class="scroll-hint-text">上や下に動かして<br>全部のカードを見てね</span>
+    <span class="scroll-hint-text">
+      画面を上下にスイスイ動かすと<br>
+      かくれているカードが出てきます。<br>
+      ※スマホをふっても出てきません。
+    </span>
   </div>
 </div>
 
