@@ -36,11 +36,9 @@ body{
   border:1px solid #ffffff66;
   background:rgba(15,23,42,.95);
   color:#fff;
-
   font-size:0.55rem;
   font-weight:700;
   letter-spacing:.04em;
-
   cursor:pointer;
   display:flex;
   align-items:center;
@@ -64,30 +62,23 @@ body{
   bottom:12px;
   left:12px;
   z-index:50;
-
   width:44px;
   height:44px;
   padding:0;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   font-size:1.2rem;
   font-weight:900;
   color:#fff;
-
   border-radius:50%;
   border:2px solid #ffffffaa;
-
   background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 55%,#4c1d95 100%);
   cursor:pointer;
-
   box-shadow:
     0 0 10px rgba(168,85,247,0.9),
     0 0 26px rgba(129,140,248,0.8),
     0 0 40px rgba(129,140,248,0.6);
-
   transition:transform .15s ease;
 }
 .help-icon:active{transform:scale(.92);}
@@ -597,7 +588,7 @@ function unlockAudio(){
 
 /* 🧠 Create a new SpeechRecognition instance each time, with cleanup */
 function startListening(){
-  if(listening || answered) return;
+  if(listening || answered) return;  // answered prevents double-record on a correct card
 
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){
@@ -639,6 +630,11 @@ function startListening(){
   };
 
   recognition.onresult = e => {
+    // iOS fix: immediately mark "not listening" so the button can be used again
+    listening = false;
+    micBtn.classList.remove('pulsing');
+    answerBox.classList.remove('pulsing');
+
     // Explicitly stop recognition to keep iOS from getting "stuck"
     try{
       recognition.stop();
@@ -663,9 +659,13 @@ function startListening(){
     answerBox.classList.remove('pulsing');
     // Soft feedback: clear text so they try again
     answerText.textContent = '';
+    try{
+      recognition.stop();
+    }catch(_){}
   };
 
   recognition.onend = () => {
+    // Fallback cleanup – in case onresult didn't run
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
@@ -690,7 +690,7 @@ function showCard(){
   updateCounter();
 }
 
-/* ✅ 1.4 second delay for Sage (option 3) */
+/* ✅ Sage & NEXT 1s after confetti on ALL devices */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -701,14 +701,14 @@ function evaluate(heard){
     playSound('s_ding');
     confettiBurst(answerBox,60);
 
-    // Give Apple time to fully close the mic before Sage speaks
-    setTimeout(()=>{
-      playSage(order[idx].en,()=>{
-        nextBtn.style.display='inline-block';
-      });
-    },1400); // ⏱ slower / clearer timing
-
     score++;
+
+    // After 1 second: show NEXT and play Sage simultaneously
+    setTimeout(()=>{
+      nextBtn.style.display='inline-block';
+      playSage(order[idx].en);
+    },1000);
+
   }else{
     answerBox.classList.add('wrong');
     playSound('s_fart');
