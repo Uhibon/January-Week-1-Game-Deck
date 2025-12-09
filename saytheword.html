@@ -568,41 +568,29 @@ const isMacDesktop = /Macintosh/.test(ua) && !isIOS;
 /* All Apple devices (Mac + iOS) */
 const isApple = isIOS || isMacDesktop;
 
-/* 🎧 Beeps only for Mac desktop
-   - Android: no beeps
-   - iPad/iPhone: no beeps (less chance of conflict)
-   - Mac: beeps on */
-const beepsEnabled = isMacDesktop;
+/* 🎧 Beeps only for Apple (no beeps on Android/Windows/etc.) */
+const beepsEnabled = isApple;
 
-/* 🔓 Unlock audio once on first tap (esp. for Safari and Sage) */
+/* 🔓 Unlock audio once on first tap (Safari / Apple only) */
 function unlockAudio(){
-  if(audioUnlocked) return;
-
-  const testAudios = [
-    document.getElementById('s_micOn'),
-    document.getElementById('s_micDone'),
-    sageVoice
-  ];
-
-  let anyTried = false;
-
-  testAudios.forEach(a=>{
-    if(!a) return;
-    anyTried = true;
-    a.muted = true;
-    const p = a.play();
-    if(p && p.then){
-      p.then(()=>{
-        a.pause();
-        a.currentTime = 0;
-        a.muted = false;
-      }).catch(()=>{});
-    }else{
-      a.muted = false;
-    }
-  });
-
-  if(anyTried){
+  if(audioUnlocked || !beepsEnabled) return;
+  const test = document.getElementById('s_micOn');
+  if(!test){
+    audioUnlocked = true;
+    return;
+  }
+  test.muted = true;
+  const p = test.play();
+  if(p && p.then){
+    p.then(()=>{
+      test.pause();
+      test.currentTime = 0;
+      test.muted = false;
+      audioUnlocked = true;
+    }).catch(()=>{
+      // Will try again on next gesture if needed
+    });
+  }else{
     audioUnlocked = true;
   }
 }
@@ -617,7 +605,7 @@ function startListening(){
     return;
   }
 
-  // Unlock audio on first user gesture (helps Sage + any beeps)
+  // Unlock audio only on Apple (for Safari autoplay rules)
   if(isApple){
     unlockAudio();
   }
@@ -631,7 +619,7 @@ function startListening(){
   micBtn.classList.add('pulsing');
   answerBox.classList.add('pulsing');
 
-  // After permission is already granted, play mic-on beep (Mac only)
+  // After permission is already granted, play mic-on beep (Apple only)
   if(hasMicPermission && beepsEnabled){
     playSound('s_micOn');
   }
@@ -651,15 +639,14 @@ function startListening(){
   };
 
   recognition.onresult = e => {
-    // On non-iOS, force stop immediately after result.
-    // On iOS, let it end naturally (avoids getting "stuck" after first use).
-    if(!isIOS){
-      try{ recognition.stop(); }catch(_){}
-    }
+    // Explicitly stop recognition to keep iOS from getting "stuck"
+    try{
+      recognition.stop();
+    }catch(_){}
 
     const raw = e.results[0][0].transcript;
 
-    // "Recorded" beep – Mac only
+    // "Recorded" beep – only on Apple
     if(hasMicPermission && beepsEnabled){
       playSound('s_micDone');
     }
@@ -674,7 +661,6 @@ function startListening(){
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
-    recognition = null;
     // Soft feedback: clear text so they try again
     answerText.textContent = '';
   };
@@ -683,7 +669,6 @@ function startListening(){
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
-    recognition = null;
   };
 }
 
@@ -705,7 +690,7 @@ function showCard(){
   updateCounter();
 }
 
-/* ✅ 1.4 second delay for Sage */
+/* ✅ 1.4 second delay for Sage (option 3) */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -721,7 +706,7 @@ function evaluate(heard){
       playSage(order[idx].en,()=>{
         nextBtn.style.display='inline-block';
       });
-    },1400);
+    },1400); // ⏱ slower / clearer timing
 
     score++;
   }else{
@@ -815,3 +800,5 @@ helpOverlay.addEventListener('click',e=>{
 preloadAll();
 showCard();
 </script>
+</body>
+</html>
