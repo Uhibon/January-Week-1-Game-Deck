@@ -26,7 +26,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  min-height:100%;
+  min-height:100vh;                  /* ✅ more reliable on iPad/iframes */
   background:var(--dark);
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
@@ -34,7 +34,8 @@ body{
   flex-direction:column;
   align-items:center;
   /* Reduce accidental page pull-to-refresh on capable browsers */
-  overscroll-behavior-y: none;
+  overscroll-behavior-y: contain;    /* was none – slightly softer for iPad */
+  padding-bottom:env(safe-area-inset-bottom);  /* keep bottom buttons clear */
 }
 
 /* Header + footer */
@@ -700,7 +701,11 @@ function unlockAudioOnce(){
   });
   audioUnlocked=true;
 }
-window.addEventListener('pointerdown', unlockAudioOnce, {once:true});
+
+/* ✅ More robust for iPad / iframe contexts */
+['pointerdown','touchstart','mousedown'].forEach(evt=>{
+  window.addEventListener(evt, unlockAudioOnce, {once:true, passive:true});
+});
 
 /* iOS pull-to-refresh guard just on the scroll container */
 function installPullToRefreshGuard(){
