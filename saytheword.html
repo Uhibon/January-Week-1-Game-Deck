@@ -553,14 +553,28 @@ let answered=false;
 let hasMicPermission=false;
 let audioUnlocked=false;
 
-/* iOS detection (iPhone/iPad incl. iPadOS desktop mode) */
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+/* 🔍 Platform detection */
+const ua = navigator.userAgent || '';
+const platform = navigator.platform || '';
 
-/* 🔓 Unlock audio once on first tap (Safari) */
+/* iOS detection (iPhone/iPad incl. iPadOS desktop mode) */
+const isIOS =
+  /iPad|iPhone|iPod/.test(ua) ||
+  (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/* macOS desktop (no touch) */
+const isMacDesktop = /Macintosh/.test(ua) && !isIOS;
+
+/* All Apple devices (Mac + iOS) */
+const isApple = isIOS || isMacDesktop;
+
+/* 🎧 Beeps only for Apple (no beeps on Android/Windows/etc.) */
+const beepsEnabled = isApple;
+
+/* 🔓 Unlock audio once on first tap (Safari / Apple only) */
 function unlockAudio(){
-  if(audioUnlocked) return;
-  const test = document.getElementById('s_micOn') || document.getElementById('s_micDone');
+  if(audioUnlocked || !beepsEnabled) return;
+  const test = document.getElementById('s_micOn');
   if(!test){
     audioUnlocked = true;
     return;
@@ -581,7 +595,7 @@ function unlockAudio(){
   }
 }
 
-/* 🧠 Create a new SpeechRecognition instance each time, but with better cleanup */
+/* 🧠 Create a new SpeechRecognition instance each time, with cleanup */
 function startListening(){
   if(listening || answered) return;
 
@@ -591,7 +605,10 @@ function startListening(){
     return;
   }
 
-  unlockAudio(); // make sure audio is allowed on Safari
+  // Unlock audio only on Apple (for Safari autoplay rules)
+  if(isApple){
+    unlockAudio();
+  }
 
   recognition = new SR();
   recognition.lang = 'en-US';
@@ -602,8 +619,8 @@ function startListening(){
   micBtn.classList.add('pulsing');
   answerBox.classList.add('pulsing');
 
-  // After permission is already granted, play mic-on beep like Android
-  if(hasMicPermission){
+  // After permission is already granted, play mic-on beep (Apple only)
+  if(hasMicPermission && beepsEnabled){
     playSound('s_micOn');
   }
 
@@ -622,10 +639,15 @@ function startListening(){
   };
 
   recognition.onresult = e => {
+    // Explicitly stop recognition to keep iOS from getting "stuck"
+    try{
+      recognition.stop();
+    }catch(_){}
+
     const raw = e.results[0][0].transcript;
 
-    // "Recorded" beep
-    if(hasMicPermission){
+    // "Recorded" beep – only on Apple
+    if(hasMicPermission && beepsEnabled){
       playSound('s_micDone');
     }
 
@@ -636,7 +658,6 @@ function startListening(){
 
   recognition.onerror = e => {
     console.warn('Speech error:', e.error);
-    // If something goes wrong on iOS, always release the lock
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
@@ -680,7 +701,7 @@ function evaluate(heard){
     playSound('s_ding');
     confettiBurst(answerBox,60);
 
-    // Give iOS time to fully close the mic before Sage speaks
+    // Give Apple time to fully close the mic before Sage speaks
     setTimeout(()=>{
       playSage(order[idx].en,()=>{
         nextBtn.style.display='inline-block';
