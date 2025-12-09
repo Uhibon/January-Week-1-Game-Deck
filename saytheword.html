@@ -544,110 +544,39 @@ let answered=false;
 let hasMicPermission=false;
 let audioUnlocked=false;
 
-/* 🔍 Platform detection */
+/* 🔍 Platform detection for iOS Safari quirks */
 const ua = navigator.userAgent || '';
 const platform = navigator.platform || '';
-
-/* iOS detection (iPhone/iPad incl. iPadOS desktop mode) */
 const isIOS =
   /iPad|iPhone|iPod/.test(ua) ||
   (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-/* macOS desktop (no touch) */
 const isMacDesktop = /Macintosh/.test(ua) && !isIOS;
-
-/* All Apple devices (Mac + iOS) */
 const isApple = isIOS || isMacDesktop;
 
-/* 🎧 Beeps only for Apple (no beeps on Android/Windows/etc.) */
-const beepsEnabled = isApple;
-
-/* 🔓 Unlock audio once on first tap (Safari / Apple only) */
-function unlockAudio(){
-  if(audioUnlocked || !beepsEnabled) return;
-  const test = document.getElementById('s_micOn');
-  if(!test){
-    audioUnlocked = true;
-    return;
-  }
-  test.muted = true;
-  const p = test.play();
-  if(p && p.then){
-    p.then(()=>{
-      test.pause();
-      test.currentTime = 0;
-      test.muted = false;
-      audioUnlocked = true;
-    }).catch(()=>{
-      // Will try again on next gesture if needed
-    });
-  }else{
-    audioUnlocked = true;
-  }
-}
-
-/* 🧠 Create a new SpeechRecognition instance each time, with cleanup */
-function startListening(){
-  if(listening || answered) return;  // answered prevents double-record on a correct card
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){
-    alert('Speech Recognition not supported on this browser.');
-    return;
-  }
-
-  // Unlock audio only on Apple (for Safari autoplay rules)
-  if(isApple){
-    unlockAudio();
-  }
-
+/* 🧠 Create ONE SpeechRecognition instance (Safari is picky about this) */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+if(SR){
   recognition = new SR();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
-  listening = true;
-  micBtn.classList.add('pulsing');
-  answerBox.classList.add('pulsing');
-
-  // After permission is already granted, play mic-on beep (Apple only)
-  if(hasMicPermission && beepsEnabled){
-    playSound('s_micOn');
-  }
-
-  try{
-    recognition.start();
-  }catch(err){
-    console.warn('Recognition start error:', err);
-    listening = false;
-    micBtn.classList.remove('pulsing');
-    answerBox.classList.remove('pulsing');
-    return;
-  }
-
   recognition.onstart = () => {
     hasMicPermission = true;
+    listening = true;
+    micBtn.classList.add('pulsing');
+    answerBox.classList.add('pulsing');
   };
 
   recognition.onresult = e => {
-    // iOS fix: immediately mark "not listening" so the button can be used again
+    // We got something → no longer listening
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
 
-    // Explicitly stop recognition to keep iOS from getting "stuck"
-    try{
-      recognition.stop();
-    }catch(_){}
-
     const raw = e.results[0][0].transcript;
-
-    // "Recorded" beep – only on Apple
-    if(hasMicPermission && beepsEnabled){
-      playSound('s_micDone');
-    }
-
     const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
+
     answerText.textContent = raw.trim();
     evaluate(heard);
   };
@@ -657,19 +586,88 @@ function startListening(){
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
-    // Soft feedback: clear text so they try again
     answerText.textContent = '';
-    try{
-      recognition.stop();
-    }catch(_){}
+    try{ recognition.stop(); }catch(_){}
   };
 
   recognition.onend = () => {
-    // Fallback cleanup – in case onresult didn't run
+    // Safety: if iOS ends without result, unlock the button again
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
   };
+}
+
+/* 🎧 Unlock audio session on first Apple tap with a silent ding */
+function unlockAudio(cb){
+  if(!isApple){
+    if(cb) cb();
+    return;
+  }
+  if(audioUnlocked){
+    if(cb) cb();
+    return;
+  }
+  audioUnlocked = true;
+
+  try{
+    // Use an existing short sound; play muted, then stop.
+    const ding = document.getElementById('s_ding');
+    if(!ding){
+      if(cb) cb();
+      return;
+    }
+    const originalVolume = ding.volume;
+    ding.volume = 0;
+    const p = ding.play();
+    if(p && p.then){
+      p.then(()=>{
+        ding.pause();
+        ding.currentTime = 0;
+        ding.volume = originalVolume;
+        if(cb) cb();
+      }).catch(()=>{
+        ding.volume = originalVolume;
+        if(cb) cb();
+      });
+    }else{
+      ding.volume = originalVolume;
+      if(cb) cb();
+    }
+  }catch(e){
+    if(cb) cb();
+  }
+}
+
+/* 🚀 Actually start recognition */
+function startRecognitionCore(){
+  if(!recognition){
+    alert('Speech Recognition not supported on this browser.');
+    return;
+  }
+  if(listening || answered) return;
+
+  try{
+    recognition.start();
+    // onstart handler will set listening + pulsing
+  }catch(err){
+    console.warn('Recognition start error:', err);
+    listening = false;
+    micBtn.classList.remove('pulsing');
+    answerBox.classList.remove('pulsing');
+  }
+}
+
+/* 🎙️ Called when user taps mic */
+function startListening(){
+  if(listening || answered) return;
+
+  if(isApple){
+    // iOS Safari: unlock audio session first, then start recognition
+    unlockAudio(()=>{ startRecognitionCore(); });
+  }else{
+    startRecognitionCore();
+  }
 }
 
 micBtn.addEventListener('click', startListening);
@@ -768,10 +766,11 @@ function preloadAll(){
     const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);
     a.load();
   });
-  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15','s_micOn','s_micDone'].forEach(id=>{
+  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
     const el=$("#"+id);
     if(el) el.load();
   });
+  // mic_on / mic_done are safe to delete; they are no longer used
 }
 
 // Quit button
@@ -800,5 +799,3 @@ helpOverlay.addEventListener('click',e=>{
 preloadAll();
 showCard();
 </script>
-</body>
-</html>
