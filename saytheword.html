@@ -455,7 +455,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <audio id="s_r1114"  src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15"    src="assets/audio/result_15.mp3"   preload="auto"></audio>
 
-<!-- 🔊 Mic beeps -->
+<!-- 🔊 Mic beeps (currently unused, but kept for future Apple-only beeps if needed) -->
 <audio id="s_micOn"   src="assets/audio/mic_on.mp3"   preload="auto"></audio>
 <audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
 
@@ -544,18 +544,30 @@ let answered=false;
 let hasMicPermission=false;
 let audioUnlocked=false;
 
-/* 🔍 Platform detection for iOS Safari quirks */
+/* 🔍 Platform detection */
 const ua = navigator.userAgent || '';
 const platform = navigator.platform || '';
-const isIOS =
-  /iPad|iPhone|iPod/.test(ua) ||
-  (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const isMacDesktop = /Macintosh/.test(ua) && !isIOS;
+
+/* ✅ iPad special case (includes "desktop mode" iPad: MacIntel + touch) */
+const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/* iPhone / iPod treated as generic iOS */
+const isIOSPhone = /iPhone|iPod/.test(ua);
+
+/* Any iOS device */
+const isIOS = isIpad || isIOSPhone;
+
+/* Mac desktop Safari (no touch) */
+const isMacDesktop = /Macintosh/.test(ua) && !isIpad;
+
+/* Any Apple device (for audio unlock rules) */
 const isApple = isIOS || isMacDesktop;
 
-/* 🧠 Create ONE SpeechRecognition instance (Safari is picky about this) */
+/* 🧠 Base SpeechRecognition type */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-if(SR){
+
+/* 🧠 Non-iPad: create ONE shared SpeechRecognition instance (Android + desktop + iPhone) */
+if(SR && !isIpad){
   recognition = new SR();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
@@ -569,7 +581,6 @@ if(SR){
   };
 
   recognition.onresult = e => {
-    // We got something → no longer listening
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
@@ -591,7 +602,6 @@ if(SR){
   };
 
   recognition.onend = () => {
-    // Safety: if iOS ends without result, unlock the button again
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
@@ -611,7 +621,6 @@ function unlockAudio(cb){
   audioUnlocked = true;
 
   try{
-    // Use an existing short sound; play muted, then stop.
     const ding = document.getElementById('s_ding');
     if(!ding){
       if(cb) cb();
@@ -641,15 +650,73 @@ function unlockAudio(cb){
 
 /* 🚀 Actually start recognition */
 function startRecognitionCore(){
-  if(!recognition){
+  if(!SR){
     alert('Speech Recognition not supported on this browser.');
     return;
   }
   if(listening || answered) return;
 
+  /* ✅ iPad: create a FRESH recognizer on every tap (one recognition per question) */
+  if(isIpad){
+    try{
+      const rec = new SR();
+      recognition = rec; // keep for stop() in error cases
+      rec.lang = 'en-US';
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+
+      rec.onstart = () => {
+        hasMicPermission = true;
+        listening = true;
+        micBtn.classList.add('pulsing');
+        answerBox.classList.add('pulsing');
+      };
+
+      rec.onresult = e => {
+        listening = false;
+        micBtn.classList.remove('pulsing');
+        answerBox.classList.remove('pulsing');
+
+        const raw = e.results[0][0].transcript;
+        const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
+
+        answerText.textContent = raw.trim();
+        evaluate(heard);   // iPad uses same evaluate(), but branches inside
+      };
+
+      rec.onerror = e => {
+        console.warn('Speech error (iPad):', e.error);
+        listening = false;
+        micBtn.classList.remove('pulsing');
+        answerBox.classList.remove('pulsing');
+        answerText.textContent = '';
+        try{ rec.stop(); }catch(_){}
+      };
+
+      rec.onend = () => {
+        listening = false;
+        micBtn.classList.remove('pulsing');
+        answerBox.classList.remove('pulsing');
+      };
+
+      rec.start();
+    }catch(err){
+      console.warn('Recognition start error (iPad):', err);
+      listening = false;
+      micBtn.classList.remove('pulsing');
+      answerBox.classList.remove('pulsing');
+    }
+    return;
+  }
+
+  /* 🌍 Non-iPad devices: reuse the shared recognizer (Android + desktop + iPhone) */
+  if(!recognition){
+    alert('Speech Recognition not supported on this browser.');
+    return;
+  }
+
   try{
     recognition.start();
-    // onstart handler will set listening + pulsing
   }catch(err){
     console.warn('Recognition start error:', err);
     listening = false;
@@ -663,7 +730,6 @@ function startListening(){
   if(listening || answered) return;
 
   if(isApple){
-    // iOS Safari: unlock audio session first, then start recognition
     unlockAudio(()=>{ startRecognitionCore(); });
   }else{
     startRecognitionCore();
@@ -684,11 +750,14 @@ function showCard(){
   answerBox.style.background='#fff';
   answerBox.style.color='#111';
   nextBtn.style.display='none';
+  nextBtn.disabled = false;
   answered=false;
   updateCounter();
 }
 
-/* ✅ Sage & NEXT 1s after confetti on ALL devices */
+/* ✅ Evaluate result
+   - Non-iPad: same as before → confetti → 1s → Sage + NEXT
+   - iPad: confetti → show NEXT only (Sage waits for tap) */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -701,11 +770,18 @@ function evaluate(heard){
 
     score++;
 
-    // After 1 second: show NEXT and play Sage simultaneously
-    setTimeout(()=>{
-      nextBtn.style.display='inline-block';
-      playSage(order[idx].en);
-    },1000);
+    if(isIpad){
+      // iPad: just show NEXT; Sage will be triggered by tap
+      setTimeout(()=>{
+        nextBtn.style.display='inline-block';
+      },600);
+    }else{
+      // Android + desktop + iPhone: keep existing behavior
+      setTimeout(()=>{
+        nextBtn.style.display='inline-block';
+        playSage(order[idx].en);
+      },1000);
+    }
 
   }else{
     answerBox.classList.add('wrong');
@@ -719,10 +795,27 @@ function evaluate(heard){
   }
 }
 
+/* ▶ NEXT button
+   - Non-iPad: unchanged → go straight to next question
+   - iPad: tap NEXT → play Sage → THEN go to next question */
 nextBtn.addEventListener('click',()=>{
-  idx++;
-  if(idx<order.length){showCard();}
-  else{showResults();}
+  if(isIpad){
+    // Avoid double taps during Sage
+    if(nextBtn.disabled) return;
+    nextBtn.disabled = true;
+
+    // Sage always triggered by tap on iPad
+    playSage(order[idx].en, ()=>{
+      nextBtn.disabled = false;
+      idx++;
+      if(idx<order.length){showCard();}
+      else{showResults();}
+    });
+  }else{
+    idx++;
+    if(idx<order.length){showCard();}
+    else{showResults();}
+  }
 });
 
 function showResults(){
@@ -770,7 +863,7 @@ function preloadAll(){
     const el=$("#"+id);
     if(el) el.load();
   });
-  // mic_on / mic_done are safe to delete; they are no longer used
+  // mic_on / mic_done are currently unused
 }
 
 // Quit button
@@ -799,3 +892,5 @@ helpOverlay.addEventListener('click',e=>{
 preloadAll();
 showCard();
 </script>
+</body>
+</html>
