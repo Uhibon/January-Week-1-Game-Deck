@@ -373,7 +373,8 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
     <div class="answerBox" id="answerBox">
       <div id="answerText">&nbsp;</div>
     </div>
-    <button id="micBtn" class="micBtn idle" aria-label="Speak">
+    <button id="micBtn" class="micBtn idle" aria-label="Speak or Check">
+      <!-- Default mic icon (Android + desktop) -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
         <path d="M19 11a1 1 0 0 0-2 0 5 5 0 0 1-10 0 1 1 0 0 0-2 0 7 7 0 0 0 6 6.93V21h-3a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2h-3v-3.07A7 7 0 0 0 19 11z"/>
@@ -427,10 +428,11 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
         In that case, please play like this:
       </p>
       <ul style="font-size:.9rem;">
-        <li>Tap the mic button.</li>
         <li>Say the English word out loud.</li>
-        <li>Tap <b>NEXT / 次へ</b> to check.</li>
-        <li>Sage will say the correct word for you.</li>
+        <li>Tap the <b>check button (✔)</b> to show the answer.</li>
+        <li>Watch the green box and confetti.</li>
+        <li>About 1 second later, Sage will say the correct word for you.</li>
+        <li>Tap <b>NEXT / 次へ</b> to go to the next word.</li>
       </ul>
       <p style="font-size:.9rem;">
         Your score still counts even if the iPad/iPhone is not judging your voice.
@@ -452,10 +454,11 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
         その場合は、次のように遊んでください：
       </p>
       <ul style="font-size:.9rem;">
-        <li>マイクボタンをタップする。</li>
         <li>英単語を声に出して言う。</li>
-        <li><b>「NEXT / 次へ」</b> をタップしてこたえをチェックする。</li>
-        <li>Sage が正しい発音を読んでくれます。</li>
+        <li><b>チェックボタン（✔）</b> をタップしてこたえを表示する。</li>
+        <li>みどりのボックスとコンフェッティを見て確認する。</li>
+        <li>約 1 秒後に、Sage が正しい発音を読んでくれます。</li>
+        <li><b>「NEXT / 次へ」</b> をタップして次の単語に進みます。</li>
       </ul>
       <p style="font-size:.9rem;">
         iPad / iPhone が「正解／不正解」をジャッジしなくても、スコアはちゃんとカウントされます。
@@ -575,6 +578,11 @@ const isIOS = isIpad || isIOSPhone;
 const isMacDesktop = /Macintosh/.test(ua) && !isIpad;
 const isApple = isIOS || isMacDesktop;
 
+/* Swap icon to ✔ on iOS */
+if(isIOS){
+  micBtn.innerHTML = '<span style="font-size:1.6rem;font-weight:900;">✔</span>';
+}
+
 /* Base SpeechRecognition type */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
@@ -677,28 +685,41 @@ function startRecognitionCore(){
   }
 }
 
-/* 🎙️ iOS fake mic flow (no real speech recognition) */
-function iosFakeMicFlow(){
+/* 🎙️ iOS check-flow (no real speech recognition) */
+function iosCheckFlow(){
   if(answered) return;
 
-  // Visual "speaking" cue
-  micBtn.classList.add('pulsing');
-  answerBox.classList.add('pulsing');
+  answered = true;
 
-  // Let them progress after speaking: show NEXT immediately
+  // Show correct English word in the white box
+  const item = order[idx];
+  answerText.textContent = item.en;
+  answerBox.classList.remove('pulsing');
+  answerBox.classList.add('correct');
+
+  // Ding + confetti immediately
+  playSound('s_ding');
+  confettiBurst(answerBox,60);
+
+  // Show NEXT immediately
   nextBtn.style.display='inline-block';
+  nextBtn.disabled = false;
+
+  // 1s later, Sage says the word
+  setTimeout(()=>{
+    playSage(item.en);
+  },1000);
 }
 
-/* 🎙️ Called when user taps mic */
+/* 🎙️ Called when user taps mic / check button */
 function startListening(){
   if(answered) return;
 
   if(isIOS){
-    // iPad / iPhone: no mic engine, just visual + NEXT
     if(isApple){
-      unlockAudio(()=>{ iosFakeMicFlow(); });
+      unlockAudio(()=>{ iosCheckFlow(); });
     }else{
-      iosFakeMicFlow();
+      iosCheckFlow();
     }
     return;
   }
@@ -764,39 +785,12 @@ function evaluate(heard){
 }
 
 /* ▶ NEXT button
-   - iOS: NEXT = "check" → mark correct, Sage, then next card
+   - iOS: just move to next card (Sage already played)
    - Non-iOS: NEXT just moves on (Sage already played in evaluate) */
 nextBtn.addEventListener('click',()=>{
-  if(isIOS){
-    // Avoid double taps during Sage
-    if(nextBtn.disabled) return;
-    nextBtn.disabled = true;
-
-    // Mark as answered + give reward now
-    if(!answered){
-      answered = true;
-      micBtn.classList.remove('pulsing');
-      answerBox.classList.remove('pulsing');
-      answerBox.classList.add('correct');
-      playSound('s_ding');
-      confettiBurst(answerBox,60);
-      score++;
-    }
-
-    // Sage says the word, THEN go next
-    playSage(order[idx].en, ()=>{
-      nextBtn.disabled = false;
-      idx++;
-      if(idx<order.length){showCard();}
-      else{showResults();}
-    });
-
-  }else{
-    // Non-iOS: just move to next card
-    idx++;
-    if(idx<order.length){showCard();}
-    else{showResults();}
-  }
+  idx++;
+  if(idx<order.length){showCard();}
+  else{showResults();}
 });
 
 function showResults(){
