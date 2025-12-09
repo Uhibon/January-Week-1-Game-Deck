@@ -451,12 +451,16 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 </div>
 
 <!-- audio (inside body) -->
-<audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
-<audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
-<audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
-<audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+<audio id="s_ding"   src="assets/audio/ding.mp3"        preload="auto"></audio>
+<audio id="s_fart"   src="assets/audio/fart.mp3"        preload="auto"></audio>
+<audio id="s_r05"    src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
+<audio id="s_r610"   src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="s_r1114"  src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="s_r15"    src="assets/audio/result_15.mp3"   preload="auto"></audio>
+
+<!-- 🔊 New mic sounds -->
+<audio id="s_micOn"   src="assets/audio/mic_on.mp3"   preload="auto"></audio>
+<audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
 
 <script>
 const MASTER=[
@@ -523,7 +527,7 @@ const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 let audioUnlocked=false;
 function unlockAudioOnce(){
   if(audioUnlocked) return;
-  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
+  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15','s_micOn','s_micDone'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
     try{
@@ -546,12 +550,21 @@ function startListening(){
   recognition.lang='en-US';
   recognition.interimResults=false;
   recognition.maxAlternatives=1;
+
   listening=true;
   micBtn.classList.add('pulsing');
   answerBox.classList.add('pulsing');
+
+  // 🔊 mic activated
+  playSound('s_micOn');
+
   recognition.start();
   recognition.onresult=e=>{
     const raw=e.results[0][0].transcript;
+
+    // 🔊 recording finished / result received
+    playSound('s_micDone');
+
     const heard=raw.toLowerCase().replace(/[^a-z]/g,'');
     answerText.textContent=raw.trim();
     evaluate(heard);
@@ -653,7 +666,7 @@ function preloadAll(){
     const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);
     a.load();
   });
-  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
+  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15','s_micOn','s_micDone'].forEach(id=>{
     const el=$("#"+id);
     if(el) el.load();
   });
