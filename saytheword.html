@@ -471,6 +471,479 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <!-- 🔊 Shared Sage voice element (reused for every word) -->
 <audio id="sageVoice" preload="auto"></audio>
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Booha Say the Word – January Week 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0b1530; --ink:#fff; --gold:#ffd166; --green:#22c55e; --red:#ef4444; --purple:#a855f7;
+  --outline:#ffffff26; --radius:26px; --micSize:56px; --barH:96px;
+  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
+}
+
+/* base */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  overscroll-behavior-y:contain;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+/* 🔘 Quit button – smaller Booha version */
+.top-nav-btn{
+  position:fixed;
+  top:8px;
+  left:8px;
+  z-index:40;
+  border-radius:999px;
+  padding:3px 8px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff;
+
+  font-size:0.55rem;
+  font-weight:700;
+  letter-spacing:.04em;
+
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  box-shadow:0 0 8px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+
+/* Japanese text adjusted to match English height */
+.top-nav-btn .jp{
+  font-size:0.48rem;
+  line-height:1;
+  font-weight:700;
+  opacity:.9;
+  transform:translateY(1px);
+}
+
+/* ❓ Help button – standard Booha */
+.help-icon{
+  position:fixed;
+  bottom:12px;
+  left:12px;
+  z-index:50;
+
+  width:44px;
+  height:44px;
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:1.2rem;
+  font-weight:900;
+  color:#fff;
+
+  border-radius:50%;
+  border:2px solid #ffffffaa;
+
+  background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 55%,#4c1d95 100%);
+  cursor:pointer;
+
+  box-shadow:
+    0 0 10px rgba(168,85,247,0.9),
+    0 0 26px rgba(129,140,248,0.8),
+    0 0 40px rgba(129,140,248,0.6);
+
+  transition:transform .15s ease;
+}
+.help-icon:active{transform:scale(.92);}
+
+/* Header */
+header{text-align:center;padding:28px 16px 10px}
+header h1{
+  font-family:'Cinzel',serif;
+  letter-spacing:.5px;
+  font-size:clamp(1.8rem,5.2vw,2.6rem);
+}
+header h2{
+  font-family:'Cinzel',serif;
+  letter-spacing:1px;
+  margin-top:6px;
+  font-size:clamp(2.0rem,6.2vw,3rem);
+}
+.subtitle-stack{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:6px;
+}
+.subtitle-stack .sub-combined{
+  font-family:'Cinzel','Noto Sans JP',system-ui,sans-serif;
+  font-weight:700;
+  font-size:clamp(1.05rem,3vw,1.3rem);
+  line-height:1.2;
+}
+hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
+
+/* Pages + footer */
+footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif}
+.page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 28px}
+.page.active{display:block}
+
+/* Game page */
+#page-game{display:flex;flex-direction:column;align-items:center;margin-top:30px;gap:28px;}
+.stripeBar{
+  position:relative;
+  width:min(560px,90vw);
+  height:var(--barH);
+  border-radius:30px;
+  overflow:hidden;
+  margin:0 auto 24px auto;
+  box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 0 0 4px rgba(255,255,255,.08);
+}
+.stripeInner{
+  position:absolute;
+  inset:0;
+  background-size:100% var(--barH);
+  animation:stripesV 3.2s linear infinite;
+  filter:saturate(1.05) brightness(1.08)
+}
+@keyframes stripesV{from{background-position:0 0}to{background-position:0 var(--barH)}}
+.sv1{background-image:repeating-linear-gradient(0deg,#ff7eb9 0 18px,#5ee6ff 18px 36px,#ffd166 36px 54px)}
+.sv2{background-image:repeating-linear-gradient(0deg,#a78bfa 0 18px,#60a5fa 18px 36px,#f472b6 36px 54px)}
+.sv3{background-image:repeating-linear-gradient(0deg,#34d399 0 18px,#fbbf24 18px 36px,#60a5fa 36px 54px)}
+.sv4{background-image:repeating-linear-gradient(0deg,#fca5a5 0 18px,#86efac 18px 36px,#93c5fd 36px 54px)}
+.sv5{background-image:repeating-linear-gradient(0deg,#f9a8d4 0 18px,#fef08a 18px 36px,#6ee7b7 36px 54px)}
+.jpLabel{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-weight:900;
+  letter-spacing:.02em;
+  text-shadow:0 1px 0 #0006,0 3px 12px #0008;
+}
+.jp{font-size:clamp(1.5rem,3.8vw,2.1rem)}
+.hira{font-size:clamp(1.05rem,3vw,1.25rem);opacity:.95}
+.answerRow{
+  width:min(560px,90vw);
+  display:grid;
+  grid-template-columns:1fr var(--micSize);
+  gap:16px;
+  align-items:center;
+  justify-content:center;
+}
+.answerBox{
+  position:relative;
+  height:96px;
+  border-radius:30px;
+  background:#fff;
+  color:#111;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(1.15rem,3.2vw,1.45rem);
+  font-weight:800;
+  letter-spacing:.01em;
+  box-shadow:0 10px 26px rgba(0,0,0,.3);
+  transition:all .3s ease;
+}
+.answerBox.correct{
+  background:var(--green);
+  color:#052b11;
+  box-shadow:0 0 0 3px rgba(34,197,94,.75),0 10px 28px rgba(34,197,94,.35)
+}
+.answerBox.wrong{
+  background:#fee2e2;
+  color:#991b1b;
+  box-shadow:0 0 0 3px #ef4444aa;
+  animation:shake .45s
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.pulsing{animation:purplePulse 1.2s ease-in-out infinite;}
+@keyframes purplePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0.8),0 0 18px 6px rgba(168,85,247,0.4);}
+  50%{box-shadow:0 0 40px 15px rgba(192,132,252,0.9),0 0 60px 25px rgba(168,85,247,0.7);}
+}
+.micBtn{
+  width:var(--micSize);
+  height:var(--micSize);
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(circle at 30% 30%,#a78bfa 0%,#7c3aed 62%,#4c1d95 100%);
+  box-shadow:0 0 20px #a855f7aa,0 0 45px #7c3aed66;
+  transition:transform .1s ease;
+}
+.micBtn svg{width:24px;height:24px;fill:#fff;}
+.micBtn:active{transform:scale(.95);}
+.micBtn.idle{animation:breath 2.2s ease-in-out infinite}
+@keyframes breath{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.25)}
+}
+.micBtn:disabled{opacity:.5;filter:saturate(.6);cursor:not-allowed}
+.btn-next{
+  background:var(--gold);
+  color:#000;
+  box-shadow:var(--goldGlow);
+  border:0;
+  border-radius:28px;
+  padding:12px 34px;
+  font-weight:800;
+  font-size:1.05rem;
+  cursor:pointer;
+  display:none;
+  margin-top:14px;
+}
+.counter{margin-top:10px;text-align:center;opacity:.9;font-size:1rem;}
+.confetti{
+  position:fixed;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:10;
+  opacity:.9;
+}
+
+/* Results page */
+#page-results{text-align:center;}
+.result-box{
+  margin-top:40px;
+  margin-bottom:24px;
+  padding:24px 18px;
+  border-radius:24px;
+  background:rgba(15,23,42,.9);
+  box-shadow:0 0 18px rgba(0,0,0,.5);
+}
+.result-msg{
+  font-size:1.4rem;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.result-score{
+  font-size:1.2rem;
+  opacity:.9;
+}
+
+/* 🌌 Help overlay – standard Booha popup */
+.help-overlay{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top, rgba(96,165,250,.42), transparent 55%),
+             radial-gradient(circle at bottom, rgba(34,197,94,.35), transparent 55%),
+             rgba(2,6,23,.88);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.help-overlay.show{display:flex;}
+
+.help-dialog{
+  max-width:520px;
+  width:90%;
+  max-height:80vh;
+  background:rgba(15,23,42,.96);
+  border:1px solid #ffffff55;
+  border-radius:24px;
+  padding:20px 20px 18px;
+  position:relative;
+  box-shadow:0 0 30px rgba(0,0,0,.8);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.help-title{
+  font-family:'Cinzel',serif;
+  text-align:center;
+  font-size:1.35rem;
+  margin-bottom:8px;
+  color:#fff;
+}
+.help-label{
+  text-align:center;
+  opacity:.75;
+  margin-bottom:12px;
+  font-size:.82rem;
+}
+.help-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(30,64,175,.9);
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  font-size:1rem;
+}
+.help-content{
+  font-size:.95rem;
+  line-height:1.6;
+  color:#f1f5f9;
+}
+.help-content ul{
+  padding-left:1.1em;
+  margin-bottom:12px;
+}
+.help-content li{
+  margin-bottom:4px;
+}
+
+@media(max-width:700px){
+  :root{--barH:88px;--micSize:52px}
+  .answerBox{height:90px}
+  header{padding-top:40px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Quit + Help buttons (standard Booha UI) -->
+<button id="quitBtn" class="top-nav-btn">
+  <span>Quit</span>
+  <span class="jp">／ やめる</span>
+</button>
+
+<button id="helpBtn" class="help-icon">?</button>
+
+<header>
+  <h1>THE BOO-RICULUM</h1>
+  <h2>SAY THE WORD</h2>
+  <div class="subtitle-stack">
+    <div class="sub-combined">January Week 1 – １月第１週</div>
+  </div>
+  <hr class="sep">
+</header>
+
+<section id="page-game" class="page active">
+  <div class="stripeBar">
+    <div id="stripeInner" class="stripeInner sv1"></div>
+    <div class="jpLabel">
+      <span id="jpTxt" class="jp"></span>
+      <span id="hiraTxt" class="hira"></span>
+    </div>
+  </div>
+
+  <div class="answerRow">
+    <div class="answerBox" id="answerBox">
+      <div id="answerText">&nbsp;</div>
+    </div>
+    <button id="micBtn" class="micBtn idle" aria-label="Speak">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
+        <path d="M19 11a1 1 0 0 0-2 0 5 5 0 0 1-10 0 1 1 0 0 0-2 0 7 7 0 0 0 6 6.93V21h-3a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2h-3v-3.07A7 7 0 0 0 19 11z"/>
+      </svg>
+    </button>
+  </div>
+
+  <button id="nextBtn" class="btn-next">NEXT ➜ / 次へ ➜</button>
+  <div id="counter" class="counter">1/15</div>
+</section>
+
+<section id="page-results" class="page">
+  <div class="result-box">
+    <div id="resultMsg" class="result-msg">結果</div>
+    <div id="resultScore" class="result-score">0/15 (0%)</div>
+  </div>
+  <div class="actions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <button id="playAgain" class="btn-next" style="display:inline-block">
+      Play Again / もう一度
+    </button>
+    <button id="backToMenu" class="btn-next" style="display:inline-block">
+      Return to Main Menu / メインメニューにもどる
+    </button>
+  </div>
+</section>
+
+<footer>Bryan's English School</footer>
+
+<!-- Help overlay (standard Booha popup) -->
+<div id="helpOverlay" class="help-overlay">
+  <div class="help-dialog">
+    <button id="helpClose" class="help-close">×</button>
+
+    <div class="help-title">HOW TO PLAY ／ 遊び方</div>
+    <div class="help-label">Booha Say the Word Game</div>
+
+    <div class="help-content">
+      <p><strong>English</strong></p>
+      <ul>
+        <li>Tap the purple mic button when you are ready to speak.</li>
+        <li>If your browser asks for microphone access, tap <b>Allow</b>.</li>
+        <li>When the mic is glowing, say the English word one time, clearly.</li>
+        <li>If you are correct, the answer box turns green and you hear a “ding” sound.</li>
+        <li>Listen to the Sage voice and then tap <b>NEXT / 次へ</b> to go to the next word.</li>
+        <li>Try to get the highest score you can!</li>
+      </ul>
+
+      <p><strong>日本語</strong></p>
+      <ul>
+        <li>じゅんびができたら、むらさきのマイクボタンをタップします。</li>
+        <li>ブラウザからマイクの許可を聞かれたら、<b>「許可」</b>をタップしてください。</li>
+        <li>マイクが光っているときだけ、英単語をはっきり1回だけ言います。</li>
+        <li>正解するとボックスがみどり色になり、「ピン！」という音が鳴ります。</li>
+        <li>Sage の声を聞いたあと、<b>「NEXT / 次へ」</b>ボタンを押して次の単語に進みます。</li>
+        <li>できるだけ高いスコアを目指しましょう！</li>
+      </ul>
+
+      <p><strong>iPad / iPhone のご注意</strong></p>
+      <p style="font-size:.9rem;">
+        まれに、マイクが反応しなくなることがあります。<br>
+        その場合はページを更新してもう一度お試しください。<br>
+        それでも直らないときは、Android 端末かパソコン（Chrome ブラウザ）でプレイしてください。
+      </p>
+
+      <p><strong>Quit / やめる</strong></p>
+      <p>
+        To stop playing, tap <b>“Quit / やめる”</b> in the top-left to return to the main menu。<br>
+        やめたいときは、左上の<b>「Quit / やめる」</b>ボタンでメインメニューにもどります。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- audio (inside body) -->
+<audio id="s_ding"   src="assets/audio/ding.mp3"        preload="auto"></audio>
+<audio id="s_fart"   src="assets/audio/fart.mp3"        preload="auto"></audio>
+<audio id="s_r05"    src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
+<audio id="s_r610"   src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="s_r1114"  src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="s_r15"    src="assets/audio/result_15.mp3"   preload="auto"></audio>
+
+<!-- 🔊 Mic beeps -->
+<audio id="s_micOn"   src="assets/audio/mic_on.mp3"   preload="auto"></audio>
+<audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
+
+<!-- 🔊 Shared Sage voice element (reused for every word) -->
+<audio id="sageVoice" preload="auto"></audio>
+
 <script>
 const MASTER=[
   {en:"goal",jp:"目標",hira:"もくひょう"},
@@ -546,33 +1019,85 @@ let order=shuffle([...MASTER]);
 let idx=0,score=0,stripeIx=0;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
-/* 🎙️ Speech recognition state (single persistent instance) */
+/* 🎙️ Speech recognition state */
 let recognition=null;
 let listening=false;
 let answered=false;
 let hasMicPermission=false;
 let audioUnlocked=false;
 
-/* Create SR instance once (better for iOS Safari) */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-if(SR){
+/* iOS detection (iPhone/iPad incl. iPadOS desktop mode) */
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/* 🔓 Unlock audio once on first tap (Safari) */
+function unlockAudio(){
+  if(audioUnlocked) return;
+  const test = document.getElementById('s_micOn') || document.getElementById('s_micDone');
+  if(!test){
+    audioUnlocked = true;
+    return;
+  }
+  test.muted = true;
+  const p = test.play();
+  if(p && p.then){
+    p.then(()=>{
+      test.pause();
+      test.currentTime = 0;
+      test.muted = false;
+      audioUnlocked = true;
+    }).catch(()=>{
+      // Will try again on next gesture if needed
+    });
+  }else{
+    audioUnlocked = true;
+  }
+}
+
+/* 🧠 Create a new SpeechRecognition instance each time, but with better cleanup */
+function startListening(){
+  if(listening || answered) return;
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    alert('Speech Recognition not supported on this browser.');
+    return;
+  }
+
+  unlockAudio(); // make sure audio is allowed on Safari
+
   recognition = new SR();
-  recognition.lang='en-US';
-  recognition.interimResults=false;
-  recognition.maxAlternatives=1;
-  recognition.continuous=false;
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  listening = true;
+  micBtn.classList.add('pulsing');
+  answerBox.classList.add('pulsing');
+
+  // After permission is already granted, play mic-on beep like Android
+  if(hasMicPermission){
+    playSound('s_micOn');
+  }
+
+  try{
+    recognition.start();
+  }catch(err){
+    console.warn('Recognition start error:', err);
+    listening = false;
+    micBtn.classList.remove('pulsing');
+    answerBox.classList.remove('pulsing');
+    return;
+  }
 
   recognition.onstart = () => {
-    listening = true;
     hasMicPermission = true;
-    micBtn.classList.add('pulsing');
-    answerBox.classList.add('pulsing');
   };
 
   recognition.onresult = e => {
     const raw = e.results[0][0].transcript;
 
-    // Mic-done beep (directly in onresult = gesture chain)
+    // "Recorded" beep
     if(hasMicPermission){
       playSound('s_micDone');
     }
@@ -580,16 +1105,15 @@ if(SR){
     const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
     answerText.textContent = raw.trim();
     evaluate(heard);
-
-    // Make sure iOS fully closes the session
-    try{ recognition.stop(); }catch(err){ console.warn('stop error:',err); }
   };
 
   recognition.onerror = e => {
     console.warn('Speech error:', e.error);
+    // If something goes wrong on iOS, always release the lock
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
+    // Soft feedback: clear text so they try again
     answerText.textContent = '';
   };
 
@@ -598,34 +1122,6 @@ if(SR){
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
   };
-}else{
-  // If SR is not supported, disable mic
-  micBtn.disabled = true;
-  micBtn.title = 'Speech Recognition not supported on this browser.';
-}
-
-/* 🔓 First click should unlock audio on Safari + give mic-on beep */
-function startListening(){
-  if(!recognition){
-    alert('Speech Recognition not supported on this browser.');
-    return;
-  }
-  if(listening || answered) return;
-
-  // First ever click → unlock audio by actually playing the mic-on sound
-  if(!audioUnlocked){
-    audioUnlocked = true;
-    playSound('s_micOn');
-  }else{
-    // Subsequent clicks → normal mic-on beep (matches Android)
-    playSound('s_micOn');
-  }
-
-  try{
-    recognition.start();
-  }catch(err){
-    console.warn('Recognition start error:',err);
-  }
 }
 
 micBtn.addEventListener('click', startListening);
@@ -646,7 +1142,7 @@ function showCard(){
   updateCounter();
 }
 
-/* ✅ 1.4 second delay for Sage (your option 3) */
+/* ✅ 1.4 second delay for Sage (option 3) */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -657,12 +1153,12 @@ function evaluate(heard){
     playSound('s_ding');
     confettiBurst(answerBox,60);
 
-    // Give iOS time to fully release the mic before Sage speaks
+    // Give iOS time to fully close the mic before Sage speaks
     setTimeout(()=>{
       playSage(order[idx].en,()=>{
         nextBtn.style.display='inline-block';
       });
-    },1400);
+    },1400); // ⏱ slower / clearer timing
 
     score++;
   }else{
@@ -756,3 +1252,5 @@ helpOverlay.addEventListener('click',e=>{
 preloadAll();
 showCard();
 </script>
+</body>
+</html>
