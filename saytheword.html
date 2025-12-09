@@ -16,11 +16,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  min-height:100%;
+  min-height:100vh;                     /* ✅ better for iPad/iframes */
   background:var(--bg);
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
+  overscroll-behavior-y:contain;        /* reduce weird overscroll on iPad */
+  padding-bottom:env(safe-area-inset-bottom); /* keep footer/buttons clear */
 }
 
 /* 🔘 Quit button – smaller Booha version */
@@ -477,13 +479,18 @@ const MASTER=[
 
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
-function playSound(id){const s=$("#"+id);if(!s)return; s.currentTime=0; s.play().catch(()=>{});}
+function playSound(id){
+  const s=$("#"+id);
+  if(!s)return;
+  s.currentTime=0;
+  s.play().catch(()=>{});
+}
 function playSage(word,onend){
   if(!word)return;
   const name=word.toLowerCase();
   const a=new Audio(`audio/${name}.mp3`);
   if(onend)a.onended=onend;
-  a.play().catch(()=>{if(onend)onend();});
+  a.play().catch(()=>{ if(onend)onend(); });
 }
 function confettiBurst(el,count=60){
   const r=el.getBoundingClientRect();
@@ -511,6 +518,25 @@ const micBtn=$('#micBtn'), nextBtn=$('#nextBtn'), counterEl=$('#counter');
 let order=shuffle([...MASTER]);
 let idx=0,score=0,stripeIx=0,recognition=null,listening=false,answered=false;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
+
+/* 🔓 Audio unlock for iPad / Safari / iframes */
+let audioUnlocked=false;
+function unlockAudioOnce(){
+  if(audioUnlocked) return;
+  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    try{
+      el.volume=1.0;
+      el.currentTime=0;
+      el.play().then(()=>el.pause()).catch(()=>{});
+    }catch(e){}
+  });
+  audioUnlocked=true;
+}
+['pointerdown','touchstart','mousedown'].forEach(evt=>{
+  window.addEventListener(evt,unlockAudioOnce,{once:true,passive:true});
+});
 
 function startListening(){
   if(listening||answered)return;
