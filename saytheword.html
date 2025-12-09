@@ -416,26 +416,49 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
         <li>Tap the purple mic button when you are ready to speak.</li>
         <li>If your browser asks for microphone access, tap <b>Allow</b>.</li>
         <li>When the mic is glowing, say the English word one time, clearly.</li>
-        <li>If you are correct, the answer box turns green and you hear a “ding” sound.</li>
+        <li>If your device supports listening, the game will check your answer automatically.</li>
         <li>Listen to the Sage voice and then tap <b>NEXT / 次へ</b> to go to the next word.</li>
         <li>Try to get the highest score you can!</li>
       </ul>
+
+      <p><strong>iPad / iPhone note</strong></p>
+      <p style="font-size:.9rem;">
+        On some iPad and iPhone devices, the live listening feature in Safari does not work well.<br>
+        In that case, please play like this:
+      </p>
+      <ul style="font-size:.9rem;">
+        <li>Tap the mic button.</li>
+        <li>Say the English word out loud.</li>
+        <li>Tap <b>NEXT / 次へ</b> to check.</li>
+        <li>Sage will say the correct word for you.</li>
+      </ul>
+      <p style="font-size:.9rem;">
+        Your score still counts even if the iPad/iPhone is not judging your voice.
+      </p>
 
       <p><strong>日本語</strong></p>
       <ul>
         <li>じゅんびができたら、むらさきのマイクボタンをタップします。</li>
         <li>ブラウザからマイクの許可を聞かれたら、<b>「許可」</b>をタップしてください。</li>
         <li>マイクが光っているときだけ、英単語をはっきり1回だけ言います。</li>
-        <li>正解するとボックスがみどり色になり、「ピン！」という音が鳴ります。</li>
+        <li>マイクが使える端末では、自動で「正解／不正解」をチェックします。</li>
         <li>Sage の声を聞いたあと、<b>「NEXT / 次へ」</b>ボタンを押して次の単語に進みます。</li>
         <li>できるだけ高いスコアを目指しましょう！</li>
       </ul>
 
-      <p><strong>iPad / iPhone のご注意</strong></p>
+      <p><strong>iPad / iPhone の注意</strong></p>
       <p style="font-size:.9rem;">
-        まれに、マイクが反応しなくなることがあります。<br>
-        その場合はページを更新してもう一度お試しください。<br>
-        それでも直らないときは、Android 端末かパソコン（Chrome ブラウザ）でプレイしてください。
+        一部の iPad / iPhone（Safari）では、マイクの聞き取り機能がうまく動かないことがあります。<br>
+        その場合は、次のように遊んでください：
+      </p>
+      <ul style="font-size:.9rem;">
+        <li>マイクボタンをタップする。</li>
+        <li>英単語を声に出して言う。</li>
+        <li><b>「NEXT / 次へ」</b> をタップしてこたえをチェックする。</li>
+        <li>Sage が正しい発音を読んでくれます。</li>
+      </ul>
+      <p style="font-size:.9rem;">
+        iPad / iPhone が「正解／不正解」をジャッジしなくても、スコアはちゃんとカウントされます。
       </p>
 
       <p><strong>Quit / やめる</strong></p>
@@ -455,7 +478,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <audio id="s_r1114"  src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15"    src="assets/audio/result_15.mp3"   preload="auto"></audio>
 
-<!-- 🔊 Mic beeps (currently unused, but kept for future Apple-only beeps if needed) -->
+<!-- 🔊 Mic beeps (kept for future if needed) -->
 <audio id="s_micOn"   src="assets/audio/mic_on.mp3"   preload="auto"></audio>
 <audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
 
@@ -537,44 +560,32 @@ let order=shuffle([...MASTER]);
 let idx=0,score=0,stripeIx=0;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
-/* 🎙️ Speech recognition state */
+/* 🎙️ Speech recognition + platform flags */
 let recognition=null;
 let listening=false;
 let answered=false;
-let hasMicPermission=false;
 let audioUnlocked=false;
 
-/* 🔍 Platform detection */
 const ua = navigator.userAgent || '';
 const platform = navigator.platform || '';
 
-/* ✅ iPad special case (includes "desktop mode" iPad: MacIntel + touch) */
 const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-/* iPhone / iPod treated as generic iOS */
 const isIOSPhone = /iPhone|iPod/.test(ua);
-
-/* Any iOS device */
 const isIOS = isIpad || isIOSPhone;
-
-/* Mac desktop Safari (no touch) */
 const isMacDesktop = /Macintosh/.test(ua) && !isIpad;
-
-/* Any Apple device (for audio unlock rules) */
 const isApple = isIOS || isMacDesktop;
 
-/* 🧠 Base SpeechRecognition type */
+/* Base SpeechRecognition type */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
-/* 🧠 Non-iPad: create ONE shared SpeechRecognition instance (Android + desktop + iPhone) */
-if(SR && !isIpad){
+/* 🌍 Non-iOS: shared recognizer (Android + desktop, including Mac) */
+if(SR && !isIOS){
   recognition = new SR();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
-    hasMicPermission = true;
     listening = true;
     micBtn.classList.add('pulsing');
     answerBox.classList.add('pulsing');
@@ -589,7 +600,7 @@ if(SR && !isIpad){
     const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
 
     answerText.textContent = raw.trim();
-    evaluate(heard);
+    evaluate(heard); // real check on non-iOS
   };
 
   recognition.onerror = e => {
@@ -648,72 +659,13 @@ function unlockAudio(cb){
   }
 }
 
-/* 🚀 Actually start recognition */
+/* 🚀 Start recognition (non-iOS only) */
 function startRecognitionCore(){
-  if(!SR){
+  if(!SR || !recognition){
     alert('Speech Recognition not supported on this browser.');
     return;
   }
   if(listening || answered) return;
-
-  /* ✅ iPad: create a FRESH recognizer on every tap (one recognition per question) */
-  if(isIpad){
-    try{
-      const rec = new SR();
-      recognition = rec; // keep for stop() in error cases
-      rec.lang = 'en-US';
-      rec.interimResults = false;
-      rec.maxAlternatives = 1;
-
-      rec.onstart = () => {
-        hasMicPermission = true;
-        listening = true;
-        micBtn.classList.add('pulsing');
-        answerBox.classList.add('pulsing');
-      };
-
-      rec.onresult = e => {
-        listening = false;
-        micBtn.classList.remove('pulsing');
-        answerBox.classList.remove('pulsing');
-
-        const raw = e.results[0][0].transcript;
-        const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
-
-        answerText.textContent = raw.trim();
-        evaluate(heard);   // iPad uses same evaluate(), but branches inside
-      };
-
-      rec.onerror = e => {
-        console.warn('Speech error (iPad):', e.error);
-        listening = false;
-        micBtn.classList.remove('pulsing');
-        answerBox.classList.remove('pulsing');
-        answerText.textContent = '';
-        try{ rec.stop(); }catch(_){}
-      };
-
-      rec.onend = () => {
-        listening = false;
-        micBtn.classList.remove('pulsing');
-        answerBox.classList.remove('pulsing');
-      };
-
-      rec.start();
-    }catch(err){
-      console.warn('Recognition start error (iPad):', err);
-      listening = false;
-      micBtn.classList.remove('pulsing');
-      answerBox.classList.remove('pulsing');
-    }
-    return;
-  }
-
-  /* 🌍 Non-iPad devices: reuse the shared recognizer (Android + desktop + iPhone) */
-  if(!recognition){
-    alert('Speech Recognition not supported on this browser.');
-    return;
-  }
 
   try{
     recognition.start();
@@ -725,9 +677,34 @@ function startRecognitionCore(){
   }
 }
 
+/* 🎙️ iOS fake mic flow (no real speech recognition) */
+function iosFakeMicFlow(){
+  if(answered) return;
+
+  // Visual "speaking" cue
+  micBtn.classList.add('pulsing');
+  answerBox.classList.add('pulsing');
+
+  // Let them progress after speaking: show NEXT immediately
+  nextBtn.style.display='inline-block';
+}
+
 /* 🎙️ Called when user taps mic */
 function startListening(){
-  if(listening || answered) return;
+  if(answered) return;
+
+  if(isIOS){
+    // iPad / iPhone: no mic engine, just visual + NEXT
+    if(isApple){
+      unlockAudio(()=>{ iosFakeMicFlow(); });
+    }else{
+      iosFakeMicFlow();
+    }
+    return;
+  }
+
+  // Non-iOS: real recognition
+  if(listening) return;
 
   if(isApple){
     unlockAudio(()=>{ startRecognitionCore(); });
@@ -755,9 +732,7 @@ function showCard(){
   updateCounter();
 }
 
-/* ✅ Evaluate result
-   - Non-iPad: same as before → confetti → 1s → Sage + NEXT
-   - iPad: confetti → show NEXT only (Sage waits for tap) */
+/* ✅ Evaluate result – real check only for non-iOS */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -770,18 +745,11 @@ function evaluate(heard){
 
     score++;
 
-    if(isIpad){
-      // iPad: just show NEXT; Sage will be triggered by tap
-      setTimeout(()=>{
-        nextBtn.style.display='inline-block';
-      },600);
-    }else{
-      // Android + desktop + iPhone: keep existing behavior
-      setTimeout(()=>{
-        nextBtn.style.display='inline-block';
-        playSage(order[idx].en);
-      },1000);
-    }
+    // Normal flow: Sage after 1s, NEXT appears
+    setTimeout(()=>{
+      nextBtn.style.display='inline-block';
+      playSage(order[idx].en);
+    },1000);
 
   }else{
     answerBox.classList.add('wrong');
@@ -796,22 +764,35 @@ function evaluate(heard){
 }
 
 /* ▶ NEXT button
-   - Non-iPad: unchanged → go straight to next question
-   - iPad: tap NEXT → play Sage → THEN go to next question */
+   - iOS: NEXT = "check" → mark correct, Sage, then next card
+   - Non-iOS: NEXT just moves on (Sage already played in evaluate) */
 nextBtn.addEventListener('click',()=>{
-  if(isIpad){
+  if(isIOS){
     // Avoid double taps during Sage
     if(nextBtn.disabled) return;
     nextBtn.disabled = true;
 
-    // Sage always triggered by tap on iPad
+    // Mark as answered + give reward now
+    if(!answered){
+      answered = true;
+      micBtn.classList.remove('pulsing');
+      answerBox.classList.remove('pulsing');
+      answerBox.classList.add('correct');
+      playSound('s_ding');
+      confettiBurst(answerBox,60);
+      score++;
+    }
+
+    // Sage says the word, THEN go next
     playSage(order[idx].en, ()=>{
       nextBtn.disabled = false;
       idx++;
       if(idx<order.length){showCard();}
       else{showResults();}
     });
+
   }else{
+    // Non-iOS: just move to next card
     idx++;
     if(idx<order.length){showCard();}
     else{showResults();}
@@ -863,7 +844,6 @@ function preloadAll(){
     const el=$("#"+id);
     if(el) el.load();
   });
-  // mic_on / mic_done are currently unused
 }
 
 // Quit button
