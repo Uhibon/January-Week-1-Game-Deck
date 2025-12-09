@@ -440,6 +440,13 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
         <li>できるだけ高いスコアを目指しましょう！</li>
       </ul>
 
+      <p><strong>iPad / iPhone のご注意</strong></p>
+      <p style="font-size:.9rem;">
+        まれに、1問目のあとでマイクが反応しなくなることがあります。<br>
+        その場合はページを更新してもう一度お試しください。<br>
+        それでも直らないときは、Android 端末かパソコン（Chrome ブラウザ）でプレイしてください。
+      </p>
+
       <p><strong>Quit / やめる</strong></p>
       <p>
         To stop playing, tap <b>“Quit / やめる”</b> in the top-left to return to the main menu。<br>
@@ -460,6 +467,9 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <!-- 🔊 Mic beeps -->
 <audio id="s_micOn"   src="assets/audio/mic_on.mp3"   preload="auto"></audio>
 <audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
+
+<!-- 🔊 Shared Sage voice element (reused for every word) -->
+<audio id="sageVoice" preload="auto"></audio>
 
 <script>
 const MASTER=[
@@ -488,13 +498,27 @@ function playSound(id){
   s.currentTime=0;
   s.play().catch(()=>{});
 }
+
+/* 🔁 Shared Sage voice element */
+const sageVoice=document.getElementById('sageVoice');
 function playSage(word,onend){
-  if(!word)return;
+  if(!word || !sageVoice){
+    if(onend)onend();
+    return;
+  }
   const name=word.toLowerCase();
-  const a=new Audio(`audio/${name}.mp3`);
-  if(onend)a.onended=onend;
-  a.play().catch(()=>{ if(onend)onend(); });
+  sageVoice.src=`audio/${name}.mp3`;
+  sageVoice.currentTime=0;
+  sageVoice.onended=()=>{
+    sageVoice.onended=null;
+    if(onend)onend();
+  };
+  sageVoice.play().catch(err=>{
+    console.warn('Sage play blocked:',err);
+    if(onend)onend();
+  });
 }
+
 function confettiBurst(el,count=60){
   const r=el.getBoundingClientRect();
   for(let i=0;i<count;i++){
@@ -526,7 +550,7 @@ const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 let hasMicPermission=false;
 
 function startListening(){
-  if(listening||answered)return;
+  if(listening || answered) return;
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){
     alert('Speech Recognition not supported on this browser.');
@@ -541,8 +565,8 @@ function startListening(){
   micBtn.classList.add('pulsing');
   answerBox.classList.add('pulsing');
 
-  // ⚠️ First time (when permission dialog appears), we DO NOT play a beep.
-  // After permission is granted once, we play mic-on like Android.
+  // First time (with permission dialog) → no beep.
+  // After permission granted once → play mic-on beep like Android.
   if(hasMicPermission){
     playSound('s_micOn');
   }
@@ -550,14 +574,13 @@ function startListening(){
   recognition.start();
 
   recognition.onstart=()=>{
-    // Called once recognition really starts (after permission granted)
     hasMicPermission=true;
   };
 
   recognition.onresult=e=>{
     const raw=e.results[0][0].transcript;
 
-    // ✅ Now it's safe: play "recorded" ping when a result arrives
+    // Now it's safe to play "recorded" beep
     if(hasMicPermission){
       playSound('s_micDone');
     }
@@ -567,7 +590,8 @@ function startListening(){
     evaluate(heard);
   };
 
-  recognition.onerror=()=>{
+  recognition.onerror=e=>{
+    console.warn('Speech error:',e.error);
     answerText.textContent='';
   };
 
