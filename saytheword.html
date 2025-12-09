@@ -546,85 +546,33 @@ let order=shuffle([...MASTER]);
 let idx=0,score=0,stripeIx=0;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
-/* 🎙️ Speech recognition state */
+/* 🎙️ Speech recognition state (single persistent instance) */
 let recognition=null;
 let listening=false;
 let answered=false;
 let hasMicPermission=false;
 let audioUnlocked=false;
 
-/* iOS detection (iPhone/iPad incl. iPadOS desktop mode) */
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-/* 🔓 Unlock audio once on first tap (Safari) */
-function unlockAudio(){
-  if(audioUnlocked) return;
-  const test = document.getElementById('s_micOn') || document.getElementById('s_micDone');
-  if(!test){
-    audioUnlocked = true;
-    return;
-  }
-  test.muted = true;
-  const p = test.play();
-  if(p && p.then){
-    p.then(()=>{
-      test.pause();
-      test.currentTime = 0;
-      test.muted = false;
-      audioUnlocked = true;
-    }).catch(()=>{
-      // Will try again on next gesture if needed
-    });
-  }else{
-    audioUnlocked = true;
-  }
-}
-
-/* 🧠 Create a new SpeechRecognition instance each time, but with better cleanup */
-function startListening(){
-  if(listening || answered) return;
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){
-    alert('Speech Recognition not supported on this browser.');
-    return;
-  }
-
-  unlockAudio(); // make sure audio is allowed on Safari
-
+/* Create SR instance once (better for iOS Safari) */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(SR){
   recognition = new SR();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  listening = true;
-  micBtn.classList.add('pulsing');
-  answerBox.classList.add('pulsing');
-
-  // After permission is already granted, play mic-on beep like Android
-  if(hasMicPermission){
-    playSound('s_micOn');
-  }
-
-  try{
-    recognition.start();
-  }catch(err){
-    console.warn('Recognition start error:', err);
-    listening = false;
-    micBtn.classList.remove('pulsing');
-    answerBox.classList.remove('pulsing');
-    return;
-  }
+  recognition.lang='en-US';
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+  recognition.continuous=false;
 
   recognition.onstart = () => {
+    listening = true;
     hasMicPermission = true;
+    micBtn.classList.add('pulsing');
+    answerBox.classList.add('pulsing');
   };
 
   recognition.onresult = e => {
     const raw = e.results[0][0].transcript;
 
-    // "Recorded" beep
+    // Mic-done beep (directly in onresult = gesture chain)
     if(hasMicPermission){
       playSound('s_micDone');
     }
@@ -632,15 +580,16 @@ function startListening(){
     const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
     answerText.textContent = raw.trim();
     evaluate(heard);
+
+    // Make sure iOS fully closes the session
+    try{ recognition.stop(); }catch(err){ console.warn('stop error:',err); }
   };
 
   recognition.onerror = e => {
     console.warn('Speech error:', e.error);
-    // If something goes wrong on iOS, always release the lock
     listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
-    // Soft feedback: clear text so they try again
     answerText.textContent = '';
   };
 
@@ -649,6 +598,34 @@ function startListening(){
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
   };
+}else{
+  // If SR is not supported, disable mic
+  micBtn.disabled = true;
+  micBtn.title = 'Speech Recognition not supported on this browser.';
+}
+
+/* 🔓 First click should unlock audio on Safari + give mic-on beep */
+function startListening(){
+  if(!recognition){
+    alert('Speech Recognition not supported on this browser.');
+    return;
+  }
+  if(listening || answered) return;
+
+  // First ever click → unlock audio by actually playing the mic-on sound
+  if(!audioUnlocked){
+    audioUnlocked = true;
+    playSound('s_micOn');
+  }else{
+    // Subsequent clicks → normal mic-on beep (matches Android)
+    playSound('s_micOn');
+  }
+
+  try{
+    recognition.start();
+  }catch(err){
+    console.warn('Recognition start error:',err);
+  }
 }
 
 micBtn.addEventListener('click', startListening);
@@ -669,7 +646,7 @@ function showCard(){
   updateCounter();
 }
 
-/* ✅ 1.4 second delay for Sage (option 3) */
+/* ✅ 1.4 second delay for Sage (your option 3) */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -680,12 +657,12 @@ function evaluate(heard){
     playSound('s_ding');
     confettiBurst(answerBox,60);
 
-    // Give iOS time to fully close the mic before Sage speaks
+    // Give iOS time to fully release the mic before Sage speaks
     setTimeout(()=>{
       playSage(order[idx].en,()=>{
         nextBtn.style.display='inline-block';
       });
-    },1400); // ⏱ slower / clearer timing
+    },1400);
 
     score++;
   }else{
@@ -779,5 +756,3 @@ helpOverlay.addEventListener('click',e=>{
 preloadAll();
 showCard();
 </script>
-</body>
-</html>
