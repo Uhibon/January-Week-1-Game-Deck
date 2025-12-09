@@ -16,13 +16,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  min-height:100vh;                     /* ✅ better for iPad/iframes */
+  min-height:100vh;
   background:var(--bg);
   color:var(--ink);
   font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   display:flex;flex-direction:column;align-items:center;
-  overscroll-behavior-y:contain;        /* reduce weird overscroll on iPad */
-  padding-bottom:env(safe-area-inset-bottom); /* keep footer/buttons clear */
+  overscroll-behavior-y:contain;
+  padding-bottom:env(safe-area-inset-bottom);
 }
 
 /* 🔘 Quit button – smaller Booha version */
@@ -37,7 +37,7 @@ body{
   background:rgba(15,23,42,.95);
   color:#fff;
 
-  font-size:0.55rem;          /* Base size for English */
+  font-size:0.55rem;
   font-weight:700;
   letter-spacing:.04em;
 
@@ -51,13 +51,12 @@ body{
 
 /* Japanese text adjusted to match English height */
 .top-nav-btn .jp{
-  font-size:0.48rem;          /* slightly smaller to visually match */
-  line-height:1;              /* prevents vertical stretching */
+  font-size:0.48rem;
+  line-height:1;
   font-weight:700;
   opacity:.9;
-  transform:translateY(1px);  /* tiny alignment fix */
+  transform:translateY(1px);
 }
-
 
 /* ❓ Help button – standard Booha */
 .help-icon{
@@ -458,7 +457,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 <audio id="s_r1114"  src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15"    src="assets/audio/result_15.mp3"   preload="auto"></audio>
 
-<!-- 🔊 New mic sounds -->
+<!-- 🔊 Mic beeps -->
 <audio id="s_micOn"   src="assets/audio/mic_on.mp3"   preload="auto"></audio>
 <audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
 
@@ -523,29 +522,16 @@ let order=shuffle([...MASTER]);
 let idx=0,score=0,stripeIx=0,recognition=null,listening=false,answered=false;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
-/* 🔓 Audio unlock for iPad / Safari / iframes */
-let audioUnlocked=false;
-function unlockAudioOnce(){
-  if(audioUnlocked) return;
-  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15','s_micOn','s_micDone'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    try{
-      el.volume=1.0;
-      el.currentTime=0;
-      el.play().then(()=>el.pause()).catch(()=>{});
-    }catch(e){}
-  });
-  audioUnlocked=true;
-}
-['pointerdown','touchstart','mousedown'].forEach(evt=>{
-  window.addEventListener(evt,unlockAudioOnce,{once:true,passive:true});
-});
+/* ✅ Track when mic permission has been granted */
+let hasMicPermission=false;
 
 function startListening(){
   if(listening||answered)return;
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Speech Recognition not supported');return;}
+  if(!SR){
+    alert('Speech Recognition not supported on this browser.');
+    return;
+  }
   recognition=new SR();
   recognition.lang='en-US';
   recognition.interimResults=false;
@@ -555,21 +541,36 @@ function startListening(){
   micBtn.classList.add('pulsing');
   answerBox.classList.add('pulsing');
 
-  // 🔊 mic activated
-  playSound('s_micOn');
+  // ⚠️ First time (when permission dialog appears), we DO NOT play a beep.
+  // After permission is granted once, we play mic-on like Android.
+  if(hasMicPermission){
+    playSound('s_micOn');
+  }
 
   recognition.start();
+
+  recognition.onstart=()=>{
+    // Called once recognition really starts (after permission granted)
+    hasMicPermission=true;
+  };
+
   recognition.onresult=e=>{
     const raw=e.results[0][0].transcript;
 
-    // 🔊 recording finished / result received
-    playSound('s_micDone');
+    // ✅ Now it's safe: play "recorded" ping when a result arrives
+    if(hasMicPermission){
+      playSound('s_micDone');
+    }
 
     const heard=raw.toLowerCase().replace(/[^a-z]/g,'');
     answerText.textContent=raw.trim();
     evaluate(heard);
   };
-  recognition.onerror=()=>{answerText.textContent='';};
+
+  recognition.onerror=()=>{
+    answerText.textContent='';
+  };
+
   recognition.onend=()=>{
     listening=false;
     micBtn.classList.remove('pulsing');
