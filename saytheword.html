@@ -442,7 +442,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 
       <p><strong>iPad / iPhone のご注意</strong></p>
       <p style="font-size:.9rem;">
-        まれに、1問目のあとでマイクが反応しなくなることがあります。<br>
+        まれに、マイクが反応しなくなることがあります。<br>
         その場合はページを更新してもう一度お試しください。<br>
         それでも直らないときは、Android 端末かパソコン（Chrome ブラウザ）でプレイしてください。
       </p>
@@ -543,65 +543,115 @@ const jpTxt=$('#jpTxt'), hiraTxt=$('#hiraTxt');
 const answerBox=$('#answerBox'), answerText=$('#answerText');
 const micBtn=$('#micBtn'), nextBtn=$('#nextBtn'), counterEl=$('#counter');
 let order=shuffle([...MASTER]);
-let idx=0,score=0,stripeIx=0,recognition=null,listening=false,answered=false;
+let idx=0,score=0,stripeIx=0;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
-/* ✅ Track when mic permission has been granted */
+/* 🎙️ Speech recognition state */
+let recognition=null;
+let listening=false;
+let answered=false;
 let hasMicPermission=false;
+let audioUnlocked=false;
 
+/* iOS detection (iPhone/iPad incl. iPadOS desktop mode) */
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/* 🔓 Unlock audio once on first tap (Safari) */
+function unlockAudio(){
+  if(audioUnlocked) return;
+  const test = document.getElementById('s_micOn') || document.getElementById('s_micDone');
+  if(!test){
+    audioUnlocked = true;
+    return;
+  }
+  test.muted = true;
+  const p = test.play();
+  if(p && p.then){
+    p.then(()=>{
+      test.pause();
+      test.currentTime = 0;
+      test.muted = false;
+      audioUnlocked = true;
+    }).catch(()=>{
+      // Will try again on next gesture if needed
+    });
+  }else{
+    audioUnlocked = true;
+  }
+}
+
+/* 🧠 Create a new SpeechRecognition instance each time, but with better cleanup */
 function startListening(){
   if(listening || answered) return;
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){
     alert('Speech Recognition not supported on this browser.');
     return;
   }
-  recognition=new SR();
-  recognition.lang='en-US';
-  recognition.interimResults=false;
-  recognition.maxAlternatives=1;
 
-  listening=true;
+  unlockAudio(); // make sure audio is allowed on Safari
+
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  listening = true;
   micBtn.classList.add('pulsing');
   answerBox.classList.add('pulsing');
 
-  // First time (with permission dialog) → no beep.
-  // After permission granted once → play mic-on beep like Android.
+  // After permission is already granted, play mic-on beep like Android
   if(hasMicPermission){
     playSound('s_micOn');
   }
 
-  recognition.start();
+  try{
+    recognition.start();
+  }catch(err){
+    console.warn('Recognition start error:', err);
+    listening = false;
+    micBtn.classList.remove('pulsing');
+    answerBox.classList.remove('pulsing');
+    return;
+  }
 
-  recognition.onstart=()=>{
-    hasMicPermission=true;
+  recognition.onstart = () => {
+    hasMicPermission = true;
   };
 
-  recognition.onresult=e=>{
-    const raw=e.results[0][0].transcript;
+  recognition.onresult = e => {
+    const raw = e.results[0][0].transcript;
 
-    // Now it's safe to play "recorded" beep
+    // "Recorded" beep
     if(hasMicPermission){
       playSound('s_micDone');
     }
 
-    const heard=raw.toLowerCase().replace(/[^a-z]/g,'');
-    answerText.textContent=raw.trim();
+    const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
+    answerText.textContent = raw.trim();
     evaluate(heard);
   };
 
-  recognition.onerror=e=>{
-    console.warn('Speech error:',e.error);
-    answerText.textContent='';
+  recognition.onerror = e => {
+    console.warn('Speech error:', e.error);
+    // If something goes wrong on iOS, always release the lock
+    listening = false;
+    micBtn.classList.remove('pulsing');
+    answerBox.classList.remove('pulsing');
+    // Soft feedback: clear text so they try again
+    answerText.textContent = '';
   };
 
-  recognition.onend=()=>{
-    listening=false;
+  recognition.onend = () => {
+    listening = false;
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
   };
 }
-micBtn.addEventListener('click',startListening);
+
+micBtn.addEventListener('click', startListening);
 
 function updateCounter(){counterEl.textContent=`${idx+1}/15`;}
 function showCard(){
@@ -619,6 +669,7 @@ function showCard(){
   updateCounter();
 }
 
+/* ✅ 1.4 second delay for Sage (option 3) */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -628,9 +679,14 @@ function evaluate(heard){
     answerBox.classList.add('correct');
     playSound('s_ding');
     confettiBurst(answerBox,60);
+
+    // Give iOS time to fully close the mic before Sage speaks
     setTimeout(()=>{
-      playSage(order[idx].en,()=>{ nextBtn.style.display='inline-block'; });
-    },1000);
+      playSage(order[idx].en,()=>{
+        nextBtn.style.display='inline-block';
+      });
+    },1400); // ⏱ slower / clearer timing
+
     score++;
   }else{
     answerBox.classList.add('wrong');
