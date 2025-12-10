@@ -39,7 +39,16 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
 .sweep.run{animation:sweepAcross var(--dur,6s) linear forwards}
 
 .en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:2}
-.en .word{display:inline-block;padding:0 .06em;color:#fff;transition:color .2s,transform .2s;text-shadow:0 0 6px rgba(255,255,255,.4)}
+.en .word{
+  display:inline-block;
+  padding:0 .06em;
+  color:#fff;
+  transition:color .2s,transform .2s;
+  text-shadow:0 0 6px rgba(255,255,255,.4);
+  text-decoration:underline;
+  text-decoration-thickness:2px;
+  text-underline-offset:0.12em;
+}
 .en .word.blue{color:#3aa0ff;text-shadow:0 0 2px #000,0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08)}
 .en .word.red{color:#ff2a2a;text-shadow:0 0 2px #000,0 0 10px #ff2a2a,0 0 18px #ff2a2a}
 
@@ -223,6 +232,56 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
     padding:16px 14px 18px;
   }
 }
+
+/* 🍎 iOS-only overlay */
+.ios-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.94);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:13000;
+}
+.ios-overlay.show{display:flex;}
+.ios-dialog{
+  max-width:520px;
+  width:calc(100% - 40px);
+  border-radius:22px;
+  padding:18px 20px 20px;
+  background:radial-gradient(circle at top,#111827,#020617 60%);
+  border:1px solid #ffffff44;
+  box-shadow:0 24px 70px rgba(0,0,0,.9);
+  color:#e5e7eb;
+  font-size:.9rem;
+  line-height:1.7;
+}
+.ios-title{
+  font-weight:800;
+  font-size:1rem;
+  margin-bottom:10px;
+  text-align:center;
+}
+.ios-body{
+  font-size:.9rem;
+  line-height:1.7;
+  white-space:pre-line;
+}
+.ios-ok-btn{
+  margin-top:14px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  border:none;
+  border-radius:999px;
+  padding:10px 24px;
+  font-weight:800;
+  font-size:.95rem;
+  background:#22c55e;
+  color:#022c16;
+  cursor:pointer;
+  box-shadow:0 0 14px rgba(34,197,94,.7);
+}
 </style>
 </head>
 <body>
@@ -268,7 +327,7 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
   </div>
 </div>
 
-<!-- ❓ Help popup (same style family as Drag & Drop / Say the Word / Word Builder) -->
+<!-- ❓ Help popup -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
   <div class="help-backdrop" data-close-help></div>
   <div class="help-dialog">
@@ -304,6 +363,29 @@ padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(2
         <li>Chrome か Edge の<strong>最新バージョン</strong>でのプレイをおすすめします。</li>
       </ul>
     </div>
+  </div>
+</div>
+
+<!-- 🍎 iOS-only notice -->
+<div id="iosNotice" class="ios-overlay" aria-hidden="true">
+  <div class="ios-dialog">
+    <div class="ios-title">iPad / iPhone をお使いのみなさんへ</div>
+    <div class="ios-body">
+このゲームの「本気モード（マイクで声をききとってジャッジするモード）」は、
+Androidスマホ と パソコン だけで遊べます。
+
+iPad / iPhone 版は、
+ブーハー流・ペラペラれんしゅうモード になっています。
+
+① きんいろの ▶ ボタンを押して、文をよく聞こう。
+② スタート ボタンを押す。
+③ メーターが動いているあいだ、
+   下線つきの英語を声に出して読んでみよう。
+
+声はジャッジされないけど、
+ちゃんと「話す力」のレベルアップはできています！
+    </div>
+    <button id="iosNoticeBtn" type="button" class="ios-ok-btn">OK ／ はじめる</button>
   </div>
 </div>
 
@@ -409,6 +491,13 @@ const beginBtn=$('#beginBtn'), retryBtn=$('#retryBtn'), nextBtn=$('#nextBtn');
 const scoreBox=$('#scoreBox'), meterText=$('#meterText'), sweep=$('#sweep'), counter=$('#counter');
 const playBtn=$('#playBtn');
 
+// 🍎 Platform detection
+const ua = navigator.userAgent || '';
+const platform = navigator.platform || '';
+const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isIOSPhone = /iPhone|iPod/.test(ua);
+const isIOS = isIpad || isIOSPhone;
+
 // Sage filenames
 const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
 // Preload Sage
@@ -459,126 +548,330 @@ function startSweep(){sweep.style.setProperty('--dur',DUR_MS+'ms');sweep.classLi
 function stopSweep(){sweep.classList.remove('run')}
 function updateCounter(){counter.textContent=`${idx+1} / 15`}
 
-async function ensureMicPermission(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());streamAllowed=true;}catch(e){alert('マイクが使えません。Chrome を使用してください。')}}
-function makeRecognizer(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return null;const r=new R();r.lang='en-US';r.continuous=true;r.interimResults=true;try{r.maxAlternatives=5;}catch(_){}return r}
+async function countdown321(){
+  const colors=['#ff7eb9','#7dd3fc','#a6f7b2'];
+  const nums=[3,2,1];
+  for(let i=0;i<nums.length;i++){
+    meterText.innerHTML=`<span class="popNum" style="color:${colors[i]}">${nums[i]}</span>`;
+    await sleep(700);
+  }
+}
 
-function playAudioWithWait(a){return new Promise(resolve=>{try{a.pause();a.currentTime=0;}catch(_){}
-  const done=()=>{a.onended=null;resolve()};
-  const tryPlay=()=>{const p=a.play(); if(p&&p.then){p.then(()=>{}).catch(()=>{setTimeout(tryPlay,120)});} };
-  const safety=setTimeout(()=>{a.onended=null;resolve()}, Math.max(3000, (a.duration||3)*1000 + 200));
-  a.addEventListener('ended', ()=>clearTimeout(safety), {once:true});
-  a.onended=done;
-  tryPlay();
-});}
+async function ensureMicPermission(){
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t=>t.stop());
+    streamAllowed=true;
+  }catch(e){
+    alert('マイクが使えません。Chrome を使用してください。');
+  }
+}
+function makeRecognizer(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R)return null;
+  const r=new R();
+  r.lang='en-US';
+  r.continuous=true;
+  r.interimResults=true;
+  try{r.maxAlternatives=5;}catch(_){}return r;
+}
 
-function chooseScoreSfx(score){if(score===100) return SFX.max; if(score>=75) return SFX.high; if(score>=44) return SFX.mid; return SFX.low}
+function playAudioWithWait(a){
+  return new Promise(resolve=>{
+    try{a.pause();a.currentTime=0;}catch(_){}
+    const done=()=>{a.onended=null;resolve()};
+    const tryPlay=()=>{
+      const p=a.play();
+      if(p&&p.then){p.then(()=>{}).catch(()=>{setTimeout(tryPlay,120);});}
+    };
+    const safety=setTimeout(()=>{a.onended=null;resolve()},Math.max(3000,(a.duration||3)*1000+200));
+    a.addEventListener('ended',()=>clearTimeout(safety),{once:true});
+    a.onended=done;
+    tryPlay();
+  });
+}
 
-/* ---------- ROUND FLOW ---------- */
-async function beginRound(){
-  if(isBusy) return; isBusy=true;
-  const R=window.SpeechRecognition||window.webkitSpeechRecognition; if(!R){alert('このブラウザでは音声認識が使えません。Chrome を使用してください。'); isBusy=false; return}
-  if(!streamAllowed){await ensureMicPermission(); if(!streamAllowed){isBusy=false; return}}
+function chooseScoreSfx(score){
+  if(score===100) return SFX.max;
+  if(score>=75) return SFX.high;
+  if(score>=44) return SFX.mid;
+  return SFX.low;
+}
+
+function disableControls(disabled){
+  [beginBtn,retryBtn,nextBtn,playBtn].forEach(b=>{ if(b){ b.disabled=disabled; } });
+}
+function resetVisuals(){
+  stopSweep(); void sweep.offsetWidth;
+  clearHearts();
+  enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
+  scoreBox.style.display='none';
+  setReady();
+}
+function showItem(){
+  const it=ITEMS[idx];
+  mountWords(it.en);
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
+  resetVisuals();
+  updateCounter();
+}
+
+/* ---------- ROUND FLOW: iOS shadowing (no mic) ---------- */
+async function beginRoundIOS(){
+  if(isBusy) return;
+  isBusy = true;
 
   resetVisuals();
   disableControls(true);
 
-  // Countdown 3,2,1
-  const colors=['#ff7eb9','#7dd3fc','#a6f7b2'];
-  const showNum=async(n,i)=>{meterText.innerHTML=`<span class="popNum" style="color:${colors[i]}">${n}</span>`;await sleep(700)}
-  await showNum(3,0); await showNum(2,1); await showNum(1,2);
+  // 3,2,1
+  await countdown321();
 
-  // GO! — pulse + start mic exactly now
+  // GO + meter only (no speech recognition)
   meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
-
-  // Start recognizer immediately at GO
-  let heard=""; listening=true; SR=makeRecognizer();
-  if(SR){
-    SR.onresult=(e)=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript+" ";} heard=(heard+" "+txt).trim(); markSpoken(heard)}
-    SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){} } };
-    try{ SR.start(); }catch(_){ }
-  }
-
-  // Small tick to render GO before sweep
   await sleep(120);
   setListening();
   startSweep();
 
   await sleep(DUR_MS);
 
-  // Finish capture
-  listening=false; try{SR&&SR.stop()}catch(_){ }
-  setFinished(); stopSweep(); finalizeColors();
+  setFinished();
+  stopSweep();
 
-  // Score and reveal controls
+  // No score, just practice. Show BOTH Retry & Next.
+  scoreBox.style.display='none';
+  beginBtn.style.display='none';
+  retryBtn.style.display='inline-block';
+  nextBtn.style.display='inline-block';
+
+  disableControls(false);
+  isBusy = false;
+}
+
+/* ---------- ROUND FLOW: full mic mode (Android / desktop) ---------- */
+async function beginRound(){
+  if(isIOS){
+    return beginRoundIOS();
+  }
+
+  if(isBusy) return;
+  isBusy=true;
+
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){
+    alert('このブラウザでは音声認識が使えません。Chrome を使用してください。');
+    isBusy=false;
+    return;
+  }
+  if(!streamAllowed){
+    await ensureMicPermission();
+    if(!streamAllowed){ isBusy=false; return; }
+  }
+
+  resetVisuals();
+  disableControls(true);
+
+  // Countdown 3,2,1
+  await countdown321();
+
+  // GO! — pulse + start mic exactly now
+  meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+
+  let heard=""; listening=true; SR=makeRecognizer();
+  if(SR){
+    SR.onresult=(e)=>{
+      let txt="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        txt+=e.results[i][0].transcript+" ";
+      }
+      heard=(heard+" "+txt).trim();
+      markSpoken(heard);
+    };
+    SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){ } } };
+    try{ SR.start(); }catch(_){}
+  }
+
+  await sleep(120);
+  setListening();
+  startSweep();
+
+  await sleep(DUR_MS);
+
+  listening=false;
+  try{ SR && SR.stop(); }catch(_){}
+  setFinished();
+  stopSweep();
+  finalizeColors();
+
   const s=keywordScore(ITEMS[idx].en,heard);
-  scoreBox.textContent='スコア：'+s+'％'; scoreBox.style.display='block';
+  scoreBox.textContent='スコア：'+s+'％';
+  scoreBox.style.display='block';
 
-  // First attempt only: record & sfx
-  if(firstScores[idx]===null){ firstScores[idx]=s; if(s===100) firstPerfectCount++; await playAudioWithWait(chooseScoreSfx(s)); }
-  // After the score sfx finishes, enable proper button
-  if(s===100){ nextBtn.style.display='inline-block'; retryBtn.style.display='none'; beginBtn.style.display='none'; }
-  else { retryBtn.style.display='inline-block'; nextBtn.style.display='none'; beginBtn.style.display='none'; }
+  if(firstScores[idx]===null){
+    firstScores[idx]=s;
+    if(s===100) firstPerfectCount++;
+    await playAudioWithWait(chooseScoreSfx(s));
+  }
+
+  if(s===100){
+    nextBtn.style.display='inline-block';
+    retryBtn.style.display='none';
+    beginBtn.style.display='none';
+  }else{
+    retryBtn.style.display='inline-block';
+    nextBtn.style.display='none';
+    beginBtn.style.display='none';
+  }
 
   disableControls(false);
   isBusy=false;
 }
 
-function disableControls(disabled){ [beginBtn,retryBtn,nextBtn,playBtn].forEach(b=>{ if(b){ b.disabled=disabled; } }); }
-
-function resetVisuals(){stopSweep();void sweep.offsetWidth;clearHearts();enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));scoreBox.style.display='none';setReady()}
-function showItem(){const it=ITEMS[idx]; mountWords(it.en); jpEl.textContent=it.jp; hiraEl.textContent=it.hira; resetVisuals(); updateCounter()}
-
 /* ---------- RESULTS ---------- */
-function avgPercent(){const sum=firstScores.reduce((a,b)=>a+(b??0),0);return Math.round(sum/15)}
-function hideAllResults(){ ['resRed','resOrange','resBlue','resGold'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display='none'; }); }
+function avgPercent(){
+  const sum=firstScores.reduce((a,b)=>a+(b??0),0);
+  return Math.round(sum/15);
+}
+function hideAllResults(){
+  ['resRed','resOrange','resBlue','resGold'].forEach(id=>{
+    const el=$('#'+id);
+    if(el) el.style.display='none';
+  });
+}
+
 async function showResults(){
-  const pct=avgPercent(); const xOf15=firstPerfectCount; let page='resBlue', snd=RES.blue, scoreSel='#scoreBlue';
+  // 🍎 iOS: no score, just cute message
+  if(isIOS){
+    hideAllResults();
+    const msgBlue = document.getElementById('msgBlue');
+    const scoreBlue = document.getElementById('scoreBlue');
+    if(msgBlue){
+      msgBlue.textContent =
+        "おつかれさま！\n\nもし今、このゲームを Android や パソコン で遊んでいたら、\n" +
+        "マイクで本気バトルができて、もっとドキドキのゲームになります。\n\n" +
+        "でも、iPad / iPhone の ペラペラれんしゅうモード でも、\n" +
+        "ちゃんと「話す力」のレベルアップはできています。\n\n" +
+        "いつか Android や パソコン で遊んだら、\n" +
+        "そのときはブーハーもビックリするくらい、\n" +
+        "もっともっと楽しくなるよ！";
+    }
+    if(scoreBlue){
+      scoreBlue.textContent = "";
+    }
+    $('#resBlue').style.display='block';
+    await playAudioWithWait(RES.blue);
+    return;
+  }
+
+  // Normal (Android / desktop) scoring
+  const pct=avgPercent();
+  const xOf15=firstPerfectCount;
+  let page='resBlue', snd=RES.blue, scoreSel='#scoreBlue';
   if(pct<=43){page='resRed'; snd=RES.red; scoreSel='#scoreRed';}
   else if(pct<=74){page='resOrange'; snd=RES.orange; scoreSel='#scoreOrange';}
   else if(pct===100){page='resGold'; snd=RES.gold; scoreSel='#scoreGold';}
 
-  // Update score text X/15 (avg%)
-  const se=$(scoreSel); if(se) se.textContent=`${xOf15}/15（${pct}%）`;
-  hideAllResults(); $('#'+page).style.display='block';
+  const se=$(scoreSel);
+  if(se) se.textContent=`${xOf15}/15（${pct}%）`;
+
+  hideAllResults();
+  $('#'+page).style.display='block';
   await playAudioWithWait(snd);
-  if(page==='resGold'){ // confetti
+
+  if(page==='resGold'){
     for(let i=0;i<160;i++){
-      setTimeout(()=>{const c=document.createElement('div'); c.className='confetti'; c.style.left=(Math.random()*100)+'vw'; c.style.background=`hsl(${Math.random()*360},100%,60%)`; c.style.animationDuration=(0.9+Math.random()*0.9)+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),1900);}, i*10);
+      setTimeout(()=>{
+        const c=document.createElement('div');
+        c.className='confetti';
+        c.style.left=(Math.random()*100)+'vw';
+        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+        c.style.animationDuration=(0.9+Math.random()*0.9)+'s';
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1900);
+      }, i*10);
     }
   }
 }
 
 /* ---------- BUTTONS ---------- */
-beginBtn.addEventListener('click', async()=>{ if(!streamAllowed) await ensureMicPermission(); if(!streamAllowed) return; showItem(); beginRound(); });
-retryBtn.addEventListener('click', ()=>{ showItem(); beginRound(); });
+beginBtn.addEventListener('click', async()=>{
+  if(isIOS){
+    showItem();
+    beginRound();
+    return;
+  }
+  if(!streamAllowed) await ensureMicPermission();
+  if(!streamAllowed) return;
+  showItem();
+  beginRound();
+});
+retryBtn.addEventListener('click', ()=>{
+  showItem();
+  beginRound();
+});
 nextBtn.addEventListener('click', ()=>{
-  if(isBusy) return; // guard
+  if(isBusy) return;
   idx++;
-  if(idx>=ITEMS.length){ nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='none'; showResults(); return; }
-  showItem(); nextBtn.style.display='none'; retryBtn.style.display='none'; beginBtn.style.display='inline-block';
+  if(idx>=ITEMS.length){
+    nextBtn.style.display='none';
+    retryBtn.style.display='none';
+    beginBtn.style.display='none';
+    showResults();
+    return;
+  }
+  showItem();
+  nextBtn.style.display='none';
+  retryBtn.style.display='none';
+  beginBtn.style.display='inline-block';
 });
 
-playBtn.addEventListener('click', ()=>{ const it=ITEMS[idx]; const key=stripForFile(it.en); const a=sageBank[key]||new Audio('./audio/'+key+'.mp3'); a.preload='auto'; a.play().catch(()=>{}); });
+playBtn.addEventListener('click', ()=>{
+  const it=ITEMS[idx];
+  const key=stripForFile(it.en);
+  const a=sageBank[key]||new Audio('./audio/'+key+'.mp3');
+  a.preload='auto';
+  a.play().catch(()=>{});
+});
 
 // Restart on all result pages
 Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click', ()=>{
-  hideAllResults(); for(let i=0;i<firstScores.length;i++) firstScores[i]=null; firstPerfectCount=0; idx=0; showItem(); beginBtn.style.display='inline-block'; retryBtn.style.display='none'; nextBtn.style.display='none';
+  hideAllResults();
+  for(let i=0;i<firstScores.length;i++) firstScores[i]=null;
+  firstPerfectCount=0;
+  idx=0;
+  showItem();
+  beginBtn.style.display='inline-block';
+  retryBtn.style.display='none';
+  nextBtn.style.display='none';
 }));
 
 /* ---------- INIT ---------- */
 showItem();
 
 /* ---------- HELP MODAL ---------- */
-const helpBtn=$('#helpBtn');
+const helpBtnEl=$('#helpBtn');
 const helpModal=$('#helpModal');
-if(helpBtn && helpModal){
+if(helpBtnEl && helpModal){
   const closeEls=helpModal.querySelectorAll('[data-close-help]');
   const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
   const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
-  helpBtn.addEventListener('click',openHelp);
+  helpBtnEl.addEventListener('click',openHelp);
   closeEls.forEach(el=>el.addEventListener('click',closeHelp));
   helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+}
+
+/* ---------- iOS notice overlay ---------- */
+const iosNotice = document.getElementById('iosNotice');
+const iosNoticeBtn = document.getElementById('iosNoticeBtn');
+if(isIOS && iosNotice && iosNoticeBtn){
+  iosNotice.classList.add('show');
+  iosNotice.setAttribute('aria-hidden','false');
+  iosNoticeBtn.addEventListener('click', ()=>{
+    iosNotice.classList.remove('show');
+    iosNotice.setAttribute('aria-hidden','true');
+  });
 }
 </script>
 </body>
