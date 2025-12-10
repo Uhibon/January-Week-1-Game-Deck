@@ -350,6 +350,7 @@ const check=qs('#checkBtn'),okWrap=qs('#okWrap'),okBtn=qs('#okBtn'),nextWrap=qs(
 const playBtn=qs('#playBtn'),progress=qs('#progress'),fx=qs('#fx');
 function qs(s){return document.querySelector(s)}
 
+/* 🔊 audio helpers */
 function sfx(name){const a=new Audio(`assets/audio/${name}.mp3`);a.volume=1;a.play().catch(()=>{});}
 function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".mp3";}
 function playSage(en,onEnd){const a=new Audio(filename(en));let done=false;
@@ -357,6 +358,20 @@ a.onended=()=>{if(done)return;done=true;if(onEnd)onEnd();};
 a.onerror=()=>{if(done)return;done=true;if(onEnd)onEnd();};
 a.play().catch(()=>{if(!done){done=true;if(onEnd)onEnd();}});
 setTimeout(()=>{if(!done){done=true;if(onEnd)onEnd();}},7000);}
+
+/* ✅ update button states after any move (drag or tap) */
+function updateAfterMove(){
+  check.disabled = bank.children.length !== 0;
+  if(wrongMode){
+    okBtn.disabled = currentBuilt() !== currentCorrect();
+  }
+}
+
+/* shared move helper */
+function moveWordTo(area, word){
+  area.appendChild(word);
+  updateAfterMove();
+}
 
 function mount(){
   bank.innerHTML='';sent.innerHTML='';sent.appendChild(playBtn);
@@ -368,22 +383,35 @@ function mount(){
     const b=document.createElement('button');b.textContent=w;b.className='word';
     b.style.setProperty('--color',chipColor(idx));
     b.draggable=true;
+
+    /* desktop drag start/end */
     b.addEventListener('dragstart',()=>b.classList.add('drag'));
     b.addEventListener('dragend',()=>b.classList.remove('drag'));
+
+    /* 🖐️ tap-to-move for mobile + desktop */
+    b.addEventListener('click',()=>{
+      const parent = b.parentElement;
+      if(parent === bank){
+        moveWordTo(sent, b);
+      }else{
+        moveWordTo(bank, b);
+      }
+    });
+
     bank.appendChild(b);
   });
-  updateProgress();check.onclick=()=>{check.disabled=true;checkLogic();};
+  updateProgress();
+  check.onclick=()=>{check.disabled=true;checkLogic();};
 }
 
+/* drop areas – keep desktop drag & drop */
 ['bank','sentence'].forEach(id=>{
   const area=document.getElementById(id);
   area.addEventListener('dragover',e=>e.preventDefault());
   area.addEventListener('drop',e=>{
     e.preventDefault();
     const drag=document.querySelector('.drag');if(!drag)return;
-    area.appendChild(drag);
-    check.disabled=bank.children.length!==0;
-    if(wrongMode) okBtn.disabled=currentBuilt()!==currentCorrect();
+    moveWordTo(area, drag);
   });
 });
 
@@ -396,7 +424,9 @@ function checkLogic(){
     if(!wrongMode){
       score++;sfx('sugoi');heartsBurst(sent);
       setTimeout(()=>{playSage(correct,()=>{nextWrap.style.display='block';});},1800);
-    }else{okBtn.textContent="Next";okBtn.disabled=false;}
+    }else{
+      okBtn.textContent="Next";okBtn.disabled=false;
+    }
   }else{
     wrongMode=true;sfx('yada');smokeBurst(sent);
     playBtn.classList.add('show');
