@@ -20,7 +20,6 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  /* 🔧 allow vertical scroll, only hide sideways scroll */
   overflow-x:hidden;
 }
 header{text-align:center;padding:26px 12px 12px}
@@ -128,7 +127,8 @@ main{
   color:#000;
   font-size:1.3rem;
   background:#fff;
-  transition:box-shadow .3s,background .3s;
+  transition:box-shadow .3s,background .3s,transform .15s;
+  padding:0.75rem 1rem;
 }
 #studentBox.glow{box-shadow:var(--purpleGlow);}
 #studentBox.shake{animation:shake .3s;}
@@ -138,6 +138,7 @@ main{
   75%{transform:translateX(5px);}
 }
 
+/* 🎤 / ✔ button */
 .micBtn{
   position:absolute;
   right:-18px;
@@ -159,6 +160,19 @@ main{
   50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}
 }
 
+/* When used as CHECK on iOS */
+.micBtn.check-mode{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+.micBtn.check-mode::after{
+  content:"✔";
+  font-size:1.4rem;
+  font-weight:900;
+  color:#022c22;
+}
+
+/* answer options */
+#options{width:100%;margin-top:0.5rem;}
 #options .option{
   border:2px solid var(--outline);
   border-radius:var(--radius);
@@ -167,11 +181,19 @@ main{
   width:100%;
   font-size:clamp(1.1rem,4vw,1.4rem);
   font-weight:700;
-  background:#00000020;
+  background:#00000040;
   color:#fff;
   cursor:pointer;
-  transition:opacity .2s,background .3s;
+  transition:opacity .2s,background .3s,border-color .3s,transform .1s;
 }
+#options .option:hover{transform:translateY(-1px);}
+#options .option.selected{
+  background:#1d4ed8;
+  border-color:#bfdbfe;
+  box-shadow:0 0 12px rgba(59,130,246,.7);
+}
+
+/* hint / mode text */
 #hintBox{
   margin-top:.8rem;
   font-size:1rem;
@@ -406,6 +428,47 @@ footer{
     padding:16px 14px 18px;
   }
 }
+
+/* 📱 iOS overlay */
+.ios-overlay{
+  position:fixed;
+  inset:0;
+  z-index:13000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.ios-overlay-inner{
+  max-width:420px;
+  width:calc(100% - 40px);
+  border-radius:24px;
+  background:#f9fafb;
+  color:#0f172a;
+  padding:18px 18px 20px;
+  box-shadow:0 22px 60px rgba(0,0,0,.8);
+  font-size:.9rem;
+}
+.ios-overlay-inner h2{
+  font-family:'Cinzel',serif;
+  font-size:1.1rem;
+  text-align:center;
+  margin-bottom:6px;
+}
+.ios-overlay-inner p{margin:4px 0;}
+.ios-overlay-inner strong{font-weight:800;}
+.ios-ok{
+  margin-top:10px;
+  display:block;
+  width:100%;
+  border:none;
+  border-radius:999px;
+  padding:10px 0;
+  font-weight:800;
+  font-family:'Noto Sans JP',system-ui,sans-serif;
+  background:linear-gradient(135deg,#4ade80,#22c55e);
+  color:#022c22;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -458,32 +521,40 @@ footer{
     <div class="help-body">
       <h3>English</h3>
       <ul>
-        <li>Tap the <strong>gold ▶ button</strong> to hear Sage ask a question in English.</li>
-        <li>Look at the four answer sentences on the screen.</li>
-        <li>When you’re ready, tap the <strong>mic button 🎤</strong> and <strong>say the correct answer sentence</strong> in English.</li>
-        <li>The white box shows what the computer hears. Try to match the sentence as closely as you can.</li>
-        <li>If you say the <strong>correct answer</strong>, you get points, confetti, and a reaction sound.</li>
-        <li>After the first correct answer, it switches to <strong>Points Mode</strong>. Say the other funny sentences to get extra points.</li>
-        <li>When you finish all sentences for that question, tap <strong>Next</strong> to go to the next adventure.</li>
+        <li>Tap the <strong>gold ▶ button</strong> to hear Sage ask the question in English.</li>
+        <li>Look at the four <strong>answer sentences</strong> on the screen.</li>
+        <li><strong>Computers &amp; Android:</strong> tap the mic button 🎤 and say the sentence you think is correct. The white box shows what the computer hears.</li>
+        <li><strong>iPad / iPhone:</strong> tap the sentence you think is correct. It appears in the white box. Tap the green CHECK circle to check your answer.</li>
+        <li>If your first try is <strong>correct</strong>, you get points, confetti, and a fun sound.</li>
+        <li>After you find the correct answer, the game switches to <strong>Practice Mode</strong>.</li>
+        <li>In Practice Mode on any device, choose a sentence, read it yourself, then say it (computers/Android) or tap CHECK (iPad/iPhone) to hear Sage read it.</li>
+        <li>When you are ready, tap <strong>Next</strong> to go to the next adventure question.</li>
       </ul>
 
       <h3>日本語</h3>
       <ul>
-        <li><strong>金色の ▶ ボタン</strong>を押すと、Sage が英語で質問をしてくれます。</li>
-        <li>画面にある４つの英文をよく見て、正しい答えを選びます。</li>
-        <li>準備ができたら、<strong>マイクボタン 🎤</strong>を押して、<strong>正しい英文を声に出して読みます</strong>。</li>
-        <li>白いボックスに、コンピューターが聞き取った英語が表示されます。できるだけ同じ英文になるように話してみてください。</li>
-        <li><strong>正しい文</strong>が言えたら、ポイントと紙ふぶき、リアクション音がもらえます。</li>
-        <li>最初の正解のあと、<strong>ポイントモード</strong>になります。ほかのおもしろい文を言って、追加ポイントをねらいましょう。</li>
-        <li>その問題の文を全部チャレンジしたら、<strong>Next（つぎへ）</strong>ボタンを押して次の冒険に進みます。</li>
-      </ul>
-
-      <h3>Mic &amp; Browser ／ マイクとブラウザ</h3>
-      <ul>
-        <li>マイクのアクセスを<strong>許可</strong>しないと、音声認識は動きません。</li>
-        <li>できれば <strong>Chrome または Edge の最新バージョン</strong>でプレイしてください。</li>
+        <li><strong>金色の ▶ ボタン</strong>を押すと、Sage が英語でしつもんをしてくれます。</li>
+        <li>画面にある４つの<strong>英語の文</strong>をよく見て、正しいと思う文をえらびます。</li>
+        <li><strong>パソコン・Android：</strong>マイクボタン 🎤 を押して、正しいと思う文を英語で言います。白いボックスに、コンピューターが聞き取った英語が出ます。</li>
+        <li><strong>iPad / iPhone：</strong>正しいと思う文をタップすると、白いボックスに表示されます。みどりのCHECKボタンを押して、正しいかチェックします。</li>
+        <li><strong>一回目のチャレンジ</strong>で正解すると、ポイントと紙ふぶき、楽しい音が出ます。</li>
+        <li>正しい答えがわかったあとは、ゲームが<strong>れんしゅうモード</strong>になります。</li>
+        <li>れんしゅうモードでは、どの文でもえらんで自分で読んでから、パソコン・Androidではもう一度言ってみて、iPad / iPhoneではCHECKを押すと、Sage の英語が聞けます。</li>
+        <li>じゅんびができたら、<strong>Next（つぎへ）</strong>ボタンを押して、つぎのアドベンチャーのしつもんに進みます。</li>
       </ul>
     </div>
+  </div>
+</div>
+
+<!-- 📱 iOS click & listen overlay -->
+<div id="iosOverlay" class="ios-overlay" aria-hidden="true">
+  <div class="ios-overlay-inner">
+    <h2>iPad / iPhone モード</h2>
+    <p><strong>On iPad and iPhone, this game uses “click &amp; listen” mode.</strong></p>
+    <p>Tap <strong>▶</strong> to hear the question. Tap an answer, then tap <strong>CHECK</strong>. After you find the correct answer, tap any sentence and use CHECK to hear Sage read it.</p>
+    <p><strong>iPad / iPhone では、「クリックして聞く」モードになります。</strong></p>
+    <p>まず <strong>▶ボタン</strong>でしつもんを聞きます。正しいと思う文をタップして、<strong>CHECK</strong>を押します。正解がわかったら、どの文でもタップしてからCHECKを押すと、Sage の英語が聞けます。</p>
+    <button id="iosOverlayOk" class="ios-ok">OK ／ はじめる</button>
   </div>
 </div>
 
@@ -493,6 +564,10 @@ const EIGO="assets/audio/eigo.mp3";
 const PRAISE=['yesgoodjob.mp3','perfectenglish.mp3','wownicework.mp3'];
 const TRY_AGAIN=['hmmtryagain.mp3','whatlanguagewasthat.mp3','doyouhaveacookieinyourmouth.mp3'];
 const EXTRA_PRAISE=['nicework.mp3','goodtry.mp3','keepgoing.mp3'];
+
+// iOS detection
+const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
 let questions=[
  {q:"What do you eat for breakfast?",a:0,audio:"whatdoyoueatforbreakfast.mp3",answers:[
@@ -534,38 +609,76 @@ questions=shuffle(questions.map(q=>{const correct=q.answers[q.a];const mixed=shu
 let current=0,points=0,listening=false,gotCorrect=false,pointsMode=false,firstAttempt=true;
 let recog,remainingIncorrect=new Set();
 
+// iOS mode state
+let iosHasCorrect=false;
+let iosFirstAttempt=true;
+let iosSelectedIndex=null;
+
 const $=s=>document.querySelector(s);
 const sageText=$('#sageText'),studentBox=$('#studentBox'),playBtn=$('#playBtn'),
 micBtn=$('#micBtn'),optionsBox=$('#options'),hintBox=$('#hintBox'),
 nextBtn=$('#nextBtn'),pointsBtn=$('#pointsBtn'),pointsCircle=$('#pointsCircle'),
 pointsValue=$('#pointsValue'),counter=$('#counter');
+const iosOverlay=document.getElementById('iosOverlay');
+const iosOverlayOk=document.getElementById('iosOverlayOk');
 
-function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f:'audio/'+f);a.onended=r;a.onerror=r;a.play().catch(r);});}
+function playAudio(f){return new Promise(r=>{const a=new Audio(f.includes('/')?f:'audio/'+f);a.onended=r;a.onerror=r;a.play().catch(()=>r());});}
 function pulsePoints(){pointsCircle.style.transform='scale(1.3)';setTimeout(()=>pointsCircle.style.transform='scale(1)',300);}
 function updateUI(){pointsValue.textContent=points;counter.textContent=(current+1)+' / '+questions.length;}
 function animateWords(t){sageText.innerHTML='';t.split(' ').forEach((w,i)=>{const s=document.createElement('span');s.className='word';s.textContent=w;sageText.appendChild(s);setTimeout(()=>s.style.opacity=1,180*i);});}
 
-/* 🎙️ Normalization – more forgiving with apostrophes and 's / s
-   - Converts ’ ‘ ´ ` to '
-   - Turns "dog's" → "dogs"
-   - Removes remaining apostrophes
-   - Keeps only letters, numbers, spaces
-*/
+/* 🎙️ Normalization – more forgiving with apostrophes */
 function normalize(s){
   return s
     .toLowerCase()
     .replace(/[’‘´`]/g,"'")
-    .replace(/'s\b/g,"s")   // treat dog’s / dog's as dogs
-    .replace(/'/g,"")       // drop any remaining apostrophes
+    .replace(/'s\b/g,"s")
+    .replace(/'/g,"")
     .replace(/[^a-z0-9\s]/g,' ')
     .replace(/\s+/g,' ')
     .trim();
 }
 
+// detect time-like answers
+function isTimeLike(str){
+  return /\b\d+\b/.test(str) && (str.includes("oclock") || /\bclock\b/.test(str));
+}
+
+function timeMatch(ns,na){
+  let sa=ns.split(' ');
+  let aa=na.split(' ');
+
+  // treat "00" and "oclock" as equivalent (7:00 vs 7 o'clock)
+  if(aa.includes('oclock') && sa.includes('00') && !sa.includes('oclock')){
+    sa = sa.map(w=>w==='00'?'oclock':w);
+  } else if(sa.includes('oclock') && aa.includes('00') && !aa.includes('oclock')){
+    aa = aa.map(w=>w==='00'?'oclock':w);
+  }
+
+  const overlap=aa.filter(w=>sa.includes(w)).length;
+  const extra=sa.filter(w=>!aa.includes(w));
+  return overlap/aa.length>=0.8 && extra.length<=2;
+}
+
+function strictMatch(s,a){
+  const ns=normalize(s),na=normalize(a);
+  if(!ns||!na)return false;
+
+  // special handling for time expressions (7:00 vs 7 o'clock)
+  if(isTimeLike(na)){
+    return timeMatch(ns,na);
+  }
+
+  const sa=ns.split(' '),aa=na.split(' ');
+  const overlap=aa.filter(w=>sa.includes(w)).length;
+  const extra=sa.filter(w=>!aa.includes(w));
+  return overlap/aa.length>=0.9&&extra.length<=2;
+}
+
 function confetti(n=80){
   for(let i=0;i<n;i++){
     const c=document.createElement('div');
-    c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;`;
+    c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;z-index:9999;`;
     document.body.appendChild(c);
     const d=900+Math.random()*1200;
     c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
@@ -574,21 +687,11 @@ function confetti(n=80){
 }
 async function shakeRedErase(){
   studentBox.classList.add('shake');
-  studentBox.style.background='#ef4444';
-  await playAudio('audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
-  setTimeout(()=>{
-    studentBox.classList.remove('shake');
-    studentBox.style.background='#fff';
-    studentBox.textContent='';
-  },650);
-}
-function strictMatch(s,a){
-  const ns=normalize(s),na=normalize(a);
-  if(!ns||!na)return false;
-  const sa=ns.split(' '),aa=na.split(' ');
-  const overlap=aa.filter(w=>sa.includes(w)).length;
-  const extra=sa.filter(w=>!aa.includes(w));
-  return overlap/aa.length>=0.9&&extra.length<=2;
+  studentBox.style.background='#fee2e2';
+  await playAudio('assets/audio/'+TRY_AGAIN[Math.floor(Math.random()*TRY_AGAIN.length)]);
+  studentBox.classList.remove('shake');
+  studentBox.style.background='#fff';
+  studentBox.textContent='';
 }
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -613,8 +716,9 @@ async function playQuestion(){
   animateWords(q.q);
   await playAudio('audio/'+q.audio);
   firstAttempt=true;
-  startMic();
+  if(!isIOS){ startMic(); }
 }
+
 function renderAnswers(){
   optionsBox.innerHTML='';
   const q=questions[current];
@@ -623,12 +727,33 @@ function renderAnswers(){
     d.className='option';
     d.dataset.index=i;
     d.textContent=a;
+    d.addEventListener('click',()=>{
+      document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+      d.classList.add('selected');
+      studentBox.textContent=a;
+      if(isIOS){
+        iosSelectedIndex=i;
+      }
+    });
     optionsBox.appendChild(d);
   });
 }
 
+function currentQuestion(){return questions[current];}
+
+/* 🔊 Sage helper */
+function filename(en){return "audio/"+en.toLowerCase().replace(/[^a-z]/g,'')+".mp3";}
+function playSage(en,onEnd){
+  const a=new Audio(filename(en));let done=false;
+  a.onended=()=>{if(done)return;done=true;if(onEnd)onEnd();};
+  a.onerror=()=>{if(done)return;done=true;if(onEnd)onEnd();};
+  a.play().catch(()=>{if(!done){done=true;if(onEnd)onEnd();}});
+  setTimeout(()=>{if(!done){done=true;if(onEnd)onEnd();}},7000);
+}
+
+/* 🎙️ Speech mode (Android / desktop) */
 async function checkSpeech(spoken){
- const q=questions[current];
+ const q=currentQuestion();
  let matchIndex=q.answers.findIndex(ans=>strictMatch(spoken,ans));
  if(matchIndex===-1){
    firstAttempt=false;
@@ -638,10 +763,9 @@ async function checkSpeech(spoken){
  const matchedText=q.answers[matchIndex];
  const optEl=document.querySelector(`.option[data-index="${matchIndex}"]`);
 
- // ✅ Correct answer check by text (now tolerant to dog's / dogs etc.)
  if(!pointsMode && !gotCorrect && strictMatch(spoken,q.correct)){
    gotCorrect=true;
-   await playAudio('audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+   await playAudio('assets/audio/'+PRAISE[Math.floor(Math.random()*PRAISE.length)]);
    confetti(60);
    await playAudio(DING);
    points+=firstAttempt?5:1;
@@ -663,7 +787,7 @@ async function checkSpeech(spoken){
  if(pointsMode){
    if(remainingIncorrect.has(matchedText)){
      remainingIncorrect.delete(matchedText);
-     await playAudio('audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
+     await playAudio('assets/audio/'+EXTRA_PRAISE[Math.floor(Math.random()*EXTRA_PRAISE.length)]);
      confetti(90);
      await playAudio(EIGO);
      points+=1;
@@ -683,6 +807,39 @@ async function checkSpeech(spoken){
  studentBox.textContent='';
 }
 
+/* 🍎 iOS click & CHECK mode */
+async function checkIOSAnswer(){
+  const q=currentQuestion();
+  if(iosSelectedIndex===null){
+    hintBox.innerHTML='First tap an answer.<small>まず答えをタップしてね。</small>';
+    return;
+  }
+  const answer=q.answers[iosSelectedIndex];
+
+  if(!iosHasCorrect){
+    if(answer===q.correct){
+      iosHasCorrect=true;
+      if(iosFirstAttempt){
+        points++; // 1 point for first-try correct
+        updateUI();
+        pulsePoints();
+      }
+      confetti(60);
+      await playAudio(DING);
+      playSage(answer);
+      hintBox.innerHTML='Practice mode – tap any sentence, read it, then tap CHECK to hear Sage.<small>れんしゅうモード：文をタップして自分で読んでから、CHECKで Sage の英語を聞いてね。</small>';
+      nextBtn.style.display='inline-block';
+    } else {
+      iosFirstAttempt=false;
+      await shakeRedErase();
+    }
+  } else {
+    // Practice mode: Sage always reads selected sentence
+    playSage(answer);
+  }
+}
+
+/* Shared question loader */
 function loadQuestion(){
   gotCorrect=false;
   pointsMode=false;
@@ -693,20 +850,43 @@ function loadQuestion(){
   hintBox.textContent='';
   sageText.textContent='';
   studentBox.textContent='';
+  iosHasCorrect=false;
+  iosFirstAttempt=true;
+  iosSelectedIndex=null;
   renderAnswers();
   updateUI();
 }
+
+/* Buttons */
 playBtn.onclick=()=>playQuestion();
 micBtn.onclick=()=>{
-  if(!recog)initRecog();
-  if(listening)recog.stop();
-  else startMic();
+  if(isIOS){
+    micBtn.classList.add('check-mode');
+    checkIOSAnswer();
+  }else{
+    if(!recog)initRecog();
+    if(listening)recog.stop();
+    else startMic();
+  }
 };
 nextBtn.onclick=()=>{
   current++;
   if(current>=questions.length)current=0;
   loadQuestion();
 };
+
+/* iOS overlay */
+if(isIOS && iosOverlay){
+  iosOverlay.style.display='flex';
+  iosOverlay.setAttribute('aria-hidden','false');
+  micBtn.classList.add('check-mode');
+  iosOverlayOk.addEventListener('click',()=>{
+    iosOverlay.style.display='none';
+    iosOverlay.setAttribute('aria-hidden','true');
+  });
+}
+
+/* INIT */
 window.onload=loadQuestion;
 
 /* ---------- HELP MODAL ---------- */
